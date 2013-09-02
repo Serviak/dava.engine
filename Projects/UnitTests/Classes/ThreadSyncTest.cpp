@@ -14,49 +14,45 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_ANDROID_CRASH_REPORT_H__
-#define __DAVAENGINE_ANDROID_CRASH_REPORT_H__
+#include "ThreadSyncTest.h"
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-
-#include "JniExtensions.h"
-#include <signal.h>
-
-namespace DAVA
+ThreadSyncTest::ThreadSyncTest()
+: TestTemplate<ThreadSyncTest>("ThreadSyncTest")
 {
-
-class File;
-
-class AndroidCrashReport
-{
-public:
-	static void Init();
-
-private:
-	static void SignalHandler(int signal, siginfo_t *info, void *uapVoid);
-
-private:
-	static stack_t s_sigstk;
-};
-
-class JniCrashReporter: public JniExtension
-{
-public:
-	void ThrowJavaExpetion(const String& cppSignal);
-
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
-
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
-};
-
-
+    RegisterFunction(this, &ThreadSyncTest::ThreadSyncTestFunction, "ThreadSyncTestFunction", NULL);
+    RegisterFunction(this, &ThreadSyncTest::ThreadSleepTestFunction, "ThreadSleepTestFunction", NULL);
 }
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+void ThreadSyncTest::LoadResources()
+{
+    someThread = Thread::Create(Message(this, &ThreadSyncTest::SomeThreadFunc));
+}
 
-#endif /* #ifndef __DAVAENGINE_ANDROID_CRASH_HANDLER_H__ */
+void ThreadSyncTest::UnloadResources()
+{
+    SafeRelease(someThread);
+}
+
+void ThreadSyncTest::ThreadSleepTestFunction(PerfFuncData * data)
+{
+    int32 time = SystemTimer::Instance()->AbsoluteMS();
+    Thread::SleepThread(300);
+    int32 elapsedTime = SystemTimer::Instance()->AbsoluteMS() - time;
+    TEST_VERIFY(elapsedTime >= 300);
+}
+
+void ThreadSyncTest::ThreadSyncTestFunction(PerfFuncData * data)
+{
+    someValue = -1;
+    someThread->Start();
+    Thread::Wait(&cv);
+    TEST_VERIFY(someValue == 0);
+}
+
+void ThreadSyncTest::SomeThreadFunc(BaseObject * caller, void * callerData, void * userData)
+{
+    someValue = 0;
+    Thread::Signal(&cv);
+}
+
+
