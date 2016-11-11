@@ -302,7 +302,7 @@ SelectableGroup EntityModificationSystem::BeginModification(const SelectableGrou
         DAVA::Entity* entity = item.AsEntity();
         if ((entity != nullptr) && (entity->GetParent() != nullptr))
         {
-            etm.originalParentWorldTransform = entity->GetParent()->GetWorldTransform();
+            etm.originalParentWorldTransform = GetTransformComponent(entity->GetParent())->GetWorldTransform();
         }
         else if (item.CanBeCastedTo<DAVA::ParticleEmitterInstance>()) // special case for emitter
         {
@@ -313,7 +313,7 @@ SelectableGroup EntityModificationSystem::BeginModification(const SelectableGrou
                 DAVA::Entity* ownerEntity = ownerComponent->GetEntity();
                 if (ownerEntity != nullptr)
                 {
-                    etm.originalParentWorldTransform = ownerEntity->GetWorldTransform();
+                    etm.originalParentWorldTransform = GetTransformComponent(ownerEntity)->GetWorldTransform();
                 }
             }
         }

@@ -7,7 +7,7 @@
  */
 const DAVA::Matrix4& EntityTransformProxy::GetWorldTransform(Selectable::Object* object)
 {
-    return static_cast<DAVA::Entity*>(object)->GetWorldTransform();
+    return GetTransformComponent(static_cast<DAVA::Entity*>(object))->GetWorldTransform();
 }
 
 const DAVA::Matrix4& EntityTransformProxy::GetLocalTransform(Selectable::Object* object)
@@ -49,7 +49,7 @@ const DAVA::Matrix4& EmitterTransformProxy::GetWorldTransform(Selectable::Object
     }
     else
     {
-        const auto& entityTransform = ownerComponent->GetEntity()->GetWorldTransform();
+        const auto& entityTransform = GetTransformComponent(ownerComponent->GetEntity())->GetWorldTransform();
         DAVA::Vector3 center = emitterInstance->GetSpawnPosition();
         TransformPerserveLength(center, DAVA::Matrix3(entityTransform));
         currentMatrix.SetTranslationVector(center + entityTransform.GetTranslationVector());
