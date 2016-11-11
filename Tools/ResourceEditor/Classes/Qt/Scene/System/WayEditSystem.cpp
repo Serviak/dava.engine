@@ -416,7 +416,7 @@ DAVA::Entity* WayEditSystem::CreateWayPoint(DAVA::Entity* parent, DAVA::Vector3 
     }
     waypoint->AddComponent(wc);
 
-    DAVA::Matrix4 pm = parent->GetWorldTransform();
+    DAVA::Matrix4 pm = GetTransformComponent(parent)->GetWorldTransform();
     pm.Inverse();
 
     DAVA::Matrix4 m;
@@ -479,8 +479,8 @@ void WayEditSystem::Draw()
 
         DAVA::AABBox3 localBox = selectionSystem->GetUntransformedBoundingBox(e);
         DVASSERT(!localBox.IsEmpty());
-        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, e->GetWorldTransform(), DAVA::Color(redValue, greenValue, blueValue, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
-        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, e->GetWorldTransform(), DAVA::Color(redValue, greenValue, blueValue, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, GetTransformComponent(e)->GetWorldTransform(), DAVA::Color(redValue, greenValue, blueValue, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, GetTransformComponent(e)->GetWorldTransform(), DAVA::Color(redValue, greenValue, blueValue, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
     }
 }
 
