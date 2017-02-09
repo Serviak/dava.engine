@@ -1,47 +1,39 @@
 #pragma once
 
 #include <fstream>
+#include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
+#include "archive.h"
 #include "pack_format.h"
+#include "pack_meta_data.h"
 
-struct FileInfo
-{
-    FileInfo() = default;
-
-    FileInfo(const char* relativePath, uint32_t originalSize,
-             uint32_t compressedSize, uint32_t compressionType);
-
-    std::string relativeFilePath;
-    uint32_t originalSize = 0;
-    uint32_t compressedSize = 0;
-    uint32_t compressionType = 0;
-    uint32_t hash = 0; // crc32
-};
-
-class PackArchive final
+class PackArchive final : public Archive
 {
 public:
     explicit PackArchive(const std::string& archiveName);
 
-    const std::vector<FileInfo>& GetFilesInfo() const;
+    const std::vector<pack_format::file_info>& GetFilesInfo() const override;
 
-    const FileInfo* GetFileInfo(const std::string& relativeFilePath) const;
+    const pack_format::file_info* GetFileInfo(const std::string& relative) const override;
 
-    bool HasFile(const std::string& relativeFilePath) const;
+    bool HasFile(const std::string& relative) const override;
 
     bool
-    LoadFile(const std::string& relativeFilePath, std::vector<uint8_t>& output);
+    HoadFile(const std::string& relativeFilePath, std::vector<uint8_t>& output) override;
 
-    int32_t fileIndex = 0;
-    std::string arcName;
-    std::string lastFileName;
+    bool HasMeta() const override;
+
+    const pack_meta_data& GetMeta() const override;
+
+    std::string PrintMeta() const override;
 
 private:
     std::ifstream file;
-    PackFormat::PackFile packFile;
-    std::unordered_map<std::string, PackFormat::FileTableEntry*> mapFileData;
-    std::vector<FileInfo> filesInfo;
+    pack_format::pack_file pack_file;
+    std::unique_ptr<pack_meta_data> pack_meta;
+    std::unordered_map<std::string, pack_format::file_table_entry*> map_file_data;
+    std::vector<pack_format::file_info> files_info;
 };
