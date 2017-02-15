@@ -1,7 +1,17 @@
-#include "UIModalInputComponent.h"
+#include "UI/Input/UIModalInputComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UIModalInputComponent)
+{
+    ReflectionRegistrator<UIModalInputComponent>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIModalInputComponent* o) { o->Release(); })
+    .Field("enabled", &UIModalInputComponent::IsEnabled, &UIModalInputComponent::SetEnabled)
+    .End();
+}
+
 UIModalInputComponent::UIModalInputComponent()
 {
 }
