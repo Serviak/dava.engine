@@ -1,7 +1,6 @@
-#ifndef __DAVAENGINE_MMNETPROTO_H__
-#define __DAVAENGINE_MMNETPROTO_H__
+#pragma once
 
-#include "Base/BaseTypes.h"
+#include <Base/BaseTypes.h>
 
 namespace DAVA
 {
@@ -113,5 +112,3 @@ inline T* Packet::Data(const size_t offset)
 } // namespace MMNetProto
 } // namespace Net
 } // namespace DAVA
-
-#endif // __DAVAENGINE_MMNETPROTO_H__

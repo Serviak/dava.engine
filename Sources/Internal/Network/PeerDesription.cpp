@@ -13,14 +13,15 @@ PeerDescription::PeerDescription()
 {
 }
 
-PeerDescription::PeerDescription(const NetConfig& config)
+PeerDescription::PeerDescription(const String& appName, const NetConfig& config)
     : platformType(DeviceInfo::GetPlatform())
     , platform(DeviceInfo::GetPlatformString())
     , version(DeviceInfo::GetVersion())
     , manufacturer(DeviceInfo::GetManufacturer())
     , model(DeviceInfo::GetModel())
     , udid(DeviceInfo::GetUDID())
-    , name(UTF8Utils::EncodeToUTF8(DeviceInfo::GetName()))
+    , deviceName(UTF8Utils::EncodeToUTF8(DeviceInfo::GetName()))
+    , appName(appName)
 #if !defined(__DAVAENGINE_COREV2__)
     , screenInfo(DeviceInfo::GetScreenInfo())
 #endif
@@ -41,7 +42,7 @@ void PeerDescription::DumpToStdout() const
 #if !defined(__DAVAENGINE_COREV2__)
     printf("PeerDescription: %s, screen %dx%d, UDID=%s\n", name.c_str(), screenInfo.width, screenInfo.height, udid.c_str());
 #else
-    printf("PeerDescription: %s, UDID=%s\n", name.c_str(), udid.c_str());
+    printf("PeerDescription: %s-%s, UDID=%s\n", deviceName.c_str(), appName.c_str(), udid.c_str());
 #endif
     printf("  %s %s %s %s\n", manufacturer.c_str(), model.c_str(), platform.c_str(), version.c_str());
     printf("  Network interfaces:\n");

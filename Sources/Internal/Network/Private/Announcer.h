@@ -24,6 +24,7 @@ public:
     virtual ~Announcer();
 
     // IController
+    Status GetStatus() const override;
     void Start() override;
     void Stop(Function<void(IController*)> callback) override;
     void Restart() override;
@@ -56,7 +57,14 @@ private:
     Endpoint tcpEndpoint; // Listening port for direct connection
     TCPAcceptor acceptor; // TCP socket for direct connection from remote discoverer
     uint8 tcpBuffer[4 * 1024];
+
+    Atomic<Status> status{ NOT_STARTED };
 };
+
+inline IController::Status Announcer::GetStatus() const
+{
+    return status.Get();
+}
 
 } // namespace Net
 } // namespace DAVA

@@ -8,7 +8,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Functional/Function.h"
 #include "Network/NetConfig.h"
-#include "Network/Services/LogConsumer.h"
 #include "Platform/TemplateWin32/UAPNetworkHelper.h"
 #include "Logger/TeamCityTestsOutput.h"
 #include "Utils/UTF8Utils.h"
@@ -20,6 +19,9 @@
 #include "RegKey.h"
 #include "UWPLogConsumer.h"
 #include "UWPRunner.h"
+
+#include <LoggerService/LogConsumer.h>
+#include <LoggerService/ServiceInfo.h>
 
 using namespace DAVA;
 
@@ -245,7 +247,7 @@ void UWPRunner::InitializeNetwork(bool isMobileDevice)
 
     auto logCreator = [this](uint32, void*) -> IChannelListener* { return &logConsumer; };
     auto logDestroyer = [](IChannelListener* obj, void*) {};
-    GetEngineContext()->netCore->RegisterService(NetCore::SERVICE_LOG, logCreator, logDestroyer);
+    GetEngineContext()->netCore->RegisterService(DAVA::Net::LOG_SERVICE_ID, logCreator, logDestroyer);
 
     eNetworkRole role;
     Endpoint endPoint;
@@ -262,7 +264,7 @@ void UWPRunner::InitializeNetwork(bool isMobileDevice)
 
     NetConfig config(role);
     config.AddTransport(TRANSPORT_TCP, endPoint);
-    config.AddService(NetCore::SERVICE_LOG);
+    config.AddService(LOG_SERVICE_ID);
 
     const uint32 timeout = 5 * 60 * 1000; //5 min
     controllerId = GetEngineContext()->netCore->CreateController(config, nullptr, timeout);
@@ -274,7 +276,7 @@ void UWPRunner::UnInitializeNetwork()
     {
         Net::NetCore* netCore = GetEngineContext()->netCore;
         netCore->DestroyControllerBlocked(controllerId);
-        netCore->UnregisterService(Net::NetCore::SERVICE_LOG);
+        netCore->UnregisterService(DAVA::Net::LOG_SERVICE_ID);
         controllerId = Net::NetCore::INVALID_TRACK_ID;
     }
 }

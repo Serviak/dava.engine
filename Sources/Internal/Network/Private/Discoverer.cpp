@@ -74,12 +74,19 @@ void Discoverer::DoStart()
     }
     if (error != 0 && false == isTerminating)
     {
+        status = START_FAILED;
         DoStop();
+    }
+    else
+    {
+        status = STARTED;
     }
 }
 
 void Discoverer::DoStop()
 {
+    status = NOT_STARTED;
+
     if (socket.IsOpen() && !socket.IsClosing())
     {
         runningObjects += 1;

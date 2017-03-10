@@ -1,24 +1,23 @@
-#include "Base/BaseTypes.h"
-
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
 
 #include <atomic>
-#include "Functional/Function.h"
-#include "Debug/DVAssert.h"
-#include "DLC/Patcher/ZLibStream.h"
-#include "Time/SystemTimer.h"
-#include "Utils/Random.h"
-#include "Utils/StringFormat.h"
+#include <Base/BaseTypes.h>
+#include <Functional/Function.h>
+#include <Debug/DVAssert.h>
+#include <DLC/Patcher/ZLibStream.h>
+#include <Time/SystemTimer.h>
+#include <Utils/Random.h>
+#include <Utils/StringFormat.h>
 
-#include "FileSystem/FileSystem.h"
-#include "FileSystem/FilePath.h"
-#include "FileSystem/File.h"
-#include "Logger/Logger.h"
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/FilePath.h>
+#include <FileSystem/File.h>
+#include <Logger/Logger.h>
 
-#include "MemoryManager/MemoryManager.h"
+#include <MemoryManager/MemoryManager.h>
 
-#include "Network/Services/MMNet/MMNetServer.h"
-#include "Network/Services/MMNet/MMBigDataTransferService.h"
+#include "MMNetServer.h"
+#include "MMBigDataTransferService.h"
 
 namespace DAVA
 {

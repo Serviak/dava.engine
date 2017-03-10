@@ -1,14 +1,13 @@
-#ifndef __DAVAENGINE_MMANOTHERSERVICE_H__
-#define __DAVAENGINE_MMANOTHERSERVICE_H__
+#pragma once
 
-#include "Base/BaseTypes.h"
-#include "Functional/Function.h"
-
-#include "FileSystem/FilePath.h"
-
-#include "Network/NetworkCommon.h"
-#include "Network/Base/IPAddress.h"
-#include "Network/NetService.h"
+#include "MMNetProto.h"
+#include <Base/BaseTypes.h>
+#include <Functional/Function.h>
+#include <FileSystem/FilePath.h>
+#include <Network/NetworkCommon.h>
+#include <Network/Base/IPAddress.h>
+#include <Network/NetService.h>
+#include <Concurrency/Thread.h>
 
 namespace DAVA
 {
@@ -121,5 +120,3 @@ private:
 
 } // namespace Net
 } // namespace DAVA
-
-#endif // __DAVAENGINE_MMANOTHERSERVICE_H__
