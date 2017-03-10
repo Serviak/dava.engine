@@ -8,7 +8,7 @@ namespace DAVA
 {
 namespace Net
 {
-bool ServiceRegistrar::Register(uint32 serviceId, ServiceCreator creator, ServiceDeleter deleter, const char8* name)
+    bool ServiceRegistrar::Register(ServiceID serviceId, ServiceCreator creator, ServiceDeleter deleter, const char8* name)
 {
     DVASSERT(creator != nullptr && deleter != nullptr);
     DVASSERT(!IsRegistered(serviceId));
@@ -30,7 +30,7 @@ bool ServiceRegistrar::Register(uint32 serviceId, ServiceCreator creator, Servic
     return false;
 }
 
-bool ServiceRegistrar::UnRegister(uint32 serviceId)
+    bool ServiceRegistrar::UnRegister(ServiceID serviceId)
 {
     if (!IsRegistered(serviceId))
     {
@@ -48,7 +48,7 @@ void ServiceRegistrar::UnregisterAll()
     registrar.clear();
 }
 
-IChannelListener* ServiceRegistrar::Create(uint32 serviceId, void* context) const
+IChannelListener* ServiceRegistrar::Create(ServiceID serviceId, void* context) const
 {
     const Entry* entry = FindEntry(serviceId);
     return entry != NULL ? entry->creator(serviceId, context)
@@ -56,7 +56,7 @@ IChannelListener* ServiceRegistrar::Create(uint32 serviceId, void* context) cons
                            NULL;
 }
 
-bool ServiceRegistrar::Delete(uint32 serviceId, IChannelListener* obj, void* context) const
+bool ServiceRegistrar::Delete(ServiceID serviceId, IChannelListener* obj, void* context) const
 {
     const Entry* entry = FindEntry(serviceId);
     if (entry != NULL)
@@ -67,7 +67,7 @@ bool ServiceRegistrar::Delete(uint32 serviceId, IChannelListener* obj, void* con
     return false;
 }
 
-const char8* ServiceRegistrar::Name(uint32 serviceId) const
+const char8* ServiceRegistrar::Name(ServiceID serviceId) const
 {
     const Entry* entry = FindEntry(serviceId);
     return entry != NULL ? entry->name
@@ -75,7 +75,7 @@ const char8* ServiceRegistrar::Name(uint32 serviceId) const
                            NULL;
 }
 
-const ServiceRegistrar::Entry* ServiceRegistrar::FindEntry(uint32 serviceId) const
+const ServiceRegistrar::Entry* ServiceRegistrar::FindEntry(ServiceID serviceId) const
 {
     Vector<Entry>::const_iterator i = std::find(registrar.begin(), registrar.end(), serviceId);
     return i != registrar.end() ? &*i : NULL;
