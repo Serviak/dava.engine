@@ -76,7 +76,7 @@ void MMNetServer::ChannelClosed(const char8* /*message*/)
     totalPoolEntries = 0;
     for (MMNetProto::Packet& p : packetPool)
     {
-        p = std::move(MMNetProto::Packet());
+        p = MMNetProto::Packet();
     }
     packetQueue.clear();
     transferService->Stop();
