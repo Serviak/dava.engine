@@ -1,13 +1,11 @@
-#ifndef __DAVAENGINE_ANNOUNCER_H__
-#define __DAVAENGINE_ANNOUNCER_H__
+#pragma once
 
-#include <Network/Base/DeadlineTimer.h>
-#include <Network/Base/UDPSocket.h>
-
+#include "Concurrency/Atomic.h"
+#include "Network/Base/DeadlineTimer.h"
+#include "Network/Base/UDPSocket.h"
 #include "Network/Base/TCPAcceptor.h"
 #include "Network/Base/TCPSocket.h"
-
-#include <Network/IController.h>
+#include "Network/IController.h"
 
 namespace DAVA
 {
@@ -69,4 +67,3 @@ inline IController::Status Announcer::GetStatus() const
 } // namespace Net
 } // namespace DAVA
 
-#endif // __DAVAENGINE_ANNOUNCER_H__
