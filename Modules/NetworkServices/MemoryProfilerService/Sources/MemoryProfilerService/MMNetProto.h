@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Base/BaseTypes.h>
+#include <Base/TemplateHelpers.h>
 
 namespace DAVA
 {
