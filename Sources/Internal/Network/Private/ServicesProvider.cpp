@@ -9,11 +9,10 @@ namespace DAVA
 {
 namespace Net
 {
-
-namespace ServicesSupplierDetails
+namespace ServicesProviderDetails
 {
-uint16 FIRST_AVAILABLE_PORT = 10000;
-uint16 LAST_AVAILABLE_PORT = 10010;
+uint16 FIRST_ALLOWED_TCP_PORT = 10000; // number of first TCP port allowed to be occupied for providing of specified network services
+uint16 LAST_ALLOWED_TCP_PORT = 10010; // numert of last TCP port allowed
 float32 WAITING_CONTROLLER_START_MS = 2000.f;
 }
 
@@ -107,7 +106,7 @@ void ServicesProviderImpl::AddService(ServiceID serviceId, NetService* service)
 void ServicesProviderImpl::Start()
 {
     DVASSERT(services.empty() == false);
-    servicesPort = ServicesSupplierDetails::FIRST_AVAILABLE_PORT;
+    servicesPort = ServicesProviderDetails::FIRST_ALLOWED_TCP_PORT;
     updateSignalId = engine.update.Connect(this, &ServicesProviderImpl::OnUpdate);
     StartServicesController();
 }
@@ -155,7 +154,7 @@ void ServicesProviderImpl::Stop()
 void ServicesProviderImpl::OnUpdate(float32 elapsedMs)
 {
     IController::Status status;
-    if (!NetCore::Instance()->GetControllerStatus(id_net, status) || status == IController::START_FAILED)
+    if (!NetCore::Instance()->GetControllerStatus(id_net, status) || status == IController::START_FAILED || status == IController::STARTED_SOME_FAILED)
     {
         TryUseNextPort();
     }
@@ -166,7 +165,7 @@ void ServicesProviderImpl::OnUpdate(float32 elapsedMs)
     else
     {
         elapsedSinceStartMs += elapsedMs;
-        if (elapsedSinceStartMs >= ServicesSupplierDetails::WAITING_CONTROLLER_START_MS)
+        if (elapsedSinceStartMs >= ServicesProviderDetails::WAITING_CONTROLLER_START_MS)
         {
             TryUseNextPort();
         }
@@ -176,7 +175,7 @@ void ServicesProviderImpl::OnUpdate(float32 elapsedMs)
 void ServicesProviderImpl::TryUseNextPort()
 {
     NetCore::Instance()->DestroyControllerBlocked(id_net);
-    if (++servicesPort <= ServicesSupplierDetails::LAST_AVAILABLE_PORT)
+    if (++servicesPort <= ServicesProviderDetails::LAST_ALLOWED_TCP_PORT)
     {
         StartServicesController();
     }
@@ -222,5 +221,5 @@ void ServicesProvider::Stop()
     impl->Stop();
 }
 
-}// NetCore
-}// DAVA
+} // NetCore
+} // DAVA
