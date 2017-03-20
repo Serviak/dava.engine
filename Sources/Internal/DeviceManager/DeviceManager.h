@@ -5,6 +5,7 @@
 #if defined(__DAVAENGINE_COREV2__)
 
 #include "DeviceManager/DeviceManagerTypes.h"
+#include "Input/KeyboardInputDevice.h"
 #include "Functional/Signal.h"
 
 #include "Engine/Private/EnginePrivateFwd.h"
@@ -35,6 +36,8 @@ private:
     ~DeviceManager();
 
 public:
+	// Display methods
+
     /** Get primary display as reported by system */
     const DisplayInfo& GetPrimaryDisplay() const;
 
@@ -44,14 +47,25 @@ public:
     /** Get total display count */
     size_t GetDisplayCount() const;
 
-    Signal<> displayConfigChanged; //<! Emited when display has been added/removed or properties of any display has changed
+	// Input methods
+
+	KeyboardInputDevice* GetKeyboard();
+
+	// Signals
+
+    Signal<> displayConfigChanged; //<! Emited when display has been added/removed or properties of any display have changed
 
 private:
     void UpdateDisplayConfig();
     void HandleEvent(const Private::MainDispatcherEvent& e);
 
+	void OnEngineInited();
+
     Vector<DisplayInfo> displays;
-    std::unique_ptr<Private::DeviceManagerImpl> impl;
+    
+	KeyboardInputDevice* keyboard = nullptr;
+
+	std::unique_ptr<Private::DeviceManagerImpl> impl;
 
     friend class Private::EngineBackend;
     friend struct Private::DeviceManagerImpl;
