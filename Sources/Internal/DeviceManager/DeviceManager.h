@@ -37,7 +37,7 @@ private:
     ~DeviceManager();
 
 public:
-	// Display methods
+    // Display methods
 
     /** Get primary display as reported by system */
     const DisplayInfo& GetPrimaryDisplay() const;
@@ -48,13 +48,13 @@ public:
     /** Get total display count */
     size_t GetDisplayCount() const;
 
-	// Input methods
+    // Input methods
 
-	InputDevice* GetInputDevice(uint32 id);
-	KeyboardInputDevice* GetKeyboard();
-	MouseInputDevice* GetMouse();
+    InputDevice* GetInputDevice(uint32 id);
+    KeyboardInputDevice* GetKeyboard();
+    MouseInputDevice* GetMouse();
 
-	// Signals
+    // Signals
 
     Signal<> displayConfigChanged; //<! Emited when display has been added/removed or properties of any display have changed
 
@@ -62,15 +62,15 @@ private:
     void UpdateDisplayConfig();
     void HandleEvent(const Private::MainDispatcherEvent& e);
 
-	void OnEngineInited();
+    void OnEngineInited();
 
     Vector<DisplayInfo> displays;
-    
-	KeyboardInputDevice* keyboard = nullptr;
-	MouseInputDevice* mouse = nullptr;
-	Vector<InputDevice*> inputDevices;
 
-	std::unique_ptr<Private::DeviceManagerImpl> impl;
+    KeyboardInputDevice* keyboard = nullptr;
+    MouseInputDevice* mouse = nullptr;
+    Vector<InputDevice*> inputDevices;
+
+    std::unique_ptr<Private::DeviceManagerImpl> impl;
 
     friend class Private::EngineBackend;
     friend struct Private::DeviceManagerImpl;

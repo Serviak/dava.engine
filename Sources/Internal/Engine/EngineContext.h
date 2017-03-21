@@ -18,6 +18,7 @@ class LocalizationSystem;
 class DownloadManager;
 
 class InputSystem;
+class ActionSystem;
 class UIControlSystem;
 
 class SoundSystem;
@@ -66,6 +67,7 @@ public:
     VersionInfo* versionInfo = nullptr;
 
     InputSystem* inputSystem = nullptr;
+    ActionSystem* actionSystem = nullptr;
     // TODO: move UI control system to Window
     UIControlSystem* uiControlSystem = nullptr;
 

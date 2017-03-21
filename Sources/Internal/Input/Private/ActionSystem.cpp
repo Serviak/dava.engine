@@ -6,9 +6,6 @@
 
 namespace DAVA
 {
-
-static uint32 bindingId = 1;
-
 ActionSystem::ActionSystem()
 {
     GetEngineContext()->inputSystem->AddInputEventHandler(MakeFunction(this, &ActionSystem::OnInputEvent));
@@ -16,22 +13,43 @@ ActionSystem::ActionSystem()
 
 ActionSystem::~ActionSystem()
 {
-    GetEngineContext()->inputSystem->RemoveHandler(inputSystemHandlerToken);
+    // GetEngineContext()->inputSystem->RemoveHandler(inputSystemHandlerToken);
 }
 
 uint32 ActionSystem::BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1)
 {
+    DigitalActionBinding binding;
+    binding.actionId = actionId;
+    binding.states[0] = state1;
 
+    digitalBindings.push_back(binding);
+
+    return 0;
 }
 
 uint32 ActionSystem::BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2)
 {
+    DigitalActionBinding binding;
+    binding.actionId = actionId;
+    binding.states[0] = state1;
+    binding.states[1] = state2;
 
+    digitalBindings.push_back(binding);
+
+    return 0;
 }
 
 uint32 ActionSystem::BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3)
 {
+    DigitalActionBinding binding;
+    binding.actionId = actionId;
+    binding.states[0] = state1;
+    binding.states[1] = state2;
+    binding.states[2] = state3;
 
+    digitalBindings.push_back(binding);
+
+    return 0;
 }
 
 bool ActionSystem::OnInputEvent(const InputEvent& event)
@@ -40,12 +58,17 @@ bool ActionSystem::OnInputEvent(const InputEvent& event)
     {
         bool triggered = true;
 
-        for (const DeviceDigitalControlState& requiredState : binding.requiredStates)
+        for (const DeviceDigitalControlState& requiredState : binding.states)
         {
-            const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(requiredState.deviceId);
-            DigitalControlState state = device->GetDigitalControlState(requiredState.controlId);
+            if (requiredState.deviceId == -1)
+            {
+                break;
+            }
 
-            if (state != requiredState.state)
+            const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(requiredState.deviceId);
+            eDigitalControlState state = device->GetDigitalControlState(requiredState.controlId);
+
+            if ((state & requiredState.stateMask) != requiredState.stateMask)
             {
                 triggered = false;
                 break;
