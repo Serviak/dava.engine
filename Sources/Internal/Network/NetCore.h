@@ -58,7 +58,7 @@ public:
     const char8* ServiceName(ServiceID serviceId) const;
 
     TrackId CreateController(const NetConfig& config, void* context = nullptr, uint32 readTimeout = DEFAULT_READ_TIMEOUT);
-    bool GetControllerStatus(TrackId, IController::Status&) const;
+    IController::Status GetControllerStatus(TrackId) const;
 
     TrackId CreateAnnouncer(const Endpoint& endpoint, uint32 sendPeriod, Function<size_t(size_t, void*)> needDataCallback, const Endpoint& tcpEndpoint = Endpoint(DEFAULT_TCP_ANNOUNCE_PORT));
     TrackId CreateDiscoverer(const Endpoint& endpoint, Function<void(size_t, const void*, const Endpoint&)> dataReadyCallback);

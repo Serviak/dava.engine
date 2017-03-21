@@ -66,4 +66,3 @@ inline IController::Status Announcer::GetStatus() const
 
 } // namespace Net
 } // namespace DAVA
-

@@ -31,27 +31,6 @@ PeerDescription::PeerDescription(const String& appName, const NetConfig& config)
     DVASSERT(true == netConfig.Validate());
 }
 
-PeerDescription& PeerDescription::operator=(PeerDescription&& other)
-{
-    platformType = std::move(other.platformType);
-    platform = std::move(other.platform);
-    version = std::move(other.version);
-    manufacturer = std::move(other.manufacturer);
-    model = std::move(other.model);
-    udid = std::move(other.udid);
-    deviceName = std::move(other.deviceName);
-    appName = std::move(other.appName);
-#if !defined(__DAVAENGINE_COREV2__)
-    screenInfo = std::move(other.screenInfo);
-#endif
-    gpuFamily = std::move(other.gpuFamily);
-
-    netConfig = std::move(other.netConfig);
-    ifaddr = std::move(other.ifaddr);
-
-    return *this;
-}
-
 void PeerDescription::SetNetworkInterfaces(const Vector<IfAddress>& availIfAddr)
 {
     ifaddr = availIfAddr;
