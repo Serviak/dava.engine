@@ -4,6 +4,7 @@
 #include "Network/PeerDesription.h"
 #include "Network/NetCore.h"
 #include "Network/NetConfig.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
