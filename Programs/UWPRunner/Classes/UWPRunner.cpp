@@ -218,11 +218,6 @@ void UWPRunner::WaitApp()
 
         DAVA::Thread::Sleep(sleepTimeMS);
     } while (!logConsumer.IsSessionEnded());
-
-    if (succeed && options.isDavaApplication)
-    {
-        succeed = davaApplicationTerminated;
-    }
 }
 
 void UWPRunner::ProcessPackageOptions()
@@ -477,8 +472,6 @@ void UWPRunner::NetLogOutput(const DAVA::String& logString)
 {
     using namespace DAVA;
 
-    const char* davaAppTermString = "Core::SystemAppFinished";
-
     //incoming string is formatted in style "[ip:port] date time message"
     //extract only message text
     String logLevel;
@@ -523,11 +516,6 @@ void UWPRunner::NetLogOutput(const DAVA::String& logString)
                 outputFile->Flush();
             }
         }
-    }
-
-    if (message.find(davaAppTermString) != String::npos)
-    {
-        davaApplicationTerminated = true;
     }
 }
 

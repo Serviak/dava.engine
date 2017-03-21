@@ -4,11 +4,6 @@
 #include <Network/PeerDesription.h>
 #include <Network/ServicesProvider.h>
 
-#include <LoggerService/NetLogger.h>
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
-#include <MemoryProfilerService/MMNetServer.h>
-#endif
-
 namespace DAVA
 {
 class Engine;
@@ -76,12 +71,12 @@ private:
 
     DAVA::Vector<BaseScreen*> screens;
 
-    std::unique_ptr<DAVA::Net::NetLogger> netLogger;
+    std::shared_ptr<DAVA::Net::NetService> netLogger;
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-    std::unique_ptr<DAVA::Net::MMNetServer> memprofServer;
+    std::shared_ptr<DAVA::Net::NetService> memprofServer;
 #endif
 
-    DAVA::Net::ServicesProvider servicesProvider;
+    std::unique_ptr<DAVA::Net::ServicesProvider> servicesProvider;
 
 #if defined(__DAVAENGINE_MACOS__)
 #elif defined(__DAVAENGINE_WIN_UAP__)
