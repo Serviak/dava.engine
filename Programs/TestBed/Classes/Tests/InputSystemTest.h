@@ -28,5 +28,5 @@ private:
 
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> keyboardButtons;
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> mouseButtons;
-    std::unordered_map<DAVA::uint32, DAVA::UIStaticText*> actionCounters;
+    std::unordered_map<DAVA::FastName, DAVA::UIStaticText*> actionCounters;
 };

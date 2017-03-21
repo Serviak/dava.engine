@@ -13,33 +13,19 @@ ActionSystem::ActionSystem()
 
 ActionSystem::~ActionSystem()
 {
-    // GetEngineContext()->inputSystem->RemoveHandler(inputSystemHandlerToken);
 }
 
-uint32 ActionSystem::BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1)
+void ActionSystem::BindDigitalAction(FastName actionId, DeviceDigitalControlState state1)
 {
-    DigitalActionBinding binding;
-    binding.actionId = actionId;
-    binding.states[0] = state1;
-
-    digitalBindings.push_back(binding);
-
-    return 0;
+    BindDigitalAction(actionId, state1, {}, {});
 }
 
-uint32 ActionSystem::BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2)
+void ActionSystem::BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2)
 {
-    DigitalActionBinding binding;
-    binding.actionId = actionId;
-    binding.states[0] = state1;
-    binding.states[1] = state2;
-
-    digitalBindings.push_back(binding);
-
-    return 0;
+    BindDigitalAction(actionId, state1, state2, {});
 }
 
-uint32 ActionSystem::BindDigitalAction(uint32 actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3)
+void ActionSystem::BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3)
 {
     DigitalActionBinding binding;
     binding.actionId = actionId;
@@ -48,8 +34,6 @@ uint32 ActionSystem::BindDigitalAction(uint32 actionId, DeviceDigitalControlStat
     binding.states[2] = state3;
 
     digitalBindings.push_back(binding);
-
-    return 0;
 }
 
 bool ActionSystem::OnInputEvent(const InputEvent& event)
