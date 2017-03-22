@@ -5,6 +5,7 @@
 #include "Network/NetCore.h"
 #include "Network/NetConfig.h"
 #include "Utils/StringFormat.h"
+#include "Platform/TemplateWin32/UAPNetworkHelper.h"
 
 namespace DAVA
 {
