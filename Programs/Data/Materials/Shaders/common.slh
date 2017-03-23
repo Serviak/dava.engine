@@ -66,6 +66,10 @@
 #define TILED_DECAL_MASK 0
 #endif
 
+#if !defined TILE_DECAL_ROTATION
+#define TILE_DECAL_ROTATION 0
+#endif
+
 #if !defined MATERIAL_LIGHTMAP
 #define MATERIAL_LIGHTMAP 0
 #endif
@@ -95,6 +99,14 @@
 
 #if !defined FOG_ATMOSPHERE
 #define FOG_ATMOSPHERE 0
+#endif
+
+#if !defined FOG_ATMOSPHERE_NO_SCATTERING
+#define FOG_ATMOSPHERE_NO_SCATTERING 0
+#endif
+
+#if !defined FOG_ATMOSPHERE_NO_ATTENUATION
+#define FOG_ATMOSPHERE_NO_ATTENUATION 0
 #endif
 
 #if !defined FOG_ATMOSPHERE_MAP
@@ -215,9 +227,15 @@
     #define VIEW_ALBEDO 0
 #endif
 
+#if !defined FLOWMAP_SKY
+    #define FLOWMAP_SKY 0
+#endif
+
 
 #if FLOWMAP_SKY
     #define FLOWMAP 1
+#else
+    #define FLOWMAP 0
 #endif
 
 
@@ -228,3 +246,24 @@
     #define VIEW_ALBEDO 1
 #endif
 
+#if !defined TEST_OCCLUSION
+#define TEST_OCCLUSION 0
+#endif
+
+
+#if !defined LANDSCAPE_SPECULAR
+#define LANDSCAPE_SPECULAR 0
+#endif
+
+#if !defined LANDSCAPE_MORPHING_COLOR
+#define LANDSCAPE_MORPHING_COLOR 0
+#endif
+
+#if !defined CURSOR
+#define CURSOR 0
+#endif
+
+
+#if !defined FRESNEL_TO_ALPHA
+#define FRESNEL_TO_ALPHA 0
+#endif
