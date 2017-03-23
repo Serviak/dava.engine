@@ -1,3 +1,7 @@
+#ifndef TEXTURED
+#define TEXTURED 0
+#endif
+
 vertex_in
 {
     float4  pos : POSITION;
