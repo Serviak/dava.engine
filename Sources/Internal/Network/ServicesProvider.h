@@ -77,7 +77,7 @@ public:
 
         It is assumed that passed network service is a 'server'
         whereas corresponding service on the remote peer side is a 'client'
-        For ex.,
+        E.g.,
             NetLogger is a 'server' service and should be on ServiceProvider side,
             LogConsumer is a 'client' service and should be on remote peer side.
 
