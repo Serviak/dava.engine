@@ -60,7 +60,7 @@ public:
 
 private:
     void UpdateDisplayConfig();
-    void HandleEvent(const Private::MainDispatcherEvent& e);
+    bool HandleEvent(const Private::MainDispatcherEvent& e);
 
     void OnEngineInited();
 
