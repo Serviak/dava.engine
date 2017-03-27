@@ -19,21 +19,16 @@ ActionSystem::~ActionSystem()
 
 void ActionSystem::BindSet(const ActionSet& set)
 {
-    impl->BindSet(set, Array<uint32, MAX_DEVICES_COUNT>{});
+    impl->BindSet(set, Vector<uint32>());
 }
 
 void ActionSystem::BindSet(const ActionSet& set, uint32 deviceId)
 {
-    Array<uint32, MAX_DEVICES_COUNT> devices{};
-    devices[0] = deviceId;
-    impl->BindSet(set, devices);
+    impl->BindSet(set, Vector<uint32>(deviceId));
 }
 
 void ActionSystem::BindSet(const ActionSet& set, uint32 deviceId1, uint32 deviceId2)
 {
-    Array<uint32, MAX_DEVICES_COUNT> devices;
-    devices[0] = deviceId1;
-    devices[1] = deviceId2;
-    impl->BindSet(set, devices);
+    impl->BindSet(set, Vector<uint32>{deviceId1, deviceId2});
 }
 }

@@ -7,8 +7,6 @@ namespace DAVA
 {
 namespace Private
 {
-#define MAX_DEVICES_COUNT 2
-
 // Comparators for BindedActionSet's multisets
 // Since we need to keep them in order
 
@@ -27,7 +25,7 @@ struct AnalogBindingCompare final
 // (CTRL + SPACE should be checked before SPACE, otherwise we might end up with SPACE action being triggered even though CTRL is also pressed)
 struct BindedActionSet final
 {
-    Array<uint32, MAX_DEVICES_COUNT> devices;
+    Vector<uint32> devices;
     std::multiset<DigitalBinding, DigitalBindingCompare> digitalBindings;
     std::multiset<AnalogBinding, AnalogBindingCompare> analogBindings;
 };
@@ -38,11 +36,11 @@ public:
     ActionSystemImpl(ActionSystem* actionSystem);
     ~ActionSystemImpl();
 
-    void BindSet(const ActionSet& set, Array<uint32, MAX_DEVICES_COUNT> devices);
+    void BindSet(const ActionSet& set, Vector<uint32> devices);
 
 private:
    bool OnInputEvent(const InputEvent& event);
-   bool CheckDigitalStates(const Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT>& states, const Array<uint32, MAX_DEVICES_COUNT>& devices);
+   bool CheckDigitalStates(const Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices);
 
 private:
     ActionSystem* actionSystem;
