@@ -40,7 +40,7 @@ public:
 
 private:
    bool OnInputEvent(const InputEvent& event);
-   bool CheckDigitalStates(const Array<DigitalControlState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices);
+   bool CheckDigitalStates(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices);
 
 private:
     ActionSystem* actionSystem;
