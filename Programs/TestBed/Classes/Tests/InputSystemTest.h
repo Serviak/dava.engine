@@ -21,12 +21,16 @@ private:
     bool OnInputEvent(DAVA::InputEvent const& event);
     void OnBeginFrame();
     void OnAction(DAVA::Action action);
+    void OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData);
+    void OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> input);
 
     void CreateKeyboardUI();
     void CreateMouseUI();
     void CreateActionsUI();
+    void CreateInputListenerUI();
 
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> keyboardButtons;
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> mouseButtons;
     std::unordered_map<DAVA::FastName, DAVA::UIStaticText*> actionCounters;
+    DAVA::UIStaticText* inputListenerResultField;
 };

@@ -37,14 +37,18 @@ public:
     ~ActionSystemImpl();
 
     void BindSet(const ActionSet& set, Vector<uint32> devices);
+    void GetUserInput(Function<void(Vector<eInputElements>)> callback);
 
 private:
-   bool OnInputEvent(const InputEvent& event);
-   bool CheckDigitalStates(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices);
+    bool OnInputEvent(const InputEvent& event);
+    bool CheckDigitalStates(const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices);
 
 private:
     ActionSystem* actionSystem;
     Vector<BindedActionSet> bindedSets;
+
+    Function<void(Vector<eInputElements>)> userInputCallback = nullptr;
+    Vector<eInputElements> listenedInputElements;
 };
 }
 }
