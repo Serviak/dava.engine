@@ -1,75 +1,39 @@
 #include "Input/ActionSystem.h"
-
-#include "Engine/Engine.h"
-#include "Input/InputSystem.h"
-#include "DeviceManager/DeviceManager.h"
+#include "Input/Private/ActionSystemImpl.h"
 
 namespace DAVA
 {
-ActionSystem::ActionSystem()
+ActionSystem::ActionSystem() : impl(new Private::ActionSystemImpl(this))
 {
-    GetEngineContext()->inputSystem->AddInputEventHandler(MakeFunction(this, &ActionSystem::OnInputEvent));
+
 }
 
 ActionSystem::~ActionSystem()
 {
-}
-
-void ActionSystem::BindDigitalAction(FastName actionId, DeviceDigitalControlState state1)
-{
-    BindDigitalAction(actionId, state1, {}, {});
-}
-
-void ActionSystem::BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2)
-{
-    BindDigitalAction(actionId, state1, state2, {});
-}
-
-void ActionSystem::BindDigitalAction(FastName actionId, DeviceDigitalControlState state1, DeviceDigitalControlState state2, DeviceDigitalControlState state3)
-{
-    DigitalActionBinding binding;
-    binding.actionId = actionId;
-    binding.states[0] = state1;
-    binding.states[1] = state2;
-    binding.states[2] = state3;
-
-    digitalBindings.push_back(binding);
-}
-
-bool ActionSystem::OnInputEvent(const InputEvent& event)
-{
-    for (const DigitalActionBinding& binding : digitalBindings)
+    if (impl != nullptr)
     {
-        bool triggered = true;
-
-        for (const DeviceDigitalControlState& requiredState : binding.states)
-        {
-            if (requiredState.deviceId == -1)
-            {
-                break;
-            }
-
-            const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(requiredState.deviceId);
-            eDigitalControlState state = device->GetDigitalControlState(requiredState.controlId);
-
-            if ((state & requiredState.stateMask) != requiredState.stateMask)
-            {
-                triggered = false;
-                break;
-            }
-        }
-
-        if (triggered)
-        {
-            Action action;
-            action.actionId = binding.actionId;
-            action.triggeredDeviceType = event.deviceType;
-            action.triggeredDeviceId = event.deviceId;
-
-            ActionTriggered.Emit(action);
-        }
+        delete impl;
+        impl = nullptr;
     }
+}
 
-    return false;
+void ActionSystem::BindSet(const ActionSet& set)
+{
+    impl->BindSet(set, Array<uint32, MAX_DEVICES_COUNT>{});
+}
+
+void ActionSystem::BindSet(const ActionSet& set, uint32 deviceId)
+{
+    Array<uint32, MAX_DEVICES_COUNT> devices{};
+    devices[0] = deviceId;
+    impl->BindSet(set, devices);
+}
+
+void ActionSystem::BindSet(const ActionSet& set, uint32 deviceId1, uint32 deviceId2)
+{
+    Array<uint32, MAX_DEVICES_COUNT> devices;
+    devices[0] = deviceId1;
+    devices[1] = deviceId2;
+    impl->BindSet(set, devices);
 }
 }
