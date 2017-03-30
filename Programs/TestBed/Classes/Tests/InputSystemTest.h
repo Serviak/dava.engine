@@ -17,22 +17,31 @@ protected:
     void UnloadResources() override;
 
 private:
-    DAVA::UIButton* CreateKeyboardUIButton(DAVA::eInputElements key, DAVA::WideString text, DAVA::FTFont* font, DAVA::float32 x, DAVA::float32 y, DAVA::float32 w, DAVA::float32 h);
-    bool OnInputEvent(DAVA::InputEvent const& event);
-    void OnBeginFrame();
-    void OnAction(DAVA::Action action);
-    void OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData);
-    void OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> input);
-
-    void CreateKeyboardUI();
+    void CreateKeyboardUI(DAVA::WideString header, DAVA::float32 x, DAVA::float32 y, bool forVirtualkeys);
     void CreateMouseUI();
     void CreateActionsUI();
     void CreateInputListenerUI();
 
+    void CreateKeyboardUIButton(DAVA::eInputElements key, DAVA::WideString text, DAVA::FTFont* font, DAVA::float32* x, DAVA::float32 y, DAVA::float32 w, DAVA::float32 h);
+    DAVA::eInputElements GetVirtualOrScancodeInputElement(DAVA::eInputElements scancodeElement, bool convertToVirtualCounterpart);
+
+    void HighlightDigitalButton(DAVA::UIButton* button, DAVA::eDigitalElementStates state);
+
+    bool OnInputEvent(DAVA::InputEvent const& event);
+    void OnAction(DAVA::Action action);
+    void OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData);
+    void OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> input);
+
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> keyboardButtons;
+    DAVA::Vector<DAVA::UIStaticText*> keyboardsHeaders;
+
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> mouseButtons;
+
     std::unordered_map<DAVA::FastName, DAVA::UIStaticText*> actionCounters;
+
+    DAVA::UIButton* inputListenerStartButton;
     DAVA::UIStaticText* inputListenerResultField;
 
-    DAVA::uint32 rawInputToken = 0;
+    DAVA::uint32 rawInputToken;
+    DAVA::SigConnectionID actionTriggeredToken;
 };

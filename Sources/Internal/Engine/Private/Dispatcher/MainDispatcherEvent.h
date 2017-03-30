@@ -63,6 +63,8 @@ struct MainDispatcherEvent final
         GAMEPAD_REMOVED,
 
         DISPLAY_CONFIG_CHANGED,
+
+        INPUT_LANGUAGE_CHANGED
     };
 
     static bool IsInputEvent(eType type);
@@ -263,6 +265,8 @@ struct MainDispatcherEvent final
     static MainDispatcherEvent CreateWindowRotationGestureEvent(Window* window, float32 rotation, eModifierKeys modifierKeys);
     static MainDispatcherEvent CreateWindowSwipeGestureEvent(Window* window, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys);
     static MainDispatcherEvent CreateWindowCaptureLostEvent(Window* window);
+
+    static MainDispatcherEvent CreateInputLanguageChangedEvent();
 };
 
 template <typename F>

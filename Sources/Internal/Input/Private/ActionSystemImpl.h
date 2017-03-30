@@ -7,7 +7,7 @@ namespace DAVA
 {
 namespace Private
 {
-// Comparators for BindedActionSet's multisets
+// Comparators for BoundActionSet's multisets
 // Since we need to keep them in order
 
 struct DigitalBindingCompare final
@@ -20,10 +20,10 @@ struct AnalogBindingCompare final
     bool operator()(const AnalogBinding& first, const AnalogBinding& second) const;
 };
 
-// ActionSet + devices it's binded to
+// ActionSet + devices it's bound to
 // Use multiset since we need to process bindings with bigger number of buttons first
 // (CTRL + SPACE should be checked before SPACE, otherwise we might end up with SPACE action being triggered even though CTRL is also pressed)
-struct BindedActionSet final
+struct BoundActionSet final
 {
     Vector<uint32> devices;
     std::multiset<DigitalBinding, DigitalBindingCompare> digitalBindings;
@@ -45,7 +45,7 @@ private:
 
 private:
     ActionSystem* actionSystem;
-    Vector<BindedActionSet> bindedSets;
+    Vector<BoundActionSet> boundSets;
 
     Function<void(Vector<eInputElements>)> userInputCallback = nullptr;
     Vector<eInputElements> listenedInputElements;

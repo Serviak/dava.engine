@@ -196,10 +196,10 @@ bool KeyboardTest::InputEventHandler(const InputEvent& inputEvent)
     if (IsMouseInputElement(inputEvent.elementId))
     {
         MouseDevice* mouse = GetEngineContext()->deviceManager->GetMouse();
-        for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
+        for (eInputElements i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; i = static_cast<eInputElements>(i + 1))
         {
-            eDigitalElementState state = mouse->GetDigitalElementState(i);
-            bool pressed = (state & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED;
+            eDigitalElementStates state = mouse->GetDigitalElementState(i);
+            bool pressed = (state & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED;
             const InputElementInfo& info = GetInputElementInfo(static_cast<eInputElements>(i));
             ss << info.name << "=" << pressed << std::endl;
         }
