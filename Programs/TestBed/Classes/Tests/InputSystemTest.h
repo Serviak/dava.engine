@@ -33,4 +33,6 @@ private:
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> mouseButtons;
     std::unordered_map<DAVA::FastName, DAVA::UIStaticText*> actionCounters;
     DAVA::UIStaticText* inputListenerResultField;
+
+    DAVA::uint32 rawInputToken = 0;
 };

@@ -1,8 +1,10 @@
 #include "Infrastructure/TestBed.h"
 #include "Tests/KeyboardTest.h"
 
+#include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
 #include <Input/InputCallback.h>
+#include <Input/MouseDevice.h>
 #include <UI/Focus/UIFocusComponent.h>
 #include <Render/2D/Sprite.h>
 
@@ -63,9 +65,11 @@ void KeyboardTest::LoadResources()
     AddControl(descriptionText);
 
     InputSystem* inputSystem = app.GetEngine().GetContext()->inputSystem;
-    pointerInputToken = inputSystem->AddHandler(eInputDevices::CLASS_POINTER, MakeFunction(this, &KeyboardTest::OnPointerEvent));
-    keyboardInputToken = inputSystem->AddHandler(eInputDevices::CLASS_KEYBOARD, MakeFunction(this, &KeyboardTest::OnKeyboardEvent));
-    gamepadInputToken = inputSystem->AddHandler(eInputDevices::CLASS_GAMEPAD, MakeFunction(this, &KeyboardTest::OnGamepadEvent));
+    pointerInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_POINTER, MakeFunction(this, &KeyboardTest::OnPointerEvent));
+    keyboardInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_KEYBOARD, MakeFunction(this, &KeyboardTest::OnKeyboardEvent));
+    gamepadInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_GAMEPAD, MakeFunction(this, &KeyboardTest::OnGamepadEvent));
+
+    rawInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &KeyboardTest::InputEventHandler));
 
     resetButton = new UIButton(Rect(420, 30, 50, 30));
     resetButton->SetDebugDraw(true);
@@ -133,6 +137,8 @@ void KeyboardTest::UnloadResources()
     inputSystem->RemoveHandler(keyboardInputToken);
     inputSystem->RemoveHandler(gamepadInputToken);
 
+    inputSystem->RemoveHandler(rawInputToken);
+
     SafeRelease(previewText);
     SafeRelease(descriptionText);
     SafeRelease(resetButton);
@@ -182,6 +188,27 @@ void KeyboardTest::ResetCounters()
     lastMouseX = 0;
     lastMouseY = 0;
     lastWheel = 0.f;
+}
+
+bool KeyboardTest::InputEventHandler(const InputEvent& inputEvent)
+{
+    StringStream ss;
+    if (IsMouseInputElement(inputEvent.elementId))
+    {
+        MouseDevice* mouse = GetEngineContext()->deviceManager->GetMouse();
+        for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
+        {
+            eDigitalElementState state = mouse->GetDigitalElementState(i);
+            bool pressed = (state & eDigitalElementState::PRESSED) == eDigitalElementState::PRESSED;
+            const InputElementInfo& info = GetInputElementInfo(static_cast<eInputElements>(i));
+            ss << info.name << "=" << pressed << std::endl;
+        }
+        AnalogElementState pos = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
+        ss << GetInputElementInfo(eInputElements::MOUSE_POSITION).name << "=" << pos.x << ", " << pos.y << std::endl;
+    }
+
+    descriptionText->SetText(UTF8Utils::EncodeToWideString(ss.str()));
+    return false;
 }
 
 bool KeyboardTest::OnPointerEvent(UIEvent* e)
