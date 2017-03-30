@@ -49,6 +49,7 @@ private:
 
     Function<void(Vector<eInputElements>)> userInputCallback = nullptr;
     Vector<eInputElements> listenedInputElements;
+    uint32 inputHandlerToken = 0;
 };
 }
 }

@@ -353,7 +353,9 @@ void Initialize()
     DAVA::Engine::Instance()->beginFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameBegin);
     DAVA::Engine::Instance()->endFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameEnd);
 
-    ImGuiImplDetails::inputHandlerToken = DAVA::InputSystem::Instance()->AddHandler(eInputDevices::TOUCH_SURFACE | eInputDevices::MOUSE | eInputDevices::KEYBOARD, &OnInput);
+    ImGuiImplDetails::inputHandlerToken = DAVA::InputSystem::Instance()->AddHandler(
+    eInputDevices::TOUCH_SURFACE | eInputDevices::MOUSE | eInputDevices::KEYBOARD,
+    DAVA::MakeFunction<bool, UIEvent*>(&OnInput));
 #endif
 
     ImGuiImplDetails::initialized = true;
