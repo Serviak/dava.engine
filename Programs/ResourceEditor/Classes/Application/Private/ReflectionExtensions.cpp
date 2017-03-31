@@ -15,6 +15,7 @@
 #include <Scene3D/Components/SoundComponent.h>
 #include <Scene3D/Components/WaveComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/SlotComponent.h>
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
@@ -42,12 +43,14 @@ void RegisterNMaterialExtensions()
 void RegisterFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
 {
     // HeightMap
-    EmplaceFieldMeta<Landscape>("heightmapPath", CreateHeightMapValidator(accessor));
-    EmplaceFieldMeta<Landscape>("heightmapPath", CreateHeightMapFileMeta(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>("lightmap", CreateTextureValidator(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>("lightmap", CreateTextureFileMeta(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>("customGeometry", CreateSceneValidator(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>("customGeometry", CreateSceneFileMeta(accessor));
+    InitFilePathExtensions(accessor);
+    EmplaceFieldMeta<Landscape>("heightmapPath", CreateHeightMapValidator());
+    EmplaceFieldMeta<Landscape>("heightmapPath", CreateHeightMapFileMeta());
+    EmplaceFieldMeta<VegetationRenderObject>("lightmap", CreateTextureValidator());
+    EmplaceFieldMeta<VegetationRenderObject>("lightmap", CreateTextureFileMeta());
+    EmplaceFieldMeta<VegetationRenderObject>("customGeometry", CreateSceneValidator());
+    EmplaceFieldMeta<VegetationRenderObject>("customGeometry", CreateSceneFileMeta());
+    EmplaceFieldMeta<SlotComponent>("configPath", GenericFileMeta<REFileMeta>("Yaml (*.yaml);; XML(*.xml);; All supported formats (*.yaml *.xml)", "Open items list"));
 }
 
 void RegisterComponentsExtensions()
