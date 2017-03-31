@@ -110,7 +110,7 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
 
     if( pre_proc.process( srcText, &src ) )
     {
-#if 0
+#if 1
 {
     Logger::Info("\n\nsrc-code:");
 
