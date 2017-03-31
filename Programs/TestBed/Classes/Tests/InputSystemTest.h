@@ -39,7 +39,10 @@ private:
 
     std::unordered_map<DAVA::FastName, DAVA::UIStaticText*> actionCounters;
 
-    DAVA::UIButton* inputListenerStartButton;
+    DAVA::UIButton* inputListenerDigitalSingleWithoutModifiersButton;
+    DAVA::UIButton* inputListenerDigitalSingleWithModifiersButton;
+    DAVA::UIButton* inputListenerDigitalMultipleAnyButton;
+    DAVA::UIButton* inputListenerAnalogButton;
     DAVA::UIStaticText* inputListenerResultField;
 
     DAVA::uint32 rawInputToken;

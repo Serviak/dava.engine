@@ -36,6 +36,8 @@ class EngineSettings;
 
 class DeviceManager;
 
+class InputListener;
+
 class AutotestingSystem;
 
 namespace Net
@@ -90,6 +92,8 @@ public:
 #endif
 
     DeviceManager* deviceManager = nullptr;
+
+    InputListener* inputListener = nullptr;
 
     AutotestingSystem* autotestingSystem = nullptr;
 };

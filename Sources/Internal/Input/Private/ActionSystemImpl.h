@@ -37,7 +37,6 @@ public:
     ~ActionSystemImpl();
 
     void BindSet(const ActionSet& set, Vector<uint32> devices);
-    void GetUserInput(Function<void(Vector<eInputElements>)> callback);
 
 private:
     bool OnInputEvent(const InputEvent& event);
@@ -46,9 +45,6 @@ private:
 private:
     ActionSystem* actionSystem;
     Vector<BoundActionSet> boundSets;
-
-    Function<void(Vector<eInputElements>)> userInputCallback = nullptr;
-    Vector<eInputElements> listenedInputElements;
     uint32 inputHandlerToken = 0;
 };
 }
