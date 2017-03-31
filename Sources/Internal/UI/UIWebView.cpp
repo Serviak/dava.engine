@@ -1,6 +1,7 @@
 #include "UIWebView.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "UI/UIControlSystem.h"
+#include "UI/Update/UIUpdateComponent.h"
 #include "Engine/Engine.h"
 
 #if defined(DISABLE_NATIVE_WEBVIEW) && !defined(ENABLE_CEF_WEBVIEW)
@@ -36,6 +37,8 @@ UIWebView::UIWebView(const Rect& rect)
 
     UpdateNativeControlVisible(false); // will be displayed in OnActive.
     SetDataDetectorTypes(DATA_DETECTOR_LINKS);
+
+    GetOrCreateComponent<UIUpdateComponent>()->SetUpdateInvisible(true);
 }
 
 UIWebView::~UIWebView()
@@ -218,10 +221,10 @@ void UIWebView::CopyDataFrom(UIControl* srcControl)
     SetDataDetectorTypes(webView->GetDataDetectorTypes());
 }
 
-void UIWebView::SystemDraw(const DAVA::UIGeometricData& geometricData)
+void UIWebView::SystemDraw(const DAVA::UIGeometricData& geometricData, const UIControlBackground* parentBackground)
 {
     webViewControl->WillDraw();
-    UIControl::SystemDraw(geometricData);
+    UIControl::SystemDraw(geometricData, parentBackground);
     webViewControl->DidDraw();
 }
 
