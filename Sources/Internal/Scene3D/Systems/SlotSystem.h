@@ -63,11 +63,13 @@ public:
 
     void AttachItemToSlot(Entity* rootEntity, FastName slotName, FastName itemName);
     void AttachItemToSlot(SlotComponent* component, FastName itemName);
+    void AttachEntityToSlot(SlotComponent* component, Entity* entity);
 
     Entity* LookUpLoadedEntity(SlotComponent* component);
 
 protected:
     void SetScene(Scene* scene) override;
+    void UnloadItem(SlotComponent* component);
 
 private:
     UnorderedMap<Component*, Entity*> slotToLoadedEntity;
