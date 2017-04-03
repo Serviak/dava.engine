@@ -274,3 +274,13 @@
 #if !defined LOD_COLOR
 #define LOD_COLOR 0
 #endif
+
+#if !defined PARTICLE_DEBUG_SHOW_ALPHA
+#define PARTICLE_DEBUG_SHOW_ALPHA 0
+#endif
+
+#if !defined PARTICLE_DEBUG_SHOW_OVERDRAW
+#define PARTICLE_DEBUG_SHOW_OVERDRAW 0
+#endif
+
+
