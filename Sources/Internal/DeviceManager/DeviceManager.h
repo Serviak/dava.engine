@@ -7,6 +7,7 @@
 #include "DeviceManager/DeviceManagerTypes.h"
 #include "Input/KeyboardInputDevice.h"
 #include "Input/MouseDevice.h"
+#include "Input/TouchDevice.h"
 #include "Functional/Signal.h"
 
 #include "Engine/Private/EnginePrivateFwd.h"
@@ -53,6 +54,7 @@ public:
     InputDevice* GetInputDevice(uint32 id);
     KeyboardInputDevice* GetKeyboard();
     MouseDevice* GetMouse();
+    TouchDevice* GetTouch();
 
     // Signals
 
@@ -68,6 +70,7 @@ private:
 
     KeyboardInputDevice* keyboard = nullptr;
     MouseDevice* mouse = nullptr;
+    TouchDevice* touch = nullptr;
     Vector<InputDevice*> inputDevices;
 
     std::unique_ptr<Private::DeviceManagerImpl> impl;
