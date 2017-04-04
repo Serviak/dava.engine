@@ -5,11 +5,8 @@
 #if defined(__DAVAENGINE_COREV2__)
 
 #include "DeviceManager/DeviceManagerTypes.h"
-#include "Input/KeyboardInputDevice.h"
-#include "Input/MouseDevice.h"
-#include "Functional/Signal.h"
-
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Functional/Signal.h"
 
 /**
     \defgroup device_manager Device Manager
@@ -17,6 +14,10 @@
 
 namespace DAVA
 {
+class GamepadDevice;
+class InputDevice;
+class KeyboardInputDevice;
+class MouseDevice;
 namespace Private
 {
 struct DeviceManagerImpl;
@@ -51,6 +52,7 @@ public:
     // Input methods
 
     InputDevice* GetInputDevice(uint32 id);
+    GamepadDevice* GetGamepad();
     KeyboardInputDevice* GetKeyboard();
     MouseDevice* GetMouse();
 
@@ -60,14 +62,22 @@ public:
 
 private:
     void UpdateDisplayConfig();
-    bool HandleEvent(const Private::MainDispatcherEvent& e);
 
+    bool HandleEvent(const Private::MainDispatcherEvent& e);
+    void HandleDisplayConfigChanged(const Private::MainDispatcherEvent& e);
+    void HandleGamepadMotion(const Private::MainDispatcherEvent& e);
+    void HandleGamepadButton(const Private::MainDispatcherEvent& e);
+    void HandleGamepadAdded(const Private::MainDispatcherEvent& e);
+    void HandleGamepadRemoved(const Private::MainDispatcherEvent& e);
+
+    void Update(float32 frameDelta);
     void OnEngineInited();
 
     Vector<DisplayInfo> displays;
 
     KeyboardInputDevice* keyboard = nullptr;
     MouseDevice* mouse = nullptr;
+    GamepadDevice* gamepad = nullptr;
     Vector<InputDevice*> inputDevices;
 
     std::unique_ptr<Private::DeviceManagerImpl> impl;
