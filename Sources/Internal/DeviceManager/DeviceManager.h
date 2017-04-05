@@ -21,6 +21,7 @@ class MouseDevice;
 namespace Private
 {
 struct DeviceManagerImpl;
+struct MainDispatcherEvent;
 }
 
 /**
