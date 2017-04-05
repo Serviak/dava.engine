@@ -65,7 +65,7 @@ private:
 
     Map<ServiceID, ServiceContext> services;
 
-    SigConnectionID updateSignalId = 0;
+    Token updateSignalId;
     float32 elapsedSinceStartMs = 0.f;
 
     bool isStarted = false;
