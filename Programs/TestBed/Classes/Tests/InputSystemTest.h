@@ -19,6 +19,7 @@ protected:
 private:
     void CreateKeyboardUI(DAVA::WideString header, DAVA::float32 x, DAVA::float32 y, bool forVirtualkeys);
     void CreateMouseUI();
+    void CreateTouchUI();
     void CreateActionsUI();
     void CreateInputListenerUI();
 
@@ -31,11 +32,18 @@ private:
     void OnAction(DAVA::Action action);
     void OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData);
     void OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> input);
+    void OnUpdate(DAVA::float32 delta);
 
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> keyboardButtons;
     DAVA::Vector<DAVA::UIStaticText*> keyboardsHeaders;
 
+    DAVA::UIButton* mouseBody;
+    DAVA::UIStaticText* mouseHeader;
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> mouseButtons;
+
+    DAVA::UIStaticText* touchHeader;
+    std::unordered_map<DAVA::uint32, DAVA::UIButton*> touchClickButtons;
+    std::unordered_map<DAVA::uint32, DAVA::UIButton*> touchMoveButtons;
 
     std::unordered_map<DAVA::FastName, DAVA::UIStaticText*> actionCounters;
 
@@ -47,4 +55,5 @@ private:
 
     DAVA::uint32 rawInputToken;
     DAVA::SigConnectionID actionTriggeredToken;
+    DAVA::SigConnectionID updateToken;
 };

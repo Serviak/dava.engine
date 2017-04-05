@@ -5,6 +5,7 @@
 #if defined(__DAVAENGINE_COREV2__)
 
 #include "DeviceManager/DeviceManagerTypes.h"
+#include "Input/TouchDevice.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Functional/Signal.h"
 
@@ -56,6 +57,7 @@ public:
     GamepadDevice* GetGamepad();
     KeyboardInputDevice* GetKeyboard();
     MouseDevice* GetMouse();
+    TouchDevice* GetTouch();
 
     // Signals
 
@@ -79,6 +81,7 @@ private:
     KeyboardInputDevice* keyboard = nullptr;
     MouseDevice* mouse = nullptr;
     GamepadDevice* gamepad = nullptr;
+    TouchDevice* touch = nullptr;
     Vector<InputDevice*> inputDevices;
 
     std::unique_ptr<Private::DeviceManagerImpl> impl;
