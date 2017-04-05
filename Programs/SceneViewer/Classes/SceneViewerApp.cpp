@@ -85,52 +85,22 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     performanceResultsScreen = new PerformanceResultsScreen(data);
 #endif
 
-    //SetScenePath( "~doc:/GB/Cromwell-test.sc2" );
-    //    SetScenePath("~doc:/effect.sc2");
-    //    SetScenePath("~doc:/karelia/karelia.sc2");
-<<<<<<< HEAD:Programs/SceneViewer/Classes/GameCore.cpp
-    //SetScenePath("~doc:/17_karelia_ka/17_karelia_ka.sc2");
-    //SetScenePath("~doc:/22_italy_it_night/22_italy_it_night.sc2");    
-    //SetScenePath("~doc:/02_desert_train_dt/02_desert_train_dt.sc2");
-    //SetScenePath("~doc:/03_erlenberg_er/03_erlenberg_er.sc2");
-    //SetScenePath("~doc:/04_medvedkovo_md/04_medvedkovo_md.sc2");
-    //SetScenePath("~doc:/05_amigosville_am/05_amigosville_am.sc2");
-    //SetScenePath("~doc:/06_rudniki_rd/06_rudniki_rd.sc2");
-    //SetScenePath("~doc:/09_savanna_sv/09_savanna_sv.sc2");
-    //SetScenePath("~doc:/10_asia_as/10_asia_as.sc2");
-    //SetScenePath("~doc:/12_malinovka_ma/12_malinovka_ma.sc2");
-    //SetScenePath("~doc:/13_pliego_pl/13_pliego_pl.sc2");
-    //SetScenePath("~doc:/14_port_pt/14_port_pt.sc2");
-    //SetScenePath("~doc:/15_ordeal_ord/15_ordeal_ord.sc2");
-    //SetScenePath("~doc:/18_canal_cn/18_canal_cn.sc2");
-    //SetScenePath("~doc:/19_himmelsdorf_hm/19_himmelsdorf_hm.sc2");
-    //SetScenePath("~doc:/20_lake_lk/20_lake_lk.sc2");
-    //SetScenePath("~doc:/21_mountain_mnt/21_mountain_mnt.sc2");
-    //SetScenePath("~doc:/23_karieri_kr/23_karieri_kr.sc2");
-    //SetScenePath("~doc:/24_milibase_mlb/24_milibase_mlb.sc2");
-    SetScenePath("~doc:/25_canyon_ca/25_canyon_ca.sc2");
-    //SetScenePath("~doc:/");
-    //SetScenePath("~doc:/");
-    //SetScenePath("~doc:/");
-    //SetScenePath("~doc:/");
-    //SetScenePath("~doc:/");
-    //SetScenePath("~doc:/");
-    //SetScenePath("~doc:/");
-    //SetScenePath("~doc:/");
-=======
-    //SetScenePath("~res:/3d/Maps/05_amigosville_am/05_amigosville_am.sc2");
->>>>>>> development:Programs/SceneViewer/Classes/SceneViewerApp.cpp
-    //    SetScenePath("~doc:/scene_viewer/test_box/box.sc2");
-    //SetScenePath("~res:/amigosville/amigosville.sc2");
-    //      SetScenePath("~doc:/fort/fort.sc2");
-    //      SetScenePath("~doc:/USSR/T-62A_crash.sc2");
-    //      SetScenePath("~doc:/amigosville/amigosville2.sc2");
-    //      SetScenePath("~doc:/amigosville/amigosville5.sc2");
-    //      SetScenePath("~doc:/amigosville/amigosville4.sc2");
-    //      SetScenePath("~doc:/aaaa.sc2");
-    //    SetScenePath("~doc:/karelia/karelia_landscape.sc2");
-    //    SetScenePath("~doc:/karelia/gates_test.sc2");
-    //SetScenePath("~doc:/karelia/objects/k_s01.sc2");
+    //data.scenePath = "~doc:/05_amigosville_am/05_amigosville_am.sc2";
+    //data.scenePath = "~doc:/06_rudniki_rd/06_rudniki_rd.sc2";
+    //data.scenePath = "~doc:/09_savanna_sv/09_savanna_sv.sc2";
+    //data.scenePath = "~doc:/10_asia_as/10_asia_as.sc2";
+    //data.scenePath = "~doc:/12_malinovka_ma/12_malinovka_ma.sc2";
+    //data.scenePath = "~doc:/13_pliego_pl/13_pliego_pl.sc2";
+    //data.scenePath = "~doc:/14_port_pt/14_port_pt.sc2";
+    //data.scenePath = "~doc:/15_ordeal_ord/15_ordeal_ord.sc2";
+    //data.scenePath = "~doc:/18_canal_cn/18_canal_cn.sc2";
+    data.scenePath = "~doc:/19_himmelsdorf_hm/19_himmelsdorf_hm.sc2";
+    //data.scenePath = "~doc:/20_lake_lk/20_lake_lk.sc2";
+    //data.scenePath = "~doc:/21_mountain_mnt/21_mountain_mnt.sc2";
+    //data.scenePath = "~doc:/23_karieri_kr/23_karieri_kr.sc2";
+    //data.scenePath = "~doc:/24_milibase_mlb/24_milibase_mlb.sc2";
+    //data.scenePath = "~doc:/25_canyon_ca/25_canyon_ca.sc2";
+    //data.scenePath = "~doc:/";
     UIScreenManager::Instance()->SetFirst(viewSceneScreen->GetScreenID());
     //UIScreenManager::Instance()->SetFirst(selectSceneScreen->GetScreenID());
 
