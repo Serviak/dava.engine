@@ -94,7 +94,7 @@ UWPRunner::UWPRunner(const PackageOptions& opt)
     : options(opt)
 {
     //install slot to log consumer
-    logConsumerConnectionID = logConsumer.newMessageNotifier.Connect([this](const DAVA::String& logStr) {
+    logConsumer.newMessageNotifier.Connect(this, [this](const DAVA::String& logStr) {
         NetLogOutput(logStr);
     });
 }
@@ -102,7 +102,7 @@ UWPRunner::UWPRunner(const PackageOptions& opt)
 UWPRunner::~UWPRunner()
 {
     cleanNeeded.Emit();
-    logConsumer.newMessageNotifier.Disconnect(logConsumerConnectionID);
+    logConsumer.newMessageNotifier.Disconnect(this);
 
     if (!options.installOnly)
     {
