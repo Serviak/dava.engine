@@ -3,6 +3,7 @@
 
 #include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
+#include <Input/GamepadDevice.h>
 #include <Input/MouseDevice.h>
 #include <UI/Focus/UIFocusComponent.h>
 #include <Render/2D/Sprite.h>
@@ -187,6 +188,17 @@ void KeyboardTest::ResetCounters()
     lastMouseX = 0;
     lastMouseY = 0;
     lastWheel = 0.f;
+
+    GamepadDevice* gamepad = GetEngineContext()->deviceManager->GetGamepad();
+    if (gamepad != nullptr)
+    {
+        for (uint32 i = eInputElements::GAMEPAD_FIRST; i <= eInputElements::GAMEPAD_LAST; ++i)
+        {
+            const InputElementInfo& info = GetInputElementInfo(static_cast<eInputElements>(i));
+            bool elementSupported = gamepad->SupportsElement(static_cast<eInputElements>(i));
+            Logger::Debug("%s %s: %s", info.name.c_str(), info.type == eInputElementTypes::DIGITAL ? "[D]" : "[A]", elementSupported ? "yes" : "no");
+        }
+    }
 }
 
 bool KeyboardTest::InputEventHandler(const InputEvent& inputEvent)
