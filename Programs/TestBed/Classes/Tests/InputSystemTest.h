@@ -3,6 +3,7 @@
 #include "Infrastructure/BaseScreen.h"
 #include "Input/KeyboardInputDevice.h"
 #include "Input/ActionSystem.h"
+#include "Input/InputListener.h"
 
 #include <map>
 
@@ -31,7 +32,7 @@ private:
     bool OnInputEvent(DAVA::InputEvent const& event);
     void OnAction(DAVA::Action action);
     void OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData);
-    void OnInputListeningEnded(DAVA::Vector<DAVA::eInputElements> input);
+    void OnInputListeningEnded(DAVA::Vector<DAVA::SpecificInputElement> input);
     void OnUpdate(DAVA::float32 delta);
 
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> keyboardButtons;
