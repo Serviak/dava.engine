@@ -65,10 +65,11 @@ public:
     void Process(float32 timeElapsed) override;
 
     void AttachItemToSlot(Entity* rootEntity, FastName slotName, FastName itemName);
-    void AttachItemToSlot(SlotComponent* component, FastName itemName);
+    Entity* AttachItemToSlot(SlotComponent* component, FastName itemName);
     void AttachEntityToSlot(SlotComponent* component, Entity* entity);
 
     Entity* LookUpLoadedEntity(SlotComponent* component);
+    SlotComponent* LookUpSlot(Entity* entity);
 
 protected:
     void SetScene(Scene* scene) override;
