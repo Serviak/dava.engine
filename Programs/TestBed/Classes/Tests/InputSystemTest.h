@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Infrastructure/BaseScreen.h"
-#include "Input/KeyboardInputDevice.h"
-#include "Input/ActionSystem.h"
-#include "Input/InputListener.h"
+
+#include <Base/Token.h>
+#include <Input/ActionSystem.h>
+#include <Input/InputDevice.h>
 
 #include <map>
 
