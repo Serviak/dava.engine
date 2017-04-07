@@ -55,6 +55,4 @@ private:
     DAVA::UIStaticText* inputListenerResultField;
 
     DAVA::uint32 rawInputToken;
-    DAVA::Token actionTriggeredToken;
-    DAVA::Token updateToken;
 };
