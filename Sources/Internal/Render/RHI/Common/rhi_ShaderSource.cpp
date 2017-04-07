@@ -66,37 +66,86 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
 
         virtual bool        open( const char* file_name )
                             {
+                                bool success = false;
                                 char    fname[2048];
                                     
                                 Snprintf( fname, countof(fname), "%s/%s", _base_dir, file_name );
-                                _in = DAVA::File::Create( fname, DAVA::File::READ|DAVA::File::OPEN );
+                                for (unsigned k = 0; k != _file.size(); ++k)
+                                {
+                                    if (_file[k].name == fname)
+                                    {
+                                        _cur_data = _file[k].data;
+                                        _cur_data_sz = _file[k].data_sz;
+                                        success = true;
+                                        break;
+                                    }
+                                }
 
-                                return (_in)  ? true  : false;
+                                if (!success)
+                                {
+                                    DAVA::File* in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+
+                                    if (in)
+                                    {
+                                        file_t f;
+
+                                        f.name = fname;
+                                        f.data_sz = unsigned(in->GetSize());
+                                        f.data = ::malloc(f.data_sz);
+
+                                        in->Read(f.data, f.data_sz);
+                                        in->Release();
+
+                                        _file.push_back(f);
+                                        _cur_data = f.data;
+                                        _cur_data_sz = f.data_sz;
+
+                                        success = true;
+                                    }
+                                }
+
+                                return success;
                             }
         virtual void        close()
                             {
-                                DVASSERT(_in);
-                                _in->Release();
-                                _in = nullptr;
+                                _cur_data = nullptr;
+                                //                                DVASSERT(_in);
+                                //                                _in->Release();
+                                //                                _in = nullptr;
                             }
         virtual unsigned    size() const
                             {
-                                return (_in)  ? unsigned(_in->GetSize())  : 0;
+                                return _cur_data_sz;
+                                //                                return (_in)  ? unsigned(_in->GetSize())  : 0;
                             }
         virtual unsigned    read( unsigned max_sz, void* dst )  
-                            { 
-                                return (_in)  ? _in->Read( dst, max_sz )  : 0; 
+                            {
+                                DVASSERT(_cur_data);
+                                DVASSERT(max_sz <= _cur_data_sz);
+                                memcpy(dst, _cur_data, max_sz);
+                                return max_sz;
+                                //                                return (_in)  ? _in->Read( dst, max_sz )  : 0;
                             }
 
     private:
+        struct
+        file_t
+        {
+            std::string name;
+            unsigned data_sz;
+            void* data;
+        };
+        std::vector<file_t> _file;
+        const void* _cur_data;
+        unsigned _cur_data_sz;
 
-        DAVA::File*         _in;
+        //        DAVA::File*         _in;
         const char* const   _base_dir;
     };
 
     
     bool                success = false;
-    ShaderFileCallback  file_cb("~res:/Materials/Shaders");
+    static ShaderFileCallback file_cb("~res:/Materials/Shaders");
     PreProc             pre_proc(&file_cb);
     std::vector<char>   src;
 
@@ -110,7 +159,7 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
 
     if( pre_proc.process( srcText, &src ) )
     {
-#if 1
+#if 0
 {
     Logger::Info("\n\nsrc-code:");
 
@@ -1893,7 +1942,7 @@ void ShaderSource::Dump() const
 //version increment history:
 //5 is for new shader language
 //6 is after fixing Add/Update problem
-const uint32 ShaderSourceCache::FormatVersion = 6;
+const uint32 ShaderSourceCache::FormatVersion = 7;
 
 Mutex shaderSourceEntryMutex;
 std::vector<ShaderSourceCache::entry_t> ShaderSourceCache::Entry;
