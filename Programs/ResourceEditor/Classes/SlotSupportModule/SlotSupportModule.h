@@ -11,10 +11,10 @@ protected:
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
-    void OnInterfaceRegistered(const Type* interfaceType) override;
-    void OnBeforeInterfaceUnregistered(const Type* interfaceType) override;
+    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
+    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
-    void PostInit();
+    void PostInit() override;
 
     DAVA_VIRTUAL_REFLECTION(SlotSupportModule, DAVA::TArc::ClientModule);
 };
