@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Infrastructure/BaseScreen.h"
-#include "Input/KeyboardInputDevice.h"
-#include "Input/ActionSystem.h"
-#include "Input/InputListener.h"
+
+#include <Base/Token.h>
+#include <Input/ActionSystem.h>
+#include <Input/InputDevice.h>
 
 #include <map>
 
@@ -54,6 +55,6 @@ private:
     DAVA::UIStaticText* inputListenerResultField;
 
     DAVA::uint32 rawInputToken;
-    DAVA::SigConnectionID actionTriggeredToken;
-    DAVA::SigConnectionID updateToken;
+    DAVA::Token actionTriggeredToken;
+    DAVA::Token updateToken;
 };
