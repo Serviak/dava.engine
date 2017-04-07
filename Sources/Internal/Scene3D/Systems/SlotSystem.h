@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Entity/SceneSystem.h"
+#include "FileSystem/FilePath.h"
+#include "Base/RefPtr.h"
+#include "Base/FastName.h"
 
 namespace DAVA
 {
