@@ -79,6 +79,14 @@ void KeyboardTest::LoadResources()
     resetButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &KeyboardTest::OnResetClick));
     AddControl(resetButton);
 
+    logEventsButton = new UIButton(Rect(480, 30, 50, 30));
+    logEventsButton->SetDebugDraw(true);
+    logEventsButton->SetStateFont(0xFF, font);
+    logEventsButton->SetStateFontColor(0xFF, Color::White);
+    logEventsButton->SetStateText(0xFF, L"Log");
+    logEventsButton->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, Message(this, &KeyboardTest::OnLogClick));
+    AddControl(logEventsButton);
+
     for (auto& touch : touches)
     {
         touch.img = new UIButton(Rect(0, 0, 50, 50));
@@ -137,11 +145,21 @@ void KeyboardTest::UnloadResources()
     inputSystem->RemoveHandler(keyboardInputToken);
     inputSystem->RemoveHandler(gamepadInputToken);
 
-    inputSystem->RemoveHandler(rawInputToken);
+    if (rawInputToken != 0)
+    {
+        inputSystem->RemoveHandler(rawInputToken);
+        rawInputToken = 0;
+    }
+    if (logHandlerToken != 0)
+    {
+        inputSystem->RemoveHandler(logHandlerToken);
+        logHandlerToken = 0;
+    }
 
     SafeRelease(previewText);
     SafeRelease(descriptionText);
     SafeRelease(resetButton);
+    SafeRelease(logEventsButton);
     SafeRelease(redBox);
 
     for (auto& touch : touches)
@@ -163,6 +181,22 @@ void KeyboardTest::OnResetClick(BaseObject* sender, void* data, void* callerData
 {
     ResetCounters();
     descriptionText->SetText(L"");
+}
+
+void KeyboardTest::OnLogClick(DAVA::BaseObject* sender, void* data, void* callerData)
+{
+    InputSystem* inputSystem = GetEngineContext()->inputSystem;
+    if (logHandlerToken == 0)
+    {
+        Logger::Debug("Input event logging enabled");
+        logHandlerToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &KeyboardTest::InputEventLogHandler));
+    }
+    else
+    {
+        Logger::Debug("Input event logging disabled");
+        inputSystem->RemoveHandler(logHandlerToken);
+        logHandlerToken = 0;
+    }
 }
 
 void KeyboardTest::ResetCounters()
@@ -199,6 +233,44 @@ void KeyboardTest::ResetCounters()
             Logger::Debug("%s %s: %s", info.name.c_str(), info.type == eInputElementTypes::DIGITAL ? "[D]" : "[A]", elementSupported ? "yes" : "no");
         }
     }
+}
+
+bool KeyboardTest::InputEventLogHandler(const DAVA::InputEvent& inputEvent)
+{
+    const InputElementInfo& info = GetInputElementInfo(inputEvent.elementId);
+    if (info.type == eInputElementTypes::DIGITAL)
+    {
+        String s;
+        if (inputEvent.digitalState != eDigitalElementStates::NONE)
+        {
+            if ((inputEvent.digitalState & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
+            {
+                s = "PRESSED";
+                if ((inputEvent.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
+                {
+                    s += "|JUST_PRESSED";
+                }
+            }
+            else if ((inputEvent.digitalState & eDigitalElementStates::RELEASED) == eDigitalElementStates::RELEASED)
+            {
+                s = "RELEASED";
+                if ((inputEvent.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
+                {
+                    s += "|JUST_RELEASED";
+                }
+            }
+        }
+        else
+        {
+            s = "NONE";
+        }
+        Logger::Debug("============= %s [D]: 0x%X {%s}", info.name.c_str(), inputEvent.digitalState, s.c_str());
+    }
+    else if (info.type == eInputElementTypes::ANALOG)
+    {
+        Logger::Debug("============= %s [A]: x=%f, y=%f, z=%f", info.name.c_str(), inputEvent.analogState.x, inputEvent.analogState.y, inputEvent.analogState.z);
+    }
+    return false;
 }
 
 bool KeyboardTest::InputEventHandler(const InputEvent& inputEvent)
