@@ -37,6 +37,7 @@ public:
     ~ActionSystemImpl();
 
     void BindSet(const ActionSet& set, Vector<uint32> devices);
+    void UnbindAllSets();
 
 private:
     bool OnInputEvent(const InputEvent& event);
