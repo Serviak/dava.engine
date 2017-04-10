@@ -24,7 +24,7 @@ void ActionSystem::BindSet(const ActionSet& set)
 
 void ActionSystem::BindSet(const ActionSet& set, uint32 deviceId)
 {
-    impl->BindSet(set, Vector<uint32>(deviceId));
+    impl->BindSet(set, Vector<uint32>{ deviceId });
 }
 
 void ActionSystem::BindSet(const ActionSet& set, uint32 deviceId1, uint32 deviceId2)
