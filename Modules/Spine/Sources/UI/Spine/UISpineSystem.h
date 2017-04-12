@@ -19,6 +19,20 @@ public:
     void OnControlInvisible(UIControl* control) override;
 
     void Process(DAVA::float32 elapsedTime) override;
+
+    Signal<UISpineComponent* /*component*/, const String& /*event*/> onAnimationEvent;
+
+private:
+    struct SpineNode
+    {
+        UISpineComponent* component = nullptr;
+        SpineSkeleton* skeleton = nullptr;
+    }
+
+    void AddNode(UISpineComponent* component);
+    void RemoveNode(UISpineComponent* component);
+
+    Vector<SpineNode> nodes;
 };
 
 }
