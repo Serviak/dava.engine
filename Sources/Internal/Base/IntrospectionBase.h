@@ -4,6 +4,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Base/GlobalEnum.h"
+#include "Base/TemplateHelpers.h"
 #include "FileSystem/VariantType.h"
 #include "Reflection/Reflection.h"
 
@@ -18,7 +19,7 @@ struct MetaInfo;
 // абстрактный базовый класс для интроспекции
 class InspBase : public ReflectionBase
 {
-    DAVA_VIRTUAL_REFLECTION(InspBase);
+    DAVA_VIRTUAL_REFLECTION(InspBase, ReflectionBase);
 
 public:
     InspBase();

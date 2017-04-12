@@ -1,8 +1,5 @@
 #pragma once
 
-#include <typeindex>
-
-#include "Base/BaseTypes.h"
 #include "Base/Type.h"
 #include "Base/TypeInheritance.h"
 #include "Base/Exception.h"
@@ -120,6 +117,9 @@ public:
     template <typename T>
     T Cast(const T& defaultValue) const;
 
+    /** Returns new any with same value but other type. Use this method carefully. */
+    Any ReinterpretCast(const Type* type) const;
+
     /// \brief  Loads value into Any from specified memory location with specified Type. Loading can be done only from
     ///         types for which Type::IsTrivial is true.
     /// \param [in,out] data    Pointer on source memory, from where value should be loaded.
@@ -163,16 +163,6 @@ struct AnyCompare
 {
     static bool IsEqual(const Any&, const Any&);
 };
-
-/*
-/// \brief any cast.
-template <typename T>
-struct AnyCast
-{
-    static bool CanCast(const Any&);
-    static T Cast(const Any&);
-};
-*/
 
 /// \brief any cast.
 template <typename From, typename To>

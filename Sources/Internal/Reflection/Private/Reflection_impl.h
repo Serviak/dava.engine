@@ -6,9 +6,14 @@
 
 #include "Reflection/Private/Reflection_pre_impl.h"
 #include "Reflection/Private/Wrappers/ValueWrapperDefault.h"
+#include "Reflection/Private/Wrappers/ValueWrapperObject.h"
 
 namespace DAVA
 {
+namespace ReflectionDetail
+{
+}
+
 inline bool Reflection::IsReadonly() const
 {
     return valueWrapper->IsReadonly(object);
@@ -43,16 +48,10 @@ inline bool Reflection::IsValid() const
     return (nullptr != valueWrapper && object.IsValid());
 }
 
-template <typename Meta>
-inline bool Reflection::HasMeta() const
+template <typename T>
+inline const T* Reflection::GetMeta() const
 {
-    return (nullptr != meta) ? meta->template HasMeta<Meta>() : false;
-}
-
-template <typename Meta>
-inline const Meta* Reflection::GetMeta() const
-{
-    return (nullptr != meta) ? meta->template GetMeta<Meta>() : nullptr;
+    return static_cast<const T*>(GetMeta(Type::Instance<T>()));
 }
 
 template <typename T>
@@ -66,6 +65,7 @@ Reflection Reflection::Create(T* objectPtr, const ReflectedMeta* objectMeta)
 
     return Reflection();
 }
+
 template <>
 struct AnyCompare<Reflection>
 {
