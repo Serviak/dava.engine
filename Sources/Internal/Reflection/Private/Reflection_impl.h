@@ -25,6 +25,11 @@ inline ReflectedObject Reflection::GetValueObject() const
     return valueWrapper->GetValueObject(object);
 }
 
+inline ReflectedObject Reflection::GetParentValueObject() const
+{
+    return object;
+}
+
 inline Any Reflection::GetValue() const
 {
     return valueWrapper->GetValue(object);

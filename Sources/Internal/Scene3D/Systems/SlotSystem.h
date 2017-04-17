@@ -24,6 +24,7 @@ public:
 
         void LoadConfigFile(const FilePath& configPath);
         const Item* LookUpItem(const FilePath& configPath, const FastName& itemName, const FastName& tag);
+        Vector<Item> GetItems(const FilePath& configPath);
 
     private:
         void LoadYamlConfig(const FilePath& configPath);
@@ -52,6 +53,7 @@ public:
     ~SlotSystem();
 
     void SetSharedCache(RefPtr<ItemsCache> cache);
+    Vector<ItemsCache::Item> GetItems(const FilePath& configPath);
     void SetExternalEntityLoader(RefPtr<ExternalEntityLoader> externalEntityLoader);
 
     void UnregisterEntity(Entity* entity) override;
@@ -68,8 +70,8 @@ public:
     Entity* AttachItemToSlot(SlotComponent* component, FastName itemName);
     void AttachEntityToSlot(SlotComponent* component, Entity* entity);
 
-    Entity* LookUpLoadedEntity(SlotComponent* component);
-    SlotComponent* LookUpSlot(Entity* entity);
+    Entity* LookUpLoadedEntity(SlotComponent* component) const;
+    SlotComponent* LookUpSlot(Entity* entity) const;
 
 protected:
     void SetScene(Scene* scene) override;
