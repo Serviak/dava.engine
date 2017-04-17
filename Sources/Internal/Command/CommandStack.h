@@ -11,7 +11,7 @@ class CommandStack
 public:
     virtual ~CommandStack();
 
-    void Exec(std::unique_ptr<Command>&& command);
+    virtual void Exec(std::unique_ptr<Command>&& command);
 
     void BeginBatch(const String& name, uint32 commandsCount = 1);
     void EndBatch();
