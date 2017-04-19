@@ -15,15 +15,13 @@ typedef struct timecaps_tag
 } TIMECAPS, *PTIMECAPS, NEAR *NPTIMECAPS, FAR *LPTIMECAPS;
 
 // To use with MapVirtualKey
-#if (WINVER >= 0x0400)
+#if !defined(MAPVK_VK_TO_VSC)
 #define MAPVK_VK_TO_VSC (0)
 #define MAPVK_VSC_TO_VK (1)
 #define MAPVK_VK_TO_CHAR (2)
 #define MAPVK_VSC_TO_VK_EX (3)
-#endif /* WINVER >= 0x0400 */
-#if (WINVER >= 0x0600)
 #define MAPVK_VK_TO_VSC_EX (4)
-#endif /* WINVER >= 0x0600 */
+#endif
 
 namespace DAVA
 {
