@@ -229,7 +229,7 @@ void KeyboardTest::ResetCounters()
         for (uint32 i = eInputElements::GAMEPAD_FIRST; i <= eInputElements::GAMEPAD_LAST; ++i)
         {
             const InputElementInfo& info = GetInputElementInfo(static_cast<eInputElements>(i));
-            bool elementSupported = gamepad->SupportsElement(static_cast<eInputElements>(i));
+            bool elementSupported = gamepad->IsElementSupported(static_cast<eInputElements>(i));
             Logger::Debug("%s %s: %s", info.name.c_str(), info.type == eInputElementTypes::DIGITAL ? "[D]" : "[A]", elementSupported ? "yes" : "no");
         }
     }
