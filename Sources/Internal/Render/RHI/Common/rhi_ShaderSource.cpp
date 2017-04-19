@@ -109,14 +109,11 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
         virtual void        close()
                             {
                                 _cur_data = nullptr;
-                                //                                DVASSERT(_in);
-                                //                                _in->Release();
-                                //                                _in = nullptr;
+                                _cur_data_sz = 0;
                             }
         virtual unsigned    size() const
                             {
                                 return _cur_data_sz;
-                                //                                return (_in)  ? unsigned(_in->GetSize())  : 0;
                             }
         virtual unsigned    read( unsigned max_sz, void* dst )  
                             {
@@ -124,7 +121,6 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
                                 DVASSERT(max_sz <= _cur_data_sz);
                                 memcpy(dst, _cur_data, max_sz);
                                 return max_sz;
-                                //                                return (_in)  ? _in->Read( dst, max_sz )  : 0;
                             }
 
     private:
@@ -139,7 +135,6 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
         const void* _cur_data;
         unsigned _cur_data_sz;
 
-        //        DAVA::File*         _in;
         const char* const   _base_dir;
     };
 
