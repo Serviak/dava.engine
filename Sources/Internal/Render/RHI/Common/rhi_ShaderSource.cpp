@@ -57,71 +57,72 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
 {
     class
     ShaderFileCallback
-        : public PreProc::FileCallback
+    : public PreProc::FileCallback
     {
     public:
-                            ShaderFileCallback( const char* base_dir )
-                                : _base_dir(base_dir)
-                            {}
+        ShaderFileCallback(const char* base_dir)
+            : _base_dir(base_dir)
+        {
+        }
 
-        virtual bool        open( const char* file_name )
-                            {
-                                bool success = false;
-                                char    fname[2048];
-                                    
-                                Snprintf( fname, countof(fname), "%s/%s", _base_dir, file_name );
-                                for (unsigned k = 0; k != _file.size(); ++k)
-                                {
-                                    if (_file[k].name == fname)
-                                    {
-                                        _cur_data = _file[k].data;
-                                        _cur_data_sz = _file[k].data_sz;
-                                        success = true;
-                                        break;
-                                    }
-                                }
+        virtual bool open(const char* file_name)
+        {
+            bool success = false;
+            char fname[2048];
 
-                                if (!success)
-                                {
-                                    DAVA::File* in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+            Snprintf(fname, countof(fname), "%s/%s", _base_dir, file_name);
+            for (unsigned k = 0; k != _file.size(); ++k)
+            {
+                if (_file[k].name == fname)
+                {
+                    _cur_data = _file[k].data;
+                    _cur_data_sz = _file[k].data_sz;
+                    success = true;
+                    break;
+                }
+            }
 
-                                    if (in)
-                                    {
-                                        file_t f;
+            if (!success)
+            {
+                DAVA::File* in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
 
-                                        f.name = fname;
-                                        f.data_sz = unsigned(in->GetSize());
-                                        f.data = ::malloc(f.data_sz);
+                if (in)
+                {
+                    file_t f;
 
-                                        in->Read(f.data, f.data_sz);
-                                        in->Release();
+                    f.name = fname;
+                    f.data_sz = unsigned(in->GetSize());
+                    f.data = ::malloc(f.data_sz);
 
-                                        _file.push_back(f);
-                                        _cur_data = f.data;
-                                        _cur_data_sz = f.data_sz;
+                    in->Read(f.data, f.data_sz);
+                    in->Release();
 
-                                        success = true;
-                                    }
-                                }
+                    _file.push_back(f);
+                    _cur_data = f.data;
+                    _cur_data_sz = f.data_sz;
 
-                                return success;
-                            }
-        virtual void        close()
-                            {
-                                _cur_data = nullptr;
-                                _cur_data_sz = 0;
-                            }
-        virtual unsigned    size() const
-                            {
-                                return _cur_data_sz;
-                            }
-        virtual unsigned    read( unsigned max_sz, void* dst )  
-                            {
-                                DVASSERT(_cur_data);
-                                DVASSERT(max_sz <= _cur_data_sz);
-                                memcpy(dst, _cur_data, max_sz);
-                                return max_sz;
-                            }
+                    success = true;
+                }
+            }
+
+            return success;
+        }
+        virtual void close()
+        {
+            _cur_data = nullptr;
+            _cur_data_sz = 0;
+        }
+        virtual unsigned size() const
+        {
+            return _cur_data_sz;
+        }
+        virtual unsigned read(unsigned max_sz, void* dst)
+        {
+            DVASSERT(_cur_data);
+            DVASSERT(max_sz <= _cur_data_sz);
+            memcpy(dst, _cur_data, max_sz);
+            return max_sz;
+        }
 
     private:
         struct
@@ -135,24 +136,23 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
         const void* _cur_data;
         unsigned _cur_data_sz;
 
-        const char* const   _base_dir;
+        const char* const _base_dir;
     };
 
-    
-    bool                success = false;
+    bool success = false;
     static ShaderFileCallback file_cb("~res:/Materials/Shaders");
-    PreProc             pre_proc(&file_cb);
-    std::vector<char>   src;
+    PreProc pre_proc(&file_cb);
+    std::vector<char> src;
 
     DVASSERT(defines.size() % 2 == 0);
     for (size_t i = 0, n = defines.size() / 2; i != n; ++i)
     {
         const char* name = defines[i * 2 + 0].c_str();
         const char* value = defines[i * 2 + 1].c_str();
-        pre_proc.add_define( name, value );
+        pre_proc.add_define(name, value);
     }
 
-    if( pre_proc.process( srcText, &src ) )
+    if (pre_proc.process(srcText, &src))
     {
 #if 0
 {
