@@ -11,7 +11,7 @@ class PackMetaData
 public:
     /** Create meta from sqlite db file
 	    open DB and read meta data vector
-		Throw DAVA::Exception exception on error
+		Throw DAVA::Exception on error
 		*/
     explicit PackMetaData(const FilePath& metaDb);
     /** Create meta from serialized bytes
@@ -19,7 +19,9 @@ public:
 		*/
     PackMetaData(const void* ptr, std::size_t size);
 
-    Vector<String> GetDependencyNames(const String& requestedPackName) const;
+    uint32 GetPackIndex(const String& requestedPackName) const;
+
+    Vector<uint32> GetPackDependencyIndexes(const String& requestedPackName) const;
 
     Vector<uint32> GetFileIndexes(const String& requestedPackName) const;
 
@@ -43,7 +45,12 @@ public:
     Vector<uint8> Serialize() const;
     void Deserialize(const void* ptr, size_t size);
 
+    bool IsChild(uint32 parentPackIndex, uint32 childPackIndex) const;
+
 private:
+    using Children = Vector<uint32>;
+
+    void CollectDependencies(uint32 packIndex, Children& out) const;
     // fileNames already in DVPK format
     // table 1.
     // fileName -> fileIndex(0-NUM_FILES) -> packIndex(0-NUM_PACKS)
@@ -51,6 +58,12 @@ private:
     // table 2.
     // packIndex(0-NUM_PACKS) -> packName, dependencies
     Vector<PackInfo> packDependencies;
+
+    // packIndex(0-NUM_PACKS) -> Vector of child indexes
+    Vector<Children> children;
+
+    // packName -> packIndex (auto generated during deserializing)
+    UnorderedMap<String, uint32> mapPackNameToPackIndex;
 };
 
 inline size_t PackMetaData::GetFileCount() const

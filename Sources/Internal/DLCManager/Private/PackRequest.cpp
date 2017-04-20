@@ -81,12 +81,21 @@ const String& PackRequest::GetRequestedPackName() const
     return requestedPackName;
 }
 
-Vector<String> PackRequest::GetDependencies() const
+Vector<uint32> PackRequest::GetDependencies() const
 {
+    if (dependencyCache.capacity() > 0)
+    {
+        return dependencyCache;
+    }
     if (packManagerImpl->IsInitialized())
     {
         const PackMetaData& pack_meta_data = packManagerImpl->GetMeta();
-        return pack_meta_data.GetDependencyNames(requestedPackName);
+        dependencyCache = pack_meta_data.GetPackDependencyIndexes(requestedPackName);
+        if (dependencyCache.capacity() == 0)
+        {
+            dependencyCache.reserve(1); // just mark to know we already check it
+        }
+        return dependencyCache;
     }
     DAVA_THROW(Exception, "Error! Can't get pack dependencies before initialization is finished");
 }
@@ -155,24 +164,10 @@ void PackRequest::SetFileIndexes(Vector<uint32> fileIndexes_)
 
 bool PackRequest::IsSubRequest(const PackRequest* other) const
 {
-    Vector<String> dep = GetDependencies();
-    for (const String& s : dep)
-    {
-        PackRequest* r = packManagerImpl->FindRequest(s);
-        if (r != nullptr)
-        {
-            if (r == other)
-            {
-                return true;
-            }
-
-            if (r->IsSubRequest(other))
-            {
-                return true;
-            }
-        }
-    }
-    return false;
+    const auto& meta = packManagerImpl->GetMeta();
+    uint32 thisPackIndex = meta.GetPackIndex(requestedPackName);
+    uint32 childPackIndex = meta.GetPackIndex(other->requestedPackName);
+    return meta.IsChild(thisPackIndex, childPackIndex);
 }
 
 void PackRequest::InitializeFileRequests()
@@ -260,14 +255,16 @@ void PackRequest::DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest
 void PackRequest::DisableRequestingAndFireSignalNoSpaceLeft(PackRequest::FileRequest& fileRequest)
 {
     int32 errnoValue = errno; // save in local variable if other error happen
-    Logger::Error("No space on device!!! Can't create or write file: %s disable DLCManager requesting", fileRequest.localFile.GetAbsolutePathname().c_str());
+    packManagerImpl->GetLog() << "No space on device!!! Can't create or write file: "
+                              << fileRequest.localFile.GetAbsolutePathname()
+                              << " disable DLCManager requesting" << std::endl;
     packManagerImpl->SetRequestingEnabled(false);
     packManagerImpl->fileErrorOccured.Emit(fileRequest.localFile.GetAbsolutePathname().c_str(), errnoValue);
 }
 
 bool PackRequest::UpdateFileRequests()
 {
-    // TODO refactor method
+    // TODO refactoring method
     bool callSignal = false;
 
     FileSystem* fs = FileSystem::Instance();
@@ -327,12 +324,20 @@ bool PackRequest::UpdateFileRequests()
                 else
                 {
                     fs->DeleteFile(fileRequest.localFile); // just in case (hash not match, size not match...)
-                    fileRequest.taskId = dm->DownloadRange(fileRequest.url, fileRequest.localFile, fileRequest.startLoadingPos, fileRequest.sizeOfCompressedFile);
+                    const DLCManager::Hints& h = packManagerImpl->GetHints();
+                    fileRequest.taskId = dm->DownloadRange(fileRequest.url,
+                                                           fileRequest.localFile,
+                                                           fileRequest.startLoadingPos,
+                                                           fileRequest.sizeOfCompressedFile,
+                                                           RESUMED,
+                                                           h.numOfThreadsPerFileDownload,
+                                                           h.timeoutForDownload,
+                                                           h.retriesCountForDownload);
                 }
             }
             else
             {
-                // TODO move to separete function
+                // TODO move to separate function
                 DownloadStatus downloadStatus;
                 if (dm->GetStatus(fileRequest.taskId, downloadStatus))
                 {
@@ -362,9 +367,9 @@ bool PackRequest::UpdateFileRequests()
                             if (DLE_NO_ERROR != downloadError)
                             {
                                 String err = DLC::ToString(downloadError);
-                                Logger::Error("can't download file: %s couse: %s",
-                                              fileRequest.localFile.GetAbsolutePathname().c_str(),
-                                              err.c_str());
+                                packManagerImpl->GetLog() << "can't download file: "
+                                                          << fileRequest.localFile.GetAbsolutePathname()
+                                                          << " cause: " << err << std::endl;
 
                                 if (DLE_FILE_ERROR == downloadError)
                                 {
