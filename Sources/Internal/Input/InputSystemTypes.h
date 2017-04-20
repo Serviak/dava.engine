@@ -31,7 +31,7 @@ enum class eDigitalElementStates : uint32
     JUST_PRESSED = 1 << 1,
 
     /** A button has just been released */
-    JUST_RELEASED = 1 << 1
+    JUST_RELEASED = 1 << 2
 };
 
 DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementStates)
