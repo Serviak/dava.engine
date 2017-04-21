@@ -27,6 +27,107 @@ namespace rhi
 {
 //==============================================================================
 
+class
+ShaderFileCallback
+: public PreProc::FileCallback
+{
+public:
+    ShaderFileCallback(const char* base_dir)
+    {
+        inclDir.push_back(base_dir);
+    }
+
+    virtual bool open(const char* file_name)
+    {
+        bool success = false;
+
+        for (unsigned k = 0; k != _file.size(); ++k)
+        {
+            if (_file[k].name == file_name)
+            {
+                _cur_data = _file[k].data;
+                _cur_data_sz = _file[k].data_sz;
+                success = true;
+                break;
+            }
+        }
+
+        if (!success)
+        {
+            DAVA::File* in = nullptr;
+
+            for (auto p : inclDir)
+            {
+                std::string fname = p + "/" + file_name;
+
+                in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+
+                if (in)
+                    break;
+            }
+
+            if (in)
+            {
+                file_t f;
+
+                f.name = file_name;
+                f.data_sz = unsigned(in->GetSize());
+                f.data = ::malloc(f.data_sz);
+
+                in->Read(f.data, f.data_sz);
+                in->Release();
+
+                _file.push_back(f);
+                _cur_data = f.data;
+                _cur_data_sz = f.data_sz;
+
+                success = true;
+            }
+        }
+
+        return success;
+    }
+    virtual void close()
+    {
+        _cur_data = nullptr;
+        _cur_data_sz = 0;
+    }
+    virtual unsigned size() const
+    {
+        return _cur_data_sz;
+    }
+    virtual unsigned read(unsigned max_sz, void* dst)
+    {
+        DVASSERT(_cur_data);
+        DVASSERT(max_sz <= _cur_data_sz);
+        memcpy(dst, _cur_data, max_sz);
+        return max_sz;
+    }
+
+    void AddIncludeDirectory(const char* dir)
+    {
+        inclDir.push_back(dir);
+    }
+
+private:
+    struct
+    file_t
+    {
+        std::string name;
+        unsigned data_sz;
+        void* data;
+    };
+    std::vector<file_t> _file;
+    const void* _cur_data;
+    unsigned _cur_data_sz;
+
+    std::vector<std::string> inclDir;
+};
+
+static ShaderFileCallback ShaderSourceFileCallback("~res:/Materials/Shaders");
+
+//==============================================================================
+
 ShaderSource::ShaderSource(const char* filename)
     : fileName(filename)
     ,
@@ -55,93 +156,8 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText)
 
 bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::vector<std::string>& defines)
 {
-    class
-    ShaderFileCallback
-    : public PreProc::FileCallback
-    {
-    public:
-        ShaderFileCallback(const char* base_dir)
-            : _base_dir(base_dir)
-        {
-        }
-
-        virtual bool open(const char* file_name)
-        {
-            bool success = false;
-            char fname[2048];
-
-            Snprintf(fname, countof(fname), "%s/%s", _base_dir, file_name);
-            for (unsigned k = 0; k != _file.size(); ++k)
-            {
-                if (_file[k].name == fname)
-                {
-                    _cur_data = _file[k].data;
-                    _cur_data_sz = _file[k].data_sz;
-                    success = true;
-                    break;
-                }
-            }
-
-            if (!success)
-            {
-                DAVA::File* in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
-
-                if (in)
-                {
-                    file_t f;
-
-                    f.name = fname;
-                    f.data_sz = unsigned(in->GetSize());
-                    f.data = ::malloc(f.data_sz);
-
-                    in->Read(f.data, f.data_sz);
-                    in->Release();
-
-                    _file.push_back(f);
-                    _cur_data = f.data;
-                    _cur_data_sz = f.data_sz;
-
-                    success = true;
-                }
-            }
-
-            return success;
-        }
-        virtual void close()
-        {
-            _cur_data = nullptr;
-            _cur_data_sz = 0;
-        }
-        virtual unsigned size() const
-        {
-            return _cur_data_sz;
-        }
-        virtual unsigned read(unsigned max_sz, void* dst)
-        {
-            DVASSERT(_cur_data);
-            DVASSERT(max_sz <= _cur_data_sz);
-            memcpy(dst, _cur_data, max_sz);
-            return max_sz;
-        }
-
-    private:
-        struct
-        file_t
-        {
-            std::string name;
-            unsigned data_sz;
-            void* data;
-        };
-        std::vector<file_t> _file;
-        const void* _cur_data;
-        unsigned _cur_data_sz;
-
-        const char* const _base_dir;
-    };
-
     bool success = false;
-    static ShaderFileCallback file_cb("~res:/Materials/Shaders");
-    PreProc pre_proc(&file_cb);
+    PreProc pre_proc(&ShaderSourceFileCallback);
     std::vector<char> src;
 
     DVASSERT(defines.size() % 2 == 0);
@@ -1827,6 +1843,11 @@ void ShaderSource::Reset()
         code[i].clear();
 }
 
+void ShaderSource::AddIncludeDirectory(const char* dir)
+{
+    ShaderSourceFileCallback.AddIncludeDirectory(dir);
+}
+
 //------------------------------------------------------------------------------
 
 void ShaderSource::Dump() const
@@ -1944,6 +1965,7 @@ std::vector<ShaderSourceCache::entry_t> ShaderSourceCache::Entry;
 
 const ShaderSource* ShaderSourceCache::Get(FastName uid, uint32 srcHash)
 {
+    return nullptr;
     LockGuard<Mutex> guard(shaderSourceEntryMutex);
 
     //    Logger::Info("get-shader-src (host-api = %i)",HostApi());
