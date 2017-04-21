@@ -16,8 +16,8 @@
 
 #include <MemoryManager/MemoryManager.h>
 
-#include "MMNetServer.h"
-#include "MMBigDataTransferService.h"
+#include "MemoryProfilerService/MMNetServer.h"
+#include "MemoryProfilerService/MMBigDataTransferService.h"
 
 namespace DAVA
 {
