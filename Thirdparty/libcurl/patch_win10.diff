@@ -1,7 +1,7 @@
 Only in ./libcurl_source: build
 diff -urw ./libcurl_source_original/lib/config-win32.h ./libcurl_source/lib/config-win32.h
 --- ./libcurl_source_original/lib/config-win32.h	2016-11-07 12:18:18.000000000 +0300
-+++ ./libcurl_source/lib/config-win32.h	2017-03-01 18:19:12.581001500 +0300
++++ ./libcurl_source/lib/config-win32.h	2017-04-21 16:54:28.546236600 +0300
 @@ -1,5 +1,8 @@
  #ifndef HEADER_CURL_CONFIG_WIN32_H
  #define HEADER_CURL_CONFIG_WIN32_H
@@ -11,10 +11,9 @@ diff -urw ./libcurl_source_original/lib/config-win32.h ./libcurl_source/lib/conf
  /***************************************************************************
   *                                  _   _ ____  _
   *  Project                     ___| | | |  _ \| |
-Only in ./libcurl_source/projects/Windows/VC14/lib: .vs
 diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.sln ./libcurl_source/projects/Windows/VC14/lib/libcurl.sln
 --- ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.sln	2016-11-07 12:18:18.000000000 +0300
-+++ ./libcurl_source/projects/Windows/VC14/lib/libcurl.sln	2017-03-01 18:34:46.163800500 +0300
++++ ./libcurl_source/projects/Windows/VC14/lib/libcurl.sln	2017-04-21 16:54:28.546236600 +0300
 @@ -1,175 +1,261 @@
  Microsoft Visual Studio Solution File, Format Version 12.00
 -# Visual Studio 2015
@@ -278,10 +277,9 @@ diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.sln ./libc
  		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release|Win32.ActiveCfg = LIB Release|Win32
  		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release|Win32.Build.0 = LIB Release|Win32
  		{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}.LIB Release|x64.ActiveCfg = LIB Release|x64
-Only in ./libcurl_source/projects/Windows/VC14/lib: libcurl.VC.db
 diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.vcxproj ./libcurl_source/projects/Windows/VC14/lib/libcurl.vcxproj
 --- ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.vcxproj	2017-02-24 10:50:05.000000000 +0300
-+++ ./libcurl_source/projects/Windows/VC14/lib/libcurl.vcxproj	2017-03-01 18:56:02.853932700 +0300
++++ ./libcurl_source/projects/Windows/VC14/lib/libcurl.vcxproj	2017-04-21 16:55:59.837085600 +0300
 @@ -1,6 +1,26 @@
 -<?xml version="1.0" encoding="utf-8"?>
 +﻿<?xml version="1.0" encoding="utf-8"?>
@@ -515,12 +513,13 @@ diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.vcxproj ./
    </PropertyGroup>
    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Release - LIB OpenSSL - LIB LibSSH2|Win32'" Label="Configuration">
-@@ -567,6 +680,94 @@
+@@ -567,6 +680,96 @@
      <CharacterSet>MultiByte</CharacterSet>
      <PlatformToolset>v140</PlatformToolset>
    </PropertyGroup>
 +  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='LIB Release - LIB OpenSSL|ARM'">
 +    <PlatformToolset>v140</PlatformToolset>
++    <ConfigurationType>StaticLibrary</ConfigurationType>
 +  </PropertyGroup>
 +  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='DLL Release - DLL wolfSSL|ARM'">
 +    <PlatformToolset>v140</PlatformToolset>
@@ -563,6 +562,7 @@ diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.vcxproj ./
 +  </PropertyGroup>
 +  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='LIB Debug - LIB OpenSSL|ARM'">
 +    <PlatformToolset>v140</PlatformToolset>
++    <ConfigurationType>StaticLibrary</ConfigurationType>
 +  </PropertyGroup>
 +  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='DLL Release - DLL Windows SSPI|ARM'">
 +    <PlatformToolset>v140</PlatformToolset>
@@ -610,59 +610,69 @@ diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.vcxproj ./
    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
    <ImportGroup Label="ExtensionSettings">
    </ImportGroup>
-@@ -906,6 +1107,15 @@
+@@ -906,6 +1109,17 @@
      <TargetName Condition="'$(Configuration)|$(Platform)'=='LIB Debug - LIB OpenSSL - LIB LibSSH2|Win32'">$(ProjectName)d</TargetName>
      <TargetName Condition="'$(Configuration)|$(Platform)'=='LIB Debug - LIB OpenSSL - LIB LibSSH2|x64'">$(ProjectName)d</TargetName>
    </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Release|ARM'">
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Release|ARM'" />
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Debug|ARM'" />
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Debug - LIB OpenSSL|ARM'">
 +    <OutDir>..\..\..\..\build\ARM\VC14\$(Configuration)\</OutDir>
 +    <IntDir>$(OutDir)lib\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Debug|ARM'">
-+    <IntDir>$(OutDir)lib\</IntDir>
-+    <OutDir>..\..\..\..\build\ARM\VC14\$(Configuration)\</OutDir>
 +    <TargetName>$(ProjectName)d</TargetName>
++  </PropertyGroup>
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Release - LIB OpenSSL|ARM'">
++    <OutDir>..\..\..\..\build\ARM\VC14\$(Configuration)\</OutDir>
++    <IntDir>$(OutDir)lib\</IntDir>
 +  </PropertyGroup>
    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DLL Debug|Win32'">
      <Midl>
        <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-@@ -1174,7 +1384,7 @@
+@@ -2037,8 +2251,8 @@
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LIB Debug - LIB OpenSSL|Win32'">
      <ClCompile>
        <Optimization>Disabled</Optimization>
-       <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
--      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\openssl\inc32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\..\..\..\Libs\openssl\include\uwp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
        <MinimalRebuild>true</MinimalRebuild>
        <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
        <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-@@ -1217,7 +1427,7 @@
+@@ -2060,8 +2274,8 @@
+     </Midl>
      <ClCompile>
        <Optimization>Disabled</Optimization>
-       <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
--      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\openssl\inc32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\..\..\..\Libs\openssl\include\uwp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
        <MinimalRebuild>true</MinimalRebuild>
        <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
        <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-@@ -1261,7 +1471,7 @@
+@@ -2296,8 +2510,8 @@
+     <ClCompile>
        <Optimization>MaxSpeed</Optimization>
        <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-       <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
--      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\openssl\inc32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\..\..\..\Libs\openssl\include\uwp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;USE_OPENSSL;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
        <StringPooling>true</StringPooling>
        <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
        <FunctionLevelLinking>true</FunctionLevelLinking>
-@@ -1304,7 +1514,7 @@
+@@ -2319,8 +2533,8 @@
+     <ClCompile>
        <Optimization>MaxSpeed</Optimization>
        <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-       <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
--      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\openssl\inc32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\..\..\..\Libs\openssl\include\uwp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;USE_OPENSSL;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
        <StringPooling>true</StringPooling>
        <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
        <FunctionLevelLinking>true</FunctionLevelLinking>
-@@ -2378,6 +2588,26 @@
+@@ -2378,6 +2592,40 @@
        <TargetMachine>MachineX64</TargetMachine>
      </Lib>
    </ItemDefinitionGroup>
@@ -673,7 +683,8 @@ diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.vcxproj ./
 +      <Optimization>Disabled</Optimization>
 +      <WarningLevel>Level4</WarningLevel>
 +      <MinimalRebuild>true</MinimalRebuild>
-+      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>
++      </PreprocessorDefinitions>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LIB Release|ARM'">
@@ -682,11 +693,25 @@ diff -urw ./libcurl_source_original/projects/Windows/VC14/lib/libcurl.vcxproj ./
 +      <FunctionLevelLinking>true</FunctionLevelLinking>
 +      <StringPooling>true</StringPooling>
 +      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-+      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>
++      </PreprocessorDefinitions>
 +      <WarningLevel>Level4</WarningLevel>
++    </ClCompile>
++  </ItemDefinitionGroup>
++  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LIB Debug - LIB OpenSSL|ARM'">
++    <ClCompile>
++      <PreprocessorDefinitions>_DEBUG;BUILDING_LIBCURL;DEBUGBUILD;CURL_STATICLIB;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\..\..\..\Libs\openssl\include\uwp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++    </ClCompile>
++  </ItemDefinitionGroup>
++  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LIB Release - LIB OpenSSL|ARM'">
++    <ClCompile>
++      <PreprocessorDefinitions>NDEBUG;BUILDING_LIBCURL;CURL_STATICLIB;USE_OPENSSL;CURL_WINDOWS_APP;CURL_DISABLE_FTP;CURL_DISABLE_LDAP;CURL_DISABLE_LDAPS;CURL_DISABLE_TELNET;CURL_DISABLE_DICT;CURL_DISABLE_FILE;CURL_DISABLE_TFTP;CURL_DISABLE_RTSP;CURL_DISABLE_POP3;CURL_DISABLE_IMAP;CURL_DISABLE_SMTP;CURL_DISABLE_GOPHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\lib;..\..\..\..\..\..\..\..\Libs\openssl\include\uwp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
    <ItemGroup>
      <ClCompile Include="..\..\..\..\lib\amigaos.c" />
      <ClCompile Include="..\..\..\..\lib\asyn-ares.c" />
-Only in ./libcurl_source/projects/Windows/VC14/lib: libcurl.vcxproj.user
+Only in ./libcurl_source_original/projects/Windows/VC14/lib: libcurl.vcxproj.filters
+Only in ./libcurl_source/projects/Windows/VC14/lib: .vs
