@@ -5,7 +5,7 @@
 #if defined(__DAVAENGINE_COREV2__)
 
 #include "DeviceManager/DeviceManagerTypes.h"
-#include "Input/TouchDevice.h"
+#include "Input/TouchScreen.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Functional/Signal.h"
 
@@ -15,10 +15,10 @@
 
 namespace DAVA
 {
-class GamepadDevice;
+class Gamepad;
 class InputDevice;
-class KeyboardInputDevice;
-class MouseDevice;
+class Keyboard;
+class Mouse;
 namespace Private
 {
 struct DeviceManagerImpl;
@@ -54,10 +54,10 @@ public:
     // Input methods
 
     InputDevice* GetInputDevice(uint32 id);
-    GamepadDevice* GetGamepad();
-    KeyboardInputDevice* GetKeyboard();
-    MouseDevice* GetMouse();
-    TouchDevice* GetTouch();
+    Gamepad* GetGamepad();
+    Keyboard* GetKeyboard();
+    Mouse* GetMouse();
+    TouchScreen* GetTouchScreen();
 
     // Signals
 
@@ -78,10 +78,10 @@ private:
 
     Vector<DisplayInfo> displays;
 
-    KeyboardInputDevice* keyboard = nullptr;
-    MouseDevice* mouse = nullptr;
-    GamepadDevice* gamepad = nullptr;
-    TouchDevice* touch = nullptr;
+    Keyboard* keyboard = nullptr;
+    Mouse* mouse = nullptr;
+    Gamepad* gamepad = nullptr;
+    TouchScreen* touchScreen = nullptr;
     Vector<InputDevice*> inputDevices;
 
     std::unique_ptr<Private::DeviceManagerImpl> impl;

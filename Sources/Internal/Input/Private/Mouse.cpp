@@ -1,4 +1,4 @@
-#include "Input/MouseDevice.h"
+#include "Input/Mouse.h"
 
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
@@ -9,35 +9,35 @@
 
 namespace DAVA
 {
-MouseDevice::MouseDevice(uint32 id)
+Mouse::Mouse(uint32 id)
     : InputDevice(id)
     , inputSystem(GetEngineContext()->inputSystem)
     , buttons{}
     , mousePosition{}
     , mouseWheelDelta{}
 {
-    Engine::Instance()->endFrame.Connect(this, &MouseDevice::OnEndFrame);
-    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &MouseDevice::HandleEvent));
+    Engine::Instance()->endFrame.Connect(this, &Mouse::OnEndFrame);
+    Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Mouse::HandleEvent));
 }
 
-MouseDevice::~MouseDevice()
+Mouse::~Mouse()
 {
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
     Engine::Instance()->endFrame.Disconnect(this);
 }
 
-bool MouseDevice::IsElementSupported(eInputElements elementId) const
+bool Mouse::IsElementSupported(eInputElements elementId) const
 {
     return eInputElements::MOUSE_FIRST <= elementId && elementId <= eInputElements::MOUSE_LAST;
 }
 
-eDigitalElementStates MouseDevice::GetDigitalElementState(eInputElements elementId) const
+eDigitalElementStates Mouse::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(eInputElements::MOUSE_LBUTTON <= elementId && elementId <= eInputElements::MOUSE_EXT2BUTTON);
     return buttons[elementId - eInputElements::MOUSE_LBUTTON];
 }
 
-AnalogElementState MouseDevice::GetAnalogElementState(eInputElements elementId) const
+AnalogElementState Mouse::GetAnalogElementState(eInputElements elementId) const
 {
     switch (elementId)
     {
@@ -51,7 +51,7 @@ AnalogElementState MouseDevice::GetAnalogElementState(eInputElements elementId) 
     }
 }
 
-eInputElements MouseDevice::GetFirstPressedButton() const
+eInputElements Mouse::GetFirstPressedButton() const
 {
     for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
     {
@@ -63,7 +63,7 @@ eInputElements MouseDevice::GetFirstPressedButton() const
     return eInputElements::NONE;
 }
 
-bool MouseDevice::HandleEvent(const Private::MainDispatcherEvent& e)
+bool Mouse::HandleEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
 
@@ -87,7 +87,7 @@ bool MouseDevice::HandleEvent(const Private::MainDispatcherEvent& e)
     return isHandled;
 }
 
-void MouseDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
+void Mouse::HandleMouseClick(const Private::MainDispatcherEvent& e)
 {
     bool pressed = e.type == Private::MainDispatcherEvent::MOUSE_BUTTON_DOWN;
     eMouseButtons button = e.mouseEvent.button;
@@ -111,7 +111,7 @@ void MouseDevice::HandleMouseClick(const Private::MainDispatcherEvent& e)
     inputSystem->DispatchInputEvent(inputEvent);
 }
 
-void MouseDevice::HandleMouseWheel(const Private::MainDispatcherEvent& e)
+void Mouse::HandleMouseWheel(const Private::MainDispatcherEvent& e)
 {
     InputEvent inputEvent;
     inputEvent.window = e.window;
@@ -133,7 +133,7 @@ void MouseDevice::HandleMouseWheel(const Private::MainDispatcherEvent& e)
     inputSystem->DispatchInputEvent(inputEvent);
 }
 
-void MouseDevice::HandleMouseMove(const Private::MainDispatcherEvent& e)
+void Mouse::HandleMouseMove(const Private::MainDispatcherEvent& e)
 {
     InputEvent inputEvent;
     inputEvent.window = e.window;
@@ -152,7 +152,7 @@ void MouseDevice::HandleMouseMove(const Private::MainDispatcherEvent& e)
     inputSystem->DispatchInputEvent(inputEvent);
 }
 
-void MouseDevice::OnEndFrame()
+void Mouse::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
     for (DIElementWrapper di : buttons)

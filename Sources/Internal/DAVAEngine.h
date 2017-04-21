@@ -49,7 +49,7 @@
 
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
-#include "Input/GamepadDevice.h"
+#include "Input/Gamepad.h"
 
 // Localization
 #include "FileSystem/LocalizationSystem.h"

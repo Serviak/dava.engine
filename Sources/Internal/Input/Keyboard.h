@@ -9,7 +9,7 @@ class InputSystem;
 
 namespace Private
 {
-class KeyboardDeviceImpl;
+class KeyboardImpl;
 struct MainDispatcherEvent;
 }
 
@@ -17,7 +17,7 @@ struct MainDispatcherEvent;
     \ingroup input
     Represents keyboard input device.
 */
-class KeyboardInputDevice final : public InputDevice
+class Keyboard final : public InputDevice
 {
     friend class DeviceManager; // For creation
 
@@ -33,10 +33,10 @@ public:
     WideString TranslateElementToWideString(eInputElements elementId) const;
 
 private:
-    KeyboardInputDevice(uint32 id);
-    ~KeyboardInputDevice();
-    KeyboardInputDevice(const KeyboardInputDevice&) = delete;
-    KeyboardInputDevice& operator=(const KeyboardInputDevice&) = delete;
+    Keyboard(uint32 id);
+    ~Keyboard();
+    Keyboard(const Keyboard&) = delete;
+    Keyboard& operator=(const Keyboard&) = delete;
 
     void OnEndFrame();
     void OnWindowFocusChanged(DAVA::Window* window, bool focused);
@@ -46,7 +46,7 @@ private:
 
 private:
     InputSystem* inputSystem = nullptr;
-    Private::KeyboardDeviceImpl* impl = nullptr;
+    std::unique_ptr<Private::KeyboardImpl> impl = nullptr;
 
     // State of each physical key
     Array<eDigitalElementStates, INPUT_ELEMENTS_KB_COUNT> keys;

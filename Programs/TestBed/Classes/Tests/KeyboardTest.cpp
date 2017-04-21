@@ -3,8 +3,8 @@
 
 #include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
-#include <Input/GamepadDevice.h>
-#include <Input/MouseDevice.h>
+#include <Input/Gamepad.h>
+#include <Input/Mouse.h>
 #include <UI/Focus/UIFocusComponent.h>
 #include <Render/2D/Sprite.h>
 
@@ -223,7 +223,7 @@ void KeyboardTest::ResetCounters()
     lastMouseY = 0;
     lastWheel = 0.f;
 
-    GamepadDevice* gamepad = GetEngineContext()->deviceManager->GetGamepad();
+    Gamepad* gamepad = GetEngineContext()->deviceManager->GetGamepad();
     if (gamepad != nullptr)
     {
         for (uint32 i = eInputElements::GAMEPAD_FIRST; i <= eInputElements::GAMEPAD_LAST; ++i)
@@ -278,7 +278,7 @@ bool KeyboardTest::InputEventHandler(const InputEvent& inputEvent)
     StringStream ss;
     if (IsMouseInputElement(inputEvent.elementId))
     {
-        MouseDevice* mouse = GetEngineContext()->deviceManager->GetMouse();
+        Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
         for (eInputElements i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; i = static_cast<eInputElements>(i + 1))
         {
             eDigitalElementStates state = mouse->GetDigitalElementState(i);
