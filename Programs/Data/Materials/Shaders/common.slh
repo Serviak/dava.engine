@@ -227,14 +227,16 @@
     #define VIEW_ALBEDO 0
 #endif
 
+
 #if !defined FLOWMAP_SKY
     #define FLOWMAP_SKY 0
 #endif
 
-
 #if FLOWMAP_SKY
     #define FLOWMAP 1
-#else
+#endif
+
+#if !defined FLOWMAP
     #define FLOWMAP 0
 #endif
 
