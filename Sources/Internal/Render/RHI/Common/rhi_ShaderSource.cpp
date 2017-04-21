@@ -56,11 +56,9 @@ public:
         {
             DAVA::File* in = nullptr;
 
-            for (auto p : inclDir)
+            for (const std::string& d : inclDir)
             {
-                std::string fname = p + "/" + file_name;
-
-                in = DAVA::File::Create(fname, DAVA::File::READ | DAVA::File::OPEN);
+                in = DAVA::File::Create(d + "/" + file_name, DAVA::File::READ | DAVA::File::OPEN);
 
                 if (in)
                     break;
