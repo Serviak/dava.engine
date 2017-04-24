@@ -34,6 +34,7 @@ private:
     void OnInputListenerButtonPressed(DAVA::BaseObject* sender, void* data, void* callerData);
     void OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::InputEvent> input);
     void OnUpdate(DAVA::float32 delta);
+    void OnBackNavigation(DAVA::Window* window);
 
     std::unordered_map<DAVA::uint32, DAVA::UIButton*> keyboardButtons;
     DAVA::Vector<DAVA::UIStaticText*> keyboardsHeaders;
