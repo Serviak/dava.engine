@@ -1,14 +1,23 @@
 #pragma once
 
-#include "UI/UISystem.h"
+#include <Base/BaseTypes.h>
+#include <Base/RefPtr.h>
+#include <UI/UISystem.h>
+#include <Functional/Signal.h>
 
 namespace DAVA
 {
 
-class UISpineSystem : public UISystem
+class UIControl;
+class UIComponent;
+class UISpineComponent;
+class SpineSkeleton;
+
+class UISpineSystem final : public UISystem
 {
 public:
-    ~UISpineSystem() = default;
+    UISpineSystem();
+    ~UISpineSystem() override;
 
     void RegisterControl(UIControl* control) override;
     void UnregisterControl(UIControl* control) override;
@@ -18,7 +27,7 @@ public:
     void OnControlVisible(UIControl* control) override;
     void OnControlInvisible(UIControl* control) override;
 
-    void Process(DAVA::float32 elapsedTime) override;
+    void Process(float32 elapsedTime) override;
 
     Signal<UISpineComponent* /*component*/, const String& /*event*/> onAnimationEvent;
 
@@ -26,8 +35,8 @@ private:
     struct SpineNode
     {
         UISpineComponent* component = nullptr;
-        SpineSkeleton* skeleton = nullptr;
-    }
+        RefPtr<SpineSkeleton> skeleton;
+    };
 
     void AddNode(UISpineComponent* component);
     void RemoveNode(UISpineComponent* component);
