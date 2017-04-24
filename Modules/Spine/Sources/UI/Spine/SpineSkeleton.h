@@ -1,29 +1,42 @@
 #pragma once
 
+#include <Base/BaseTypes.h>
+#include <Base/BaseObject.h>
+#include <Functional/Signal.h>
+
 namespace DAVA
 {
+
+struct BatchDescriptor;
+
+// Spine types. Maybe add some wrappers for they in public API.
+class SpineTrackEntry
+{
+};
+
+class SpineBone
+{
+};
 
 class SpineSkeleton final : public BaseObject
 {
 public:
-    // Spine types. Maybe add some wrappers for they in public API.
-    class TackEntry;
-    class Bone;
-
-    /** Default contructor. */
+    /** Default constructor. */
     SpineSkeleton();
+    /** Copy constructor. */
+    SpineSkeleton(const SpineSkeleton& src);
 
     /** Load Spine skeleton from binary/json data file and atlas. */
     void Load(const FilePath& dataPath, const FilePath& atlasPath);
 
     /** Update state of Spine skeleton with specified time delta. */
-    void Update(const flaot32 timeElapsed);
+    void Update(const float32 timeElapsed);
 
     /** Reset all Spine skeleton's states. */
     void ResetSkeleton();
 
     /** Return render batch data for draw current state of Spine skeleton in UIControlBackground. */
-    const RenderSystem2D::BatchDescriptor& GetRenderBatch() const;
+    BatchDescriptor* GetRenderBatch() const;
 
     /** Return list of names of available animations. */
     Vector<String> GetAvailableAnimationsNames() const;
@@ -31,17 +44,17 @@ public:
     Set current animation by specified name, track index and looping flag.
     Return track data of setted animation.
     */
-    TrackEntry* SetAnimation(int32 trackIndex, const String& name, bool loop);
+    SpineTrackEntry* SetAnimation(int32 trackIndex, const String& name, bool loop);
     /**
     Add next animation by specified name, track index and looping flag.
     Return track data of added animation.
     */
-    TrackEntry* AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay);
+    SpineTrackEntry* AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay);
     /** Return track data by specified track index. */
-    TrackEntry* GetTrack(int32 trackIndex);
+    SpineTrackEntry* GetTrack(int32 trackIndex);
     /** Create translation animation between two animation states specified by names. */
     void SetAnimationMix(const String& fromAnimation, const String& toAnimation, float32 duration);
-    /** Clear all animation tracs and stop any animtaion. */
+    /** Clear all animation tracks and stop any animation. */
     void ClearTracks();
     /** Remove track from animations queue by specified track's index. */
     void CleatTrack(int32 trackIndex);
@@ -59,13 +72,16 @@ public:
     int32 GetSkinNumber();
 
     /** Find bone data by specified bone's name. Return nullptr if bone not found. */
-    Bone* FindBone(const String& boneName);
+    SpineBone* FindBone(const String& boneName);
 
     /** Emit on each event during spine animation. */
     Signal<const String& /*event*/> onEvent;
 
 protected:
     ~SpineSkeleton() override;
+
+private:
+    BatchDescriptor* batchDescriptor = nullptr;
 
 };
 
