@@ -2,12 +2,15 @@
 #include "TArc/Controls/PropertyPanel/Private/ReflectedPropertyModel.h"
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
 
-#include "Engine/PlatformApi.h"
+#include "TArc/WindowSubSystem/QtTArcEvents.h"
+
+#include <Engine/PlatformApi.h>
 
 #include <QTreeView>
 #include <QApplication>
 #include <QtEvents>
 #include <QtGlobal>
+#include <QPainter>
 
 namespace DAVA
 {
@@ -50,7 +53,7 @@ void InitStyleOptions(QStyleOptionViewItem& options, BaseComponentValue* compone
 }
 
 PropertiesViewDelegate::PropertiesViewDelegate(QTreeView* view_, ReflectedPropertyModel* model_, QObject* parent)
-    : QAbstractItemDelegate(parent)
+    : QStyledItemDelegate(parent)
     , model(model_)
     , view(view_)
 {
@@ -74,11 +77,10 @@ void PropertiesViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
     }
     else
     {
-        QStyle* style = option.widget->style();
-        style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
+        painter->fillRect(opt.rect, opt.palette.window());
 
         AdjustEditorRect(opt);
-        valueComponent->Draw(view->viewport(), painter, opt);
+        valueComponent->Draw(painter, opt);
     }
 }
 
@@ -102,16 +104,15 @@ QSize PropertiesViewDelegate::sizeHint(const QStyleOptionViewItem& option, const
     }
     else
     {
-        QWidget* viewport = view->viewport();
-        if (valueComponent->HasHeightForWidth(viewport))
+        if (valueComponent->HasHeightForWidth())
         {
-            int height = valueComponent->GetHeightForWidth(viewport, view->columnWidth(1));
+            int height = valueComponent->GetHeightForWidth(view->columnWidth(1));
             heightForWidthItems[QPersistentModelIndex(index)] = height;
             sizeHint.setHeight(height);
         }
         else
         {
-            sizeHint.setHeight(valueComponent->GetHeight(viewport));
+            sizeHint.setHeight(valueComponent->GetHeight());
         }
     }
 
@@ -129,22 +130,20 @@ QWidget* PropertiesViewDelegate::createEditor(QWidget* parent, const QStyleOptio
     QStyleOptionViewItem opt = option;
     AdjustEditorRect(opt);
     UpdateSpanning(index, valueComponent->IsSpannedControl());
-    return valueComponent->AcquireEditorWidget(parent, opt);
+    QWidget* result = valueComponent->AcquireEditorWidget(opt);
+    result->setProperty("modelIndex", index);
+    return result;
 }
 
 void PropertiesViewDelegate::destroyEditor(QWidget* editor, const QModelIndex& index) const
 {
-    if (index.isValid() == false)
-    {
-        return;
-    }
-
-    BaseComponentValue* valueComponent = GetComponentValue(index);
-    return valueComponent->ReleaseEditorWidget(editor);
+    editor->setProperty("modelIndex", QVariant());
 }
 
 void PropertiesViewDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
+    BaseComponentValue* valueComponent = GetComponentValue(index);
+    valueComponent->ForceUpdate();
 }
 
 void PropertiesViewDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
@@ -162,11 +161,44 @@ void PropertiesViewDelegate::updateEditorGeometry(QWidget* editor, const QStyleO
     QStyleOptionViewItem opt = option;
     AdjustEditorRect(opt);
     UpdateSpanning(index, valueComponent->IsSpannedControl());
-    valueComponent->UpdateGeometry(view->viewport(), opt);
+    valueComponent->UpdateGeometry(opt);
 }
 
 bool PropertiesViewDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index)
 {
+    if (index.isValid() == false || index.column() == 0)
+    {
+        return false;
+    }
+
+    switch (event->type())
+    {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+    case QEvent::MouseMove:
+    {
+        QMouseEvent* ev = static_cast<QMouseEvent*>(event);
+
+        BaseComponentValue* value = GetComponentValue(index);
+        QWidget* target = view->viewport();
+        QPoint localPos = ev->pos();
+        QWidget* childAt = value->AcquireEditorWidget(option);
+        while (childAt != nullptr && childAt != target)
+        {
+            localPos = childAt->mapFrom(target, localPos);
+            target = childAt;
+            childAt = target->childAt(localPos);
+        }
+
+        QMouseEvent* newEvent = new QMouseEvent(ev->type(), localPos, ev->windowPos(), ev->screenPos(),
+                                                ev->button(), ev->buttons(), ev->modifiers(), ev->source());
+        newEvent->setTimestamp(ev->timestamp());
+        PlatformApi::Qt::GetApplication()->postEvent(target, newEvent);
+    }
+    default:
+        break;
+    }
     return false;
 }
 
@@ -178,7 +210,9 @@ bool PropertiesViewDelegate::helpEvent(QHelpEvent* event, QAbstractItemView* vie
 BaseComponentValue* PropertiesViewDelegate::GetComponentValue(const QModelIndex& index) const
 {
     DVASSERT(index.isValid());
-    return model->GetComponentValue(index);
+    BaseComponentValue* value = model->GetComponentValue(index);
+    value->EnsureEditorCreated(view->viewport());
+    return value;
 }
 
 void PropertiesViewDelegate::AdjustEditorRect(QStyleOptionViewItem& opt) const
@@ -206,13 +240,12 @@ bool PropertiesViewDelegate::UpdateSizeHints(int section, int newWidth)
 
     int sectionWidth = view->columnWidth(1);
     QList<QModelIndex> sizeHintChangedIndexes;
-    QWidget* viewportWidgte = view->viewport();
     for (auto iter = heightForWidthItems.begin(); iter != heightForWidthItems.end(); ++iter)
     {
         QPersistentModelIndex index = iter.key();
         BaseComponentValue* value = GetComponentValue(index);
-        DVASSERT(value->HasHeightForWidth(viewportWidgte));
-        int heightForWidth = value->GetHeightForWidth(viewportWidgte, sectionWidth);
+        DVASSERT(value->HasHeightForWidth());
+        int heightForWidth = value->GetHeightForWidth(sectionWidth);
         if (iter.value() != heightForWidth)
         {
             iter.value() = heightForWidth;
@@ -234,6 +267,32 @@ void PropertiesViewDelegate::UpdateSpanning(const QModelIndex& index, bool isSpa
     {
         view->setFirstColumnSpanned(index.row(), index.parent(), isSpanned);
     }
+}
+
+bool PropertiesViewDelegate::eventFilter(QObject* object, QEvent* event)
+{
+    QWidget* w = qobject_cast<QWidget*>(object);
+    if (w == nullptr)
+    {
+        return false;
+    }
+
+    if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->matches(QKeySequence::Cancel))
+        {
+            QVariant value = w->property("modelIndex");
+            if (value.isValid() && value.canConvert<QModelIndex>())
+            {
+                QModelIndex index = value.value<QModelIndex>();
+                GetComponentValue(index)->ForceUpdate();
+            }
+            return true;
+        }
+    }
+
+    return QStyledItemDelegate::eventFilter(object, event);
 }
 
 } // namespace TArc

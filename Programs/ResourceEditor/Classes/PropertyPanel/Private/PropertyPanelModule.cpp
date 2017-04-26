@@ -4,6 +4,7 @@
 #include "Classes/PropertyPanel/KeyedArchiveExtensions.h"
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
 
 #include <TArc/Controls/PropertyPanel/PropertiesView.h>
 #include <TArc/Controls/PropertyPanel/TimerUpdater.h>
@@ -12,6 +13,8 @@
 #include <TArc/DataProcessing/DataNode.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Core/FieldBinder.h>
+
+#include <QtTools/Utils/QtDelayedExecutor.h>
 
 #include <Scene3D/Entity.h>
 #include <Reflection/Reflection.h>
@@ -27,6 +30,38 @@
 
 namespace PropertyPanelModuleDetail
 {
+class PropertyPanelUpdater : public DAVA::TArc::PropertiesView::Updater
+{
+public:
+    PropertyPanelUpdater()
+        : timerUpdater(1000, 100)
+    {
+        SceneSignals* sceneSignals = SceneSignals::Instance();
+        connections.AddConnection(sceneSignals, &SceneSignals::CommandExecuted, [this](SceneEditor2* scene, const RECommandNotificationObject& commandNotification)
+                                  {
+                                      QueueFullUpdate();
+                                  });
+
+        timerUpdater.update.Connect(this, &PropertyPanelUpdater::EmitUpdate);
+    }
+
+private:
+    void EmitUpdate(DAVA::TArc::PropertiesView::UpdatePolicy policy)
+    {
+        update.Emit(policy);
+    }
+
+    void QueueFullUpdate()
+    {
+        executor.DelayedExecute(DAVA::Bind(&PropertyPanelUpdater::EmitUpdate, this, DAVA::TArc::PropertiesView::FullUpdate));
+    }
+
+private:
+    DAVA::TArc::TimerUpdater timerUpdater;
+    DAVA::TArc::QtConnections connections;
+    QtDelayedExecutor executor;
+};
+
 class PropertyPanelData : public DAVA::TArc::DataNode
 {
 public:
@@ -59,7 +94,7 @@ public:
 
     static const char* selectedEntitiesProperty;
 
-    std::shared_ptr<DAVA::TArc::TimerUpdater> updater;
+    std::shared_ptr<DAVA::TArc::PropertiesView::Updater> updater;
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     QPointer<DAVA::TArc::PropertiesView> view;
 
@@ -85,7 +120,7 @@ void PropertyPanelModule::PostInit()
     ctx->CreateData(std::make_unique<PropertyPanelData>(accessor));
 
     PropertyPanelData* data = ctx->GetData<PropertyPanelData>();
-    data->updater.reset(new TimerUpdater(1000, 100));
+    data->updater.reset(new PropertyPanelUpdater());
 
     DockPanelInfo panelInfo;
     panelInfo.title = QStringLiteral("New Property Panel");
@@ -99,6 +134,9 @@ void PropertyPanelModule::PostInit()
     params.objectsField.fieldName = DAVA::FastName(PropertyPanelData::selectedEntitiesProperty);
     params.settingsNodeName = "PropertyPanel";
     params.updater = std::weak_ptr<PropertiesView::Updater>(data->updater);
+#if !defined(DEPLOY_BUILD)
+    params.isInDevMode = true;
+#endif
 
     PropertiesView* view = new PropertiesView(params);
     data->view = view;
