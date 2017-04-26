@@ -1,0 +1,8 @@
+Header:
+    version: "11"
+Controls:
+-   class: "UIControl"
+    name: "UIControl"
+    size: [256.000000, 256.000000]
+    components:
+        Spine: {}
