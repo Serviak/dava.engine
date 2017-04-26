@@ -89,9 +89,9 @@ void PropertyPanelModule::PostInit()
 
     DockPanelInfo panelInfo;
     panelInfo.title = QStringLiteral("New Property Panel");
-    panelInfo.actionPlacementInfo = ActionPlacementInfo(CreateMenuPoint(QList<QString>() << "View"
+    panelInfo.actionPlacementInfo = ActionPlacementInfo(CreateMenuPoint(QList<QString>() << MenuItems::menuView
                                                                                          << "Dock"));
-    PropertiesView::Params params(REGlobal::MainWindowKey);
+    PropertiesView::Params params(DAVA::TArc::mainWindowKey);
     params.accessor = accessor;
     params.invoker = GetInvoker();
     params.ui = ui;
@@ -110,7 +110,7 @@ void PropertyPanelModule::PostInit()
     view->RegisterExtension(std::make_shared<QualitySettingsEditorCreator>());
     view->RegisterExtension(std::make_shared<KeyedArchiveChildCreator>());
     view->RegisterExtension(std::make_shared<KeyedArchiveEditorCreator>(accessor));
-    ui->AddView(REGlobal::MainWindowKey, PanelKey(panelInfo.title, panelInfo), view);
+    ui->AddView(DAVA::TArc::mainWindowKey, PanelKey(panelInfo.title, panelInfo), view);
 
     RegisterInterface(static_cast<PropertyPanelInterface*>(this));
 }
