@@ -65,8 +65,6 @@ void KeyboardTest::LoadResources()
     AddControl(descriptionText);
 
     InputSystem* inputSystem = app.GetEngine().GetContext()->inputSystem;
-    pointerInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_POINTER, MakeFunction(this, &KeyboardTest::OnPointerEvent));
-    keyboardInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_KEYBOARD, MakeFunction(this, &KeyboardTest::OnKeyboardEvent));
     gamepadInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_GAMEPAD, MakeFunction(this, &KeyboardTest::OnGamepadEvent));
 
     rawInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &KeyboardTest::InputEventHandler));
@@ -241,28 +239,21 @@ bool KeyboardTest::InputEventLogHandler(const DAVA::InputEvent& inputEvent)
     if (info.type == eInputElementTypes::DIGITAL)
     {
         String s;
-        if (inputEvent.digitalState != eDigitalElementStates::NONE)
+        if (inputEvent.digitalState.IsPressed())
         {
-            if ((inputEvent.digitalState & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
+            s = "PRESSED";
+            if (inputEvent.digitalState.IsJustPressed())
             {
-                s = "PRESSED";
-                if ((inputEvent.digitalState & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED)
-                {
-                    s += "|JUST_PRESSED";
-                }
-            }
-            else if ((inputEvent.digitalState & eDigitalElementStates::RELEASED) == eDigitalElementStates::RELEASED)
-            {
-                s = "RELEASED";
-                if ((inputEvent.digitalState & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED)
-                {
-                    s += "|JUST_RELEASED";
-                }
+                s += "|JUST_PRESSED";
             }
         }
-        else
+        else if (inputEvent.digitalState.IsReleased())
         {
-            s = "NONE";
+            s = "RELEASED";
+            if (inputEvent.digitalState.IsJustReleased())
+            {
+                s += "|JUST_RELEASED";
+            }
         }
         Logger::Debug("============= %s [D]: 0x%X {%s}", info.name.c_str(), inputEvent.digitalState, s.c_str());
     }
@@ -281,10 +272,9 @@ bool KeyboardTest::InputEventHandler(const InputEvent& inputEvent)
         Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
         for (eInputElements i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; i = static_cast<eInputElements>(i + 1))
         {
-            eDigitalElementStates state = mouse->GetDigitalElementState(i);
-            bool pressed = (state & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED;
+            DigitalElementState state = mouse->GetDigitalElementState(i);
             const InputElementInfo& info = GetInputElementInfo(static_cast<eInputElements>(i));
-            ss << info.name << "=" << pressed << std::endl;
+            ss << info.name << "=" << state.IsPressed() << std::endl;
         }
         AnalogElementState pos = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
         ss << GetInputElementInfo(eInputElements::MOUSE_POSITION).name << "=" << pos.x << ", " << pos.y << std::endl;
@@ -294,259 +284,60 @@ bool KeyboardTest::InputEventHandler(const InputEvent& inputEvent)
     return false;
 }
 
-bool KeyboardTest::OnPointerEvent(UIEvent* e)
-{
-    if (e->phase == UIEvent::Phase::GESTURE)
-    {
-        OnGestureEvent(e);
-    }
-    else
-    {
-        OnMouseTouchOrKeyboardEvent(e);
-    }
-    return false;
-}
-
-bool KeyboardTest::OnKeyboardEvent(UIEvent* e)
-{
-    OnMouseTouchOrKeyboardEvent(e);
-    return false;
-}
-
-bool KeyboardTest::OnGamepadEvent(UIEvent* event)
+bool KeyboardTest::OnGamepadEvent(const DAVA::InputEvent& e)
 {
     //Logger::Info("gamepad tid: %2d, x: %.3f, y:%.3f", event->tid, event->point.x, event->point.y);
 
-    DVASSERT(event->device == eInputDevices::GAMEPAD);
-    DVASSERT(event->phase == UIEvent::Phase::JOYSTICK);
+    DVASSERT(e.deviceType == eInputDevices::GAMEPAD);
 
-    switch (event->element)
+    switch (e.elementId)
     {
-    case eGamepadElements::A:
-        UpdateGamepadElement("button_a", event->point.x == 1);
+    case eInputElements::GAMEPAD_A:
+        UpdateGamepadElement("button_a", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::B:
-        UpdateGamepadElement("button_b", event->point.x == 1);
+    case eInputElements::GAMEPAD_B:
+        UpdateGamepadElement("button_b", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::X:
-        UpdateGamepadElement("button_x", event->point.x == 1);
+    case eInputElements::GAMEPAD_X:
+        UpdateGamepadElement("button_x", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::Y:
-        UpdateGamepadElement("button_y", event->point.x == 1);
+    case eInputElements::GAMEPAD_Y:
+        UpdateGamepadElement("button_y", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::LEFT_SHOULDER:
-        UpdateGamepadElement("shift_left", event->point.x == 1);
+    case eInputElements::GAMEPAD_LSHOULDER:
+        UpdateGamepadElement("shift_left", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::RIGHT_SHOULDER:
-        UpdateGamepadElement("shift_right", event->point.x == 1);
+    case eInputElements::GAMEPAD_RSHOULDER:
+        UpdateGamepadElement("shift_right", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::LEFT_TRIGGER:
-        UpdateGamepadElement("triger_left", event->point.x > 0);
+    case eInputElements::GAMEPAD_LTHUMB:
+        UpdateGamepadElement("triger_left", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::RIGHT_TRIGGER:
-        UpdateGamepadElement("triger_right", event->point.x > 0);
+    case eInputElements::GAMEPAD_RTHUMB:
+        UpdateGamepadElement("triger_right", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::LEFT_THUMBSTICK_X:
-        UpdateGamepadStickX("stick_left", event->point.x);
+    case eInputElements::GAMEPAD_AXIS_LTHUMB:
+        UpdateGamepadStickX("stick_left", e.analogState.x);
         break;
-    case eGamepadElements::LEFT_THUMBSTICK_Y:
-        UpdateGamepadStickY("stick_left", event->point.x);
+    case eInputElements::GAMEPAD_AXIS_RTHUMB:
+        UpdateGamepadStickX("stick_right", e.analogState.x);
         break;
-    case eGamepadElements::RIGHT_THUMBSTICK_X:
-        UpdateGamepadStickX("stick_right", event->point.x);
+    case eInputElements::GAMEPAD_DPAD_LEFT:
+        UpdateGamepadElement("button_left", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::RIGHT_THUMBSTICK_Y:
-        UpdateGamepadStickY("stick_right", event->point.x);
+    case eInputElements::GAMEPAD_DPAD_RIGHT:
+        UpdateGamepadElement("button_right", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::DPAD_X:
-        UpdateGamepadElement("button_left", event->point.x < 0);
-        UpdateGamepadElement("button_right", event->point.x > 0);
+    case eInputElements::GAMEPAD_DPAD_UP:
+        UpdateGamepadElement("button_up", e.digitalState.IsPressed());
         break;
-    case eGamepadElements::DPAD_Y:
-        UpdateGamepadElement("button_up", event->point.x > 0);
-        UpdateGamepadElement("button_down", event->point.x < 0);
+    case eInputElements::GAMEPAD_DPAD_DOWN:
+        UpdateGamepadElement("button_down", e.digitalState.IsPressed());
         break;
     default:
-        Logger::Error("not handled gamepad input event element: %d", event->element);
+        Logger::Error("not handled gamepad input event element: %d", static_cast<uint32>(e.elementId));
     }
     return false;
-}
-
-bool KeyboardTest::OnMouseTouchOrKeyboardEvent(UIEvent* currentInput)
-{
-    KeyboardDevice& keyboard = InputSystem::Instance()->GetKeyboard();
-
-    if (currentInput->device == eInputDevices::KEYBOARD)
-    {
-        ++numKeyboardEvents;
-    }
-    else if (currentInput->device == eInputDevices::MOUSE)
-    {
-        ++numMouseEvents;
-    }
-    switch (currentInput->phase)
-    {
-    case UIEvent::Phase::BEGAN: //!<Screen touch or mouse button press is began.
-        if (currentInput->device == eInputDevices::MOUSE)
-        {
-            ++numMouseDown;
-            lastMouseX = static_cast<int32>(currentInput->point.x);
-            lastMouseY = static_cast<int32>(currentInput->point.y);
-            lastMouseKey = L'0' + static_cast<wchar_t>(currentInput->mouseButton);
-
-            if (currentInput->tapCount > 1)
-            {
-                numMouseDblDown++;
-            }
-        }
-        if (currentInput->device == eInputDevices::TOUCH_SURFACE)
-        {
-            auto FindFirstEmptyImage = [](::Finger& t) {
-                return !t.isActive;
-            };
-            auto it = std::find_if(begin(touches), end(touches), FindFirstEmptyImage);
-            if (it != touches.end())
-            {
-                it->isActive = true;
-                it->img->SetPosition(currentInput->point);
-                it->index = currentInput->touchId;
-            }
-        }
-        break;
-    case UIEvent::Phase::DRAG: //!<User moves mouse with presset button or finger over the screen.
-        if (currentInput->device == eInputDevices::MOUSE)
-        {
-            ++numDrag;
-            lastMouseX = static_cast<int32>(currentInput->point.x);
-            lastMouseY = static_cast<int32>(currentInput->point.y);
-        }
-        if (currentInput->device == eInputDevices::TOUCH_SURFACE)
-        {
-            int32 index = currentInput->touchId;
-            auto FindTouchById = [index](::Finger& t) {
-                return index == t.index;
-            };
-            auto it = std::find_if(begin(touches), end(touches), FindTouchById);
-            if (it != touches.end())
-            {
-                it->img->SetPosition(currentInput->point);
-            }
-            else
-            {
-                DVASSERT(false);
-            }
-        }
-        break;
-    case UIEvent::Phase::ENDED: //!<Screen touch or mouse button press is ended.
-        if (currentInput->device == eInputDevices::MOUSE)
-        {
-            ++numMouseUp;
-            lastMouseX = static_cast<int32>(currentInput->point.x);
-            lastMouseY = static_cast<int32>(currentInput->point.y);
-            lastMouseKey = L'0' + static_cast<wchar_t>(currentInput->mouseButton);
-
-            if (currentInput->tapCount > 1)
-            {
-                numMouseDblUp++;
-            }
-        }
-        if (currentInput->device == eInputDevices::TOUCH_SURFACE)
-        {
-            int32 index = currentInput->touchId;
-            auto FindTouchById = [index](::Finger& t) {
-                return index == t.index;
-            };
-            auto it = std::find_if(begin(touches), end(touches), FindTouchById);
-            if (it != touches.end())
-            {
-                it->img->SetPosition(hiddenPos);
-                it->isActive = false;
-            }
-            else
-            {
-                DVASSERT(false);
-            }
-        }
-        break;
-    case UIEvent::Phase::MOVE: //!<Mouse move event. Mouse moves without pressing any buttons. Works only with mouse controller.
-        ++numMouseMove;
-        lastMouseX = static_cast<int32>(currentInput->point.x);
-        lastMouseY = static_cast<int32>(currentInput->point.y);
-        lastMouseKey = L'0' + static_cast<wchar_t>(currentInput->mouseButton);
-        break;
-    case UIEvent::Phase::WHEEL: //!<Mouse wheel event. MacOS & Win32 only
-        ++numMouseWheel;
-        lastWheel = currentInput->wheelDelta.y;
-        break;
-    case UIEvent::Phase::CANCELLED: //!<Event was cancelled by the platform or by the control system for the some reason.
-        ++numMouseCancel;
-        if (currentInput->device == eInputDevices::TOUCH_SURFACE)
-        {
-            int32 index = currentInput->touchId;
-            auto FindTouchById = [index](::Finger& t) {
-                return index == t.index;
-            };
-            auto it = std::find_if(begin(touches), end(touches), FindTouchById);
-            if (it != touches.end())
-            {
-                it->img->SetPosition(hiddenPos);
-                it->isActive = false;
-            }
-            else
-            {
-                DVASSERT(false);
-            }
-        }
-        break;
-    case UIEvent::Phase::CHAR:
-        ++numChar;
-        lastChar = static_cast<wchar_t>(currentInput->keyChar);
-        break;
-    case UIEvent::Phase::CHAR_REPEAT:
-        ++numCharRepeat;
-        break;
-    case UIEvent::Phase::KEY_DOWN:
-        ++numKeyDown;
-        lastKey = UTF8Utils::EncodeToWideString(keyboard.GetKeyName(currentInput->key));
-        break;
-    case UIEvent::Phase::KEY_DOWN_REPEAT:
-        ++numKeyDownRepeat;
-        lastKey = UTF8Utils::EncodeToWideString(keyboard.GetKeyName(currentInput->key));
-        break;
-    case UIEvent::Phase::KEY_UP:
-        ++numKeyUp;
-        lastKey = UTF8Utils::EncodeToWideString(keyboard.GetKeyName(currentInput->key));
-        break;
-    default:
-        break;
-    };
-
-    std::wstringstream currentText;
-    currentText << L"Keys: " << numKeyboardEvents << L"\n"
-                << L"D: " << numKeyDown << L"\n"
-                << L"U: " << numKeyUp << L"\n"
-                << L"DR: " << numKeyDownRepeat << L"\n"
-                << L"C: " << numChar << L"\n"
-                << L"CR: " << numCharRepeat << L"\n"
-                << L"c: \'" << lastChar << L"\'\n"
-                << L"k: " << lastKey << L"\n"
-                << L"Mouse: " << numMouseEvents << L"\n"
-                << L"Drg: " << numDrag << L"\n"
-                << L"Mv: " << numMouseMove << L"\n"
-                << L"Dn: " << numMouseDown << L"\n"
-                << L"Up: " << numMouseUp << L"\n"
-                << L"DblDn: " << numMouseDblDown << L"\n"
-                << L"DblUp: " << numMouseDblUp << L"\n"
-                << L"Whl: " << numMouseWheel << L"\n"
-                << L"Cncl: " << numMouseCancel << L"\n"
-                << L"Btn: " << lastMouseKey << L"\n"
-                << L"X: " << lastMouseX << L"\n"
-                << L"Y: " << lastMouseY << L"\n"
-                << L"Whl: " << lastWheel;
-
-    descriptionText->SetText(currentText.str());
-
-    return false; // let pass event to other controls
 }
 
 void KeyboardTest::OnGestureEvent(UIEvent* event)

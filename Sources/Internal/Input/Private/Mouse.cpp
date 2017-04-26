@@ -5,7 +5,6 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputElements.h"
 #include "Input/InputSystem.h"
-#include "Input/Private/DIElementWrapper.h"
 
 namespace DAVA
 {
@@ -31,7 +30,7 @@ bool Mouse::IsElementSupported(eInputElements elementId) const
     return eInputElements::MOUSE_FIRST <= elementId && elementId <= eInputElements::MOUSE_LAST;
 }
 
-eDigitalElementStates Mouse::GetDigitalElementState(eInputElements elementId) const
+DigitalElementState Mouse::GetDigitalElementState(eInputElements elementId) const
 {
     DVASSERT(eInputElements::MOUSE_LBUTTON <= elementId && elementId <= eInputElements::MOUSE_EXT2BUTTON);
     return buttons[elementId - eInputElements::MOUSE_LBUTTON];
@@ -55,7 +54,7 @@ eInputElements Mouse::GetFirstPressedButton() const
 {
     for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
     {
-        if ((buttons[i - eInputElements::MOUSE_FIRST_BUTTON] & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED)
+        if (buttons[i - eInputElements::MOUSE_FIRST_BUTTON].IsPressed())
         {
             return static_cast<eInputElements>(i);
         }
@@ -96,13 +95,13 @@ void Mouse::HandleMouseClick(const Private::MainDispatcherEvent& e)
     inputEvent.window = e.window;
     inputEvent.timestamp = e.timestamp / 1000.0f;
     inputEvent.deviceType = eInputDeviceTypes::MOUSE;
-    inputEvent.deviceId = GetId();
+    inputEvent.device = this;
     inputEvent.mouseEvent.isRelative = e.mouseEvent.isRelative;
 
     uint32 index = static_cast<uint32>(button) - 1;
-    DIElementWrapper di(buttons[index]);
-    pressed ? di.Press() : di.Release();
-    inputEvent.digitalState = di.GetState();
+    DigitalElementState& buttonState = buttons[index];
+    pressed ? buttonState.Press() : buttonState.Release();
+    inputEvent.digitalState = buttonState;
     inputEvent.elementId = static_cast<eInputElements>(index + eInputElements::MOUSE_FIRST_BUTTON);
 
     mousePosition.x = e.mouseEvent.x;
@@ -117,7 +116,7 @@ void Mouse::HandleMouseWheel(const Private::MainDispatcherEvent& e)
     inputEvent.window = e.window;
     inputEvent.timestamp = e.timestamp / 1000.0f;
     inputEvent.deviceType = eInputDeviceTypes::MOUSE;
-    inputEvent.deviceId = GetId();
+    inputEvent.device = this;
     inputEvent.elementId = eInputElements::MOUSE_WHEEL;
     inputEvent.analogState.x = e.mouseEvent.scrollDeltaX;
     inputEvent.analogState.y = e.mouseEvent.scrollDeltaY;
@@ -139,7 +138,7 @@ void Mouse::HandleMouseMove(const Private::MainDispatcherEvent& e)
     inputEvent.window = e.window;
     inputEvent.timestamp = e.timestamp / 1000.0f;
     inputEvent.deviceType = eInputDeviceTypes::MOUSE;
-    inputEvent.deviceId = GetId();
+    inputEvent.device = this;
     inputEvent.elementId = eInputElements::MOUSE_POSITION;
     inputEvent.analogState.x = e.mouseEvent.x;
     inputEvent.analogState.y = e.mouseEvent.y;
@@ -155,9 +154,9 @@ void Mouse::HandleMouseMove(const Private::MainDispatcherEvent& e)
 void Mouse::OnEndFrame()
 {
     // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (DIElementWrapper di : buttons)
+    for (DigitalElementState& buttonState : buttons)
     {
-        di.OnEndFrame();
+        buttonState.OnEndFrame();
     }
 
     mouseWheelDelta.x = 0.f;

@@ -15,6 +15,7 @@ class UIControl;
 class UIScreen;
 class UIEvent;
 class UIFocusSystem;
+class Window;
 
 class UIInputSystem
 : public UISystem
@@ -22,6 +23,8 @@ class UIInputSystem
 public:
     UIInputSystem();
     ~UIInputSystem() override;
+
+    void OnBackNavigation(DAVA::Window* window);
 
     void Process(DAVA::float32 elapsedTime) override{};
 

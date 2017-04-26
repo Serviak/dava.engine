@@ -1,6 +1,5 @@
-#include "UI/UIAnalitycs.h"
+#include "UI/UIAnalytics.h"
 
-#include "Input/KeyboardDevice.h"
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
 
@@ -54,17 +53,13 @@ bool EmitKeyEvent(UIControl* control, UIEvent* uiEvent)
     }
     const char* pressedKey = nullptr;
 
-    if (uiEvent->key == Key::ESCAPE)
+    if (uiEvent->key == eInputElements::KB_ESCAPE)
     {
         pressedKey = ESC_KEY_PRESSED;
     }
-    else if (uiEvent->key == Key::ENTER)
+    else if (uiEvent->key == eInputElements::KB_ENTER)
     {
         pressedKey = ENTER_KEY_PRESSED;
-    }
-    else if (uiEvent->key == Key::BACK)
-    {
-        pressedKey = BACK_KEY_PRESSED;
     }
     else
     {
@@ -80,6 +75,26 @@ bool EmitKeyEvent(UIControl* control, UIEvent* uiEvent)
 
     // Create event record
     AnalyticsEvent event(GetUIControlName(control));
+    event.fields[UI_EVENT_TYPE_TAG] = KEY_PRESS_EVENT;
+    event.fields[PRESSED_KEY_TAG] = pressedKey;
+
+    // Process
+    return core.PostEvent(event);
+}
+
+bool EmitBackNavigationEvent()
+{
+    const char* pressedKey = BACK_KEY_PRESSED;
+
+    // Check if core is not ready
+    Analytics::Core& core = GetCore();
+    if (!core.IsStarted())
+    {
+        return false;
+    }
+
+    // Create event record
+    AnalyticsEvent event("BackNavigation" /* TODO: DISCUSS THIS */);
     event.fields[UI_EVENT_TYPE_TAG] = KEY_PRESS_EVENT;
     event.fields[PRESSED_KEY_TAG] = pressedKey;
 

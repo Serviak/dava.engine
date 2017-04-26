@@ -12,8 +12,6 @@
 #include "UI/UIControlHelpers.h"
 #include "UI/UITextField.h"
 
-#include "Input/KeyboardDevice.h"
-
 namespace DAVA
 {
 UIFocusSystem::UIFocusSystem()

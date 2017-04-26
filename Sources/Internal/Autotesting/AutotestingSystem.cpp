@@ -504,22 +504,21 @@ void AutotestingSystem::ResetScreenshotTexture(Size2i size)
 
 void AutotestingSystem::ClickSystemBack()
 {
-    UIEvent keyEvent;
-    keyEvent.device = eInputDevices::KEYBOARD;
-    keyEvent.phase = DAVA::UIEvent::Phase::KEY_DOWN;
-    keyEvent.key = DAVA::Key::BACK;
-    keyEvent.timestamp = SystemTimer::GetMs() / 1000.0;
-    UIControlSystem::Instance()->OnInput(&keyEvent);
+    Window* primaryWindow = GetPrimaryWindow();
+    primaryWindow->backNavigation.Emit(primaryWindow);
 }
 
 void AutotestingSystem::PressEscape()
 {
-    UIEvent keyEvent;
-    keyEvent.device = eInputDevices::KEYBOARD;
-    keyEvent.phase = DAVA::UIEvent::Phase::KEY_DOWN;
-    keyEvent.key = DAVA::Key::ESCAPE;
-    keyEvent.timestamp = SystemTimer::GetMs() / 1000.0;
-    UIControlSystem::Instance()->OnInput(&keyEvent);
+    InputEvent inputEvent;
+    inputEvent.window = GetPrimaryWindow();
+    inputEvent.timestamp = SystemTimer::GetMs() / 1000.0;
+    inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
+    inputEvent.digitalState = eDigitalElementStates::JUST_PRESSED;
+    inputEvent.elementId = eInputElements::KB_ESCAPE;
+    inputEvent.keyboardEvent.isCharEvent = false;
+
+    GetEngineContext()->inputSystem->DispatchInputEvent(inputEvent);
 }
 
 void AutotestingSystem::OnTestsFinished()

@@ -48,7 +48,6 @@
 #include "Input/Accelerometer.h"
 
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
 #include "Input/Gamepad.h"
 
 // Localization
