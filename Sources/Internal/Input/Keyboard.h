@@ -27,11 +27,10 @@ public:
     DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
 
-    /**
-        Translate keyboard key into wide string, using curring keyboard layout.
-    */
+    /** Translate keyboard key into wide string, using curring keyboard layout. */
     WideString TranslateElementToWideString(eInputElements elementId) const;
 
+    /** Convert keyboard input element to native platform scancode */
     uint32 GetElementNativeScancode(eInputElements elementId) const;
 
 private:

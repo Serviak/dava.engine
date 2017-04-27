@@ -49,11 +49,16 @@ DAVA_TESTCLASS (KeyboardTestClass)
         }
     }
 
+    DAVA_TEST (KeyboardTranslateElementToWideStringTest)
+    {
+        // TODO
+    }
+
     DAVA_TEST (KeyboardEventHandlingTest)
     {
         // Check event handling by the keyboard, for each key:
         //   - Check that initial state is released
-        //   - Imitate platform sending KEY_DOWN event
+        //   - Imitate platform sending KEY_DOWN event (it also tests `GetElementNativeScancode` method)
         //   - Check that state has changed to just pressed
         //   - Wait for the next frame, check it has changed to pressed
         //   - Imititate platform sending KEY_UP event
@@ -68,6 +73,11 @@ DAVA_TESTCLASS (KeyboardTestClass)
             keyboardEventHandlingTestFinished = true;
             return;
         }
+    }
+
+    DAVA_TEST (KeyboardMultipleKeysEventHandlingTest)
+    {
+        // TODO
     }
 
     void CheckSingleState(Keyboard * keyboard, eInputElements requiredElement, DigitalElementState requiredState)
