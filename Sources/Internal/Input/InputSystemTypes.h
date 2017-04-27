@@ -38,7 +38,7 @@ Struct describing digital element state.
 | A user released the button (same frame)          | -           | -               | +            | +                |
 | A user released the button (next frames)         | -           | -               | +            | -                |
 */
-struct DigitalElementState
+struct DigitalElementState final
 {
     DigitalElementState(eDigitalElementStates initialState)
         : state(initialState)
@@ -77,7 +77,7 @@ struct DigitalElementState
 
     bool IsReleased() const
     {
-        return state == eDigitalElementStates::RELEASED;
+        return state == eDigitalElementStates::RELEASED || state == eDigitalElementStates::JUST_RELEASED;
     }
 
     bool IsJustReleased() const

@@ -516,7 +516,7 @@ void AutotestingSystem::PressEscape()
     inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
     inputEvent.digitalState = eDigitalElementStates::JUST_PRESSED;
     inputEvent.elementId = eInputElements::KB_ESCAPE;
-    inputEvent.keyboardEvent.isCharEvent = false;
+    inputEvent.keyboardEvent.charCode = 0;
 
     GetEngineContext()->inputSystem->DispatchInputEvent(inputEvent);
 }
