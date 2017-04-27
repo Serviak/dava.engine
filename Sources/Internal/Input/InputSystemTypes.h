@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -8,24 +9,6 @@ namespace DAVA
     \addtogroup input
     \{
 */
-
-/** Helper enum for describing possible digital element state flags */
-enum class eDigitalElementStates : uint32
-{
-    /** A button is in released state */
-    RELEASED = 0,
-
-    /** A button is in pressed state */
-    PRESSED = 1 << 0,
-
-    /** A button has just been pressed */
-    JUST_PRESSED = 1 << 1,
-
-    /** A button has just been released */
-    JUST_RELEASED = 1 << 2
-};
-
-DAVA_DEFINE_ENUM_BITWISE_OPERATORS(eDigitalElementStates)
 
 /**
 Struct describing digital element state.
@@ -40,66 +23,85 @@ Struct describing digital element state.
 */
 struct DigitalElementState final
 {
-    DigitalElementState(eDigitalElementStates initialState)
-        : state(initialState)
+    static DigitalElementState Pressed()
     {
+        DigitalElementState result;
+        result.pressed = true;
+        result.justChanged = false;
+
+        return result;
     }
-    DigitalElementState()
-        : DigitalElementState(eDigitalElementStates::RELEASED)
+
+    static DigitalElementState JustPressed()
     {
+        DigitalElementState result;
+        result.pressed = true;
+        result.justChanged = true;
+
+        return result;
+    }
+
+    static DigitalElementState Released()
+    {
+        DigitalElementState result;
+
+        return result;
+    }
+
+    static DigitalElementState JustReleased()
+    {
+        DigitalElementState result;
+        result.justChanged = true;
+
+        return result;
     }
 
     void Press()
     {
-        if (!IsPressed())
+        if (!pressed)
         {
-            state = eDigitalElementStates::PRESSED | eDigitalElementStates::JUST_PRESSED;
+            pressed = true;
+            justChanged = true;
         }
     }
 
     void Release()
     {
-        if (!IsReleased())
+        if (pressed)
         {
-            state = eDigitalElementStates::JUST_RELEASED;
+            pressed = false;
+            justChanged = true;
         }
     }
 
     bool IsPressed() const
     {
-        return (state & eDigitalElementStates::PRESSED) == eDigitalElementStates::PRESSED;
+        return pressed;
     }
 
     bool IsJustPressed() const
     {
-        return (state & eDigitalElementStates::JUST_PRESSED) == eDigitalElementStates::JUST_PRESSED;
+        return (pressed && justChanged);
     }
 
     bool IsReleased() const
     {
-        return state == eDigitalElementStates::RELEASED || state == eDigitalElementStates::JUST_RELEASED;
+        return !pressed;
     }
 
     bool IsJustReleased() const
     {
-        return (state & eDigitalElementStates::JUST_RELEASED) == eDigitalElementStates::JUST_RELEASED;
+        return (!pressed && justChanged);
     }
 
     void OnEndFrame()
     {
-        state &= ~(eDigitalElementStates::JUST_PRESSED | eDigitalElementStates::JUST_RELEASED);
+        justChanged = false;
     }
 
     bool operator==(const DigitalElementState& other) const
     {
-        if (other.state == eDigitalElementStates::RELEASED)
-        {
-            return state == eDigitalElementStates::RELEASED;
-        }
-        else
-        {
-            return (state & other.state) == other.state;
-        }
+        return (pressed == other.pressed) && (justChanged == other.justChanged);
     }
 
     bool operator!=(const DigitalElementState& other) const
@@ -108,7 +110,8 @@ struct DigitalElementState final
     }
 
 private:
-    eDigitalElementStates state;
+    bool pressed = false;
+    bool justChanged = false;
 };
 
 /**
