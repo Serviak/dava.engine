@@ -312,7 +312,6 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UIScrollBarDelegateComponent, "ScrollBarDelegate");
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UIUpdateComponent, "Update");
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UICustomUpdateDeltaComponent, "CustomUpdateDelta");
-    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UICustomUpdateDeltaComponent, "CustomDeltaUpdate");
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UILayoutSourceRectComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UILayoutIsolationComponent);
 

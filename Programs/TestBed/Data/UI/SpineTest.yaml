@@ -3,6 +3,37 @@ Header:
 Controls:
 -   class: "UIControl"
     name: "UIControl"
-    size: [256.000000, 256.000000]
-    components:
-        Spine: {}
+    position: [0.000000, 0.000000]
+    size: [788.000000, 521.000000]
+    children:
+    -   class: "UIControl"
+        name: "UIControl"
+        position: [96.000000, 154.000000]
+        size: [50.000000, 50.000000]
+        debugDraw: true
+        components:
+            Background:
+                drawType: "DRAW_BATCH"
+            Spine:
+                skeletonPath: "~res:/UI/Spine/powerup.json"
+                atlasPath: "~res:/UI/Spine/powerup.atlas"
+                animationName: "animation"
+                animationState: "Played"
+                timeScale: 1.000000
+                loopedPlayback: true
+    -   class: "UIControl"
+        name: "UIControl"
+        position: [473.000000, 446.000000]
+        size: [50.000000, 50.000000]
+        scale: [0.500000, 0.500000]
+        debugDraw: true
+        components:
+            Background:
+                drawType: "DRAW_BATCH"
+            Spine:
+                skeletonPath: "~res:/UI/Spine/spineboy.json"
+                atlasPath: "~res:/UI/Spine/spineboy.atlas"
+                animationName: "idle"
+                animationState: "Played"
+                timeScale: 1.000000
+                loopedPlayback: true
