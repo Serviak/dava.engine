@@ -2,14 +2,28 @@
 
 #include <Base/BaseTypes.h>
 #include <Base/BaseObject.h>
+#include <FileSystem/FilePath.h>
 #include <Functional/Signal.h>
+#include <Math/Polygon2.h>
+
+// Spine types forward declaration
+struct spEvent;
+struct spTrackEntry;
+struct spAtlasPage;
+struct spAtlas;
+struct spSkeleton;
+struct spAnimationState;
+struct spActionsData;
 
 namespace DAVA
 {
 
+// Dava types forward declaration
 struct BatchDescriptor;
+class UIControl;
+class Texture;
 
-// Spine types. Maybe add some wrappers for they in public API.
+// Public wrappers
 class SpineTrackEntry
 {
 };
@@ -18,13 +32,19 @@ class SpineBone
 {
 };
 
+
+/**
+    
+*/
 class SpineSkeleton final : public BaseObject
 {
 public:
     /** Default constructor. */
     SpineSkeleton();
     /** Copy constructor. */
-    SpineSkeleton(const SpineSkeleton& src);
+    SpineSkeleton(const SpineSkeleton& src) = delete;
+
+    SpineSkeleton& operator=(const SpineSkeleton&) = delete;
 
     /** Load Spine skeleton from binary/json data file and atlas. */
     void Load(const FilePath& dataPath, const FilePath& atlasPath);
@@ -34,21 +54,16 @@ public:
 
     /** Reset all Spine skeleton's states. */
     void ResetSkeleton();
-
     /** Return render batch data for draw current state of Spine skeleton in UIControlBackground. */
     BatchDescriptor* GetRenderBatch() const;
 
     /** Return list of names of available animations. */
     Vector<String> GetAvailableAnimationsNames() const;
-    /**
-    Set current animation by specified name, track index and looping flag.
-    Return track data of setted animation.
-    */
+    /** Set current animation by specified name, track index and looping flag.
+        Return track data of setted animation. */
     SpineTrackEntry* SetAnimation(int32 trackIndex, const String& name, bool loop);
-    /**
-    Add next animation by specified name, track index and looping flag.
-    Return track data of added animation.
-    */
+    /** Add next animation by specified name, track index and looping flag.
+        Return track data of added animation. */
     SpineTrackEntry* AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay);
     /** Return track data by specified track index. */
     SpineTrackEntry* GetTrack(int32 trackIndex);
@@ -65,23 +80,55 @@ public:
     float32 GetTimeScale() const;
 
     /** Select skin by specified skin's name. */
-    void SetSkin(const String& skinName);
+    bool SetSkin(const String& skinName);
     /** Select skin by specified skin's index. */
-    void SetSkin(int32 skinNumber);
+    bool SetSkin(int32 skinNumber);
     /** Get index of current skin. */
     int32 GetSkinNumber();
 
     /** Find bone data by specified bone's name. Return nullptr if bone not found. */
     SpineBone* FindBone(const String& boneName);
 
+    /** Emit then animation start */
+    Signal<int32 /*trackIndex*/> onStart;
+    /** Emit then all animations finish */
+    Signal<int32 /*trackIndex*/> onFinish;
+    /** Emit then one animation in queue finish */
+    Signal<int32 /*trackIndex*/> onComplete;
     /** Emit on each event during spine animation. */
-    Signal<const String& /*event*/> onEvent;
+    Signal<int32 /*trackIndex*/, const String& /*event*/> onEvent;
 
 protected:
     ~SpineSkeleton() override;
 
 private:
     BatchDescriptor* batchDescriptor = nullptr;
+
+    FilePath mPath;
+    FilePath mSequencePath;
+    
+    Vector<String> mAnimations;
+    int32 mAnimationType = 0;
+    int32 mSkin = 0;
+    bool mRun = false;
+    bool mLoop = false;
+    bool mNeedInitialize = false;
+    
+    spActionsData* mActionsData = nullptr;
+    spAtlas* mAtlas = nullptr;
+    spSkeleton* mSkeleton = nullptr;
+    spAnimationState* mState = nullptr;
+    
+    float32* mWorldVertices = nullptr;
+    Texture* mTexture = nullptr;
+    float32 mTimeScale = 1.0f;
+    Vector<Vector2> mUVs;
+    Vector<uint16> mSpriteClippedIndecex;
+    Vector<uint32> mColors;
+    Polygon2 mPolygon;
+    
+    Map<String, UIControl*> mBones;
+    Vector<bool> mBonesVisibility;
 
 };
 

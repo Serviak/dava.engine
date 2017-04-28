@@ -11,6 +11,7 @@ namespace DAVA
 class UIControl;
 class UIComponent;
 class UISpineComponent;
+class UIControlBackground;
 class SpineSkeleton;
 
 class UISpineSystem final : public UISystem
@@ -29,7 +30,10 @@ public:
 
     void Process(float32 elapsedTime) override;
 
-    Signal<UISpineComponent* /*component*/, const String& /*event*/> onAnimationEvent;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationStart;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationFinish;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationComplete;
+    Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/, const String& /*event*/> onAnimationEvent;
 
 private:
     struct SpineNode
@@ -40,7 +44,7 @@ private:
 
     void AddNode(UISpineComponent* component);
     void RemoveNode(UISpineComponent* component);
-
+    
     Vector<SpineNode> nodes;
 };
 
