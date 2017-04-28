@@ -1,6 +1,4 @@
-#ifndef TEXTURED
-#define TEXTURED 0
-#endif
+#ensuredefined TEXTURED 0
 
 vertex_in
 {
