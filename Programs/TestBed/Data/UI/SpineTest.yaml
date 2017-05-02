@@ -1,5 +1,5 @@
 Header:
-    version: "11"
+    version: "12"
 Controls:
 -   class: "UIControl"
     name: "UIControl"
@@ -19,11 +19,12 @@ Controls:
                 atlasPath: "~res:/UI/Spine/powerup.atlas"
                 animationName: "animation"
                 animationState: "Played"
+                skinName: "default"
                 timeScale: 1.000000
                 loopedPlayback: true
     -   class: "UIControl"
         name: "UIControl"
-        position: [473.000000, 446.000000]
+        position: [632.000000, 363.000000]
         size: [50.000000, 50.000000]
         scale: [0.500000, 0.500000]
         debugDraw: true
@@ -33,7 +34,25 @@ Controls:
             Spine:
                 skeletonPath: "~res:/UI/Spine/spineboy.json"
                 atlasPath: "~res:/UI/Spine/spineboy.atlas"
-                animationName: "idle"
+                animationName: "walk"
                 animationState: "Played"
+                skinName: "default"
+                timeScale: 1.000000
+                loopedPlayback: true
+    -   class: "UIControl"
+        name: "UIControl"
+        position: [381.000000, 468.000000]
+        size: [50.000000, 50.000000]
+        scale: [0.500000, 0.500000]
+        debugDraw: true
+        components:
+            Background:
+                drawType: "DRAW_BATCH"
+            Spine:
+                skeletonPath: "~res:/UI/Spine/goblins-mesh.json"
+                atlasPath: "~res:/UI/Spine/goblins-mesh.atlas"
+                animationName: "walk"
+                animationState: "Played"
+                skinName: "goblin"
                 timeScale: 1.000000
                 loopedPlayback: true
