@@ -58,7 +58,7 @@ public:
     BatchDescriptor* GetRenderBatch() const;
 
     /** Return list of names of available animations. */
-    Vector<String> GetAvailableAnimationsNames() const;
+    const Vector<String>& GetAvailableAnimationsNames() const;
     /** Set current animation by specified name, track index and looping flag.
         Return track data of setted animation. */
     SpineTrackEntry* SetAnimation(int32 trackIndex, const String& name, bool loop);
@@ -81,10 +81,8 @@ public:
 
     /** Select skin by specified skin's name. */
     bool SetSkin(const String& skinName);
-    /** Select skin by specified skin's index. */
-    bool SetSkin(int32 skinNumber);
-    /** Get index of current skin. */
-    int32 GetSkinNumber();
+    /** Return list of names of available skins. */
+    const Vector<String>& GetAvailableSkinsNames() const;
 
     /** Find bone data by specified bone's name. Return nullptr if bone not found. */
     SpineBone* FindBone(const String& boneName);
@@ -108,8 +106,8 @@ private:
     FilePath mSequencePath;
     
     Vector<String> mAnimations;
+    Vector<String> mSkins;
     int32 mAnimationType = 0;
-    int32 mSkin = 0;
     bool mRun = false;
     bool mLoop = false;
     bool mNeedInitialize = false;
