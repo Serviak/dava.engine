@@ -25,6 +25,7 @@ public:
         Text,
         Icon,
         AutoRaise,
+        ToolTip,
         Enabled,
         FieldCount
     };

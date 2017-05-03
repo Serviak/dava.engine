@@ -17,18 +17,19 @@ public:
         struct Item
         {
             FastName itemName;
-            FastName tag;
+            FastName type;
             FilePath scenePath;
             RefPtr<KeyedArchive> additionalParams;
         };
 
         void LoadConfigFile(const FilePath& configPath);
-        const Item* LookUpItem(const FilePath& configPath, const FastName& itemName, const FastName& tag);
+        const Item* LookUpItem(const FilePath& configPath, FastName itemName);
         Vector<Item> GetItems(const FilePath& configPath);
 
     private:
         void LoadYamlConfig(const FilePath& configPath);
         void LoadXmlConfig(const FilePath& configPath);
+        class XmlConfigParser;
         struct ItemLess
         {
             bool operator()(const Item& item1, const Item& item2) const;
@@ -68,7 +69,7 @@ public:
 
     void AttachItemToSlot(Entity* rootEntity, FastName slotName, FastName itemName);
     Entity* AttachItemToSlot(SlotComponent* component, FastName itemName);
-    void AttachEntityToSlot(SlotComponent* component, Entity* entity);
+    void AttachEntityToSlot(SlotComponent* component, Entity* entity, FastName itemName);
 
     Entity* LookUpLoadedEntity(SlotComponent* component) const;
     SlotComponent* LookUpSlot(Entity* entity) const;
