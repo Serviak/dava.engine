@@ -100,6 +100,9 @@ protected:
     ~SpineSkeleton() override;
 
 private:
+    void ReleaseAtlas();
+    void ReleaseSkeleton();
+
     BatchDescriptor* batchDescriptor = nullptr;
 
     FilePath mPath;
