@@ -67,12 +67,13 @@ protected slots:
 
 private:
     void InitWidget(QWidget*);
-    void UpdateTooltip();
+    void UpdateTooltip(QLineEdit* label);
     void UpdateLayerSprite();
     void UpdateFlowmapSprite();
     void CreateFlowmapLayoutWidget();
     void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
     void OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc);
+    void CheckPath(const QString& text);
     void FillLayerTypes();
     DAVA::int32 LayerTypeToIndex(DAVA::ParticleLayer::eType layerType);
 
