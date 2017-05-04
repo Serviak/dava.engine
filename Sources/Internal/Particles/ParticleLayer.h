@@ -16,13 +16,13 @@ namespace DAVA
 {
 class ParticleEmitter;
 
-/**	
-	In most cases you'll not need to use this class directly 
-	and should use ParticleEffect instead. 
-	
-	Few cases when you actually need ParticleLayers: 
-	- You want to get information about layer lifeTime or layer sprite
-	- You want to change something on the fly inside layer
+/**
+    In most cases you'll not need to use this class directly 
+    and should use ParticleEffect instead. 
+    
+    Few cases when you actually need ParticleLayers: 
+    - You want to get information about layer lifeTime or layer sprite
+    - You want to change something on the fly inside layer
  */
 struct ParticleLayer : public BaseObject
 {
@@ -78,8 +78,14 @@ struct ParticleLayer : public BaseObject
     Vector2 layerPivotPoint;
     Vector2 layerPivotSizeOffsets; //precached for faster bbox computation
     void SetPivotPoint(Vector2 pivot);
-
     FilePath spritePath;
+
+    FilePath flowmapPath;
+    ScopedPtr<Sprite> flowmap;
+    bool enableFlow = false;
+    void SetFlowmap(const FilePath& spritePath_);
+
+
     bool isLooped;
     bool isLong;
     eBlending blending;
@@ -94,10 +100,13 @@ struct ParticleLayer : public BaseObject
     String layerName;
 
     /*
-	 Properties of particle layer that describe particle system logic
-	 */
+     Properties of particle layer that describe particle system logic
+     */
     RefPtr<PropertyLine<float32>> life; // in seconds
     RefPtr<PropertyLine<float32>> lifeVariation; // variation part of life that added to particle life during generation of the particle
+
+    RefPtr<PropertyLine<float32>> flowSpeed; // Flow animation speed.
+    RefPtr<PropertyLine<float32>> flowOffset; // Flow animation offset.
 
     RefPtr<PropertyLine<float32>> number; // number of particles per second
     RefPtr<PropertyLine<float32>> numberVariation; // variation part of number that added to particle count during generation of the particle

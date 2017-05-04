@@ -41,7 +41,7 @@ public:
     // Switch from/to SuperEmitter mode.
     void SetSuperemitterMode(bool isSuperemitter);
 
-    // Notify yhe widget layer value is changed.
+    // Notify the widget layer value is changed.
     void OnLayerValueChanged();
 
 signals:
@@ -51,10 +51,16 @@ protected slots:
     void OnLodsChanged();
     void OnValueChanged();
     void OnLayerMaterialValueChanged();
+    void OnFlowPropertiesChanged();
     void OnSpriteBtn();
     void OnSpriteFolderBtn();
     void OnSpritePathChanged(const QString& text);
     void OnSpritePathEdited(const QString& text);
+    void OnFlowSpritePathEdited(const QString& text);
+
+    void OnFlowSpriteBtn();
+    void OnFlowFolderBtn();
+    void OnFlowTexturePathChanged(const QString& text);
 
     void OnPivotPointReset();
     void OnSpriteUpdateTimerExpired();
@@ -63,7 +69,10 @@ private:
     void InitWidget(QWidget*);
     void UpdateTooltip();
     void UpdateLayerSprite();
-
+    void UpdateFlowmapSprite();
+    void CreateFlowmapLayoutWidget();
+    void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
+    void OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc);
     void FillLayerTypes();
     DAVA::int32 LayerTypeToIndex(DAVA::ParticleLayer::eType layerType);
 
@@ -88,6 +97,7 @@ private:
 
     QTimer* spriteUpdateTimer = nullptr;
     DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> spriteUpdateTexturesStack;
+    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> flowSpriteUpdateTexturesStack;
 
     QVBoxLayout* mainBox = nullptr;
     QVBoxLayout* pivotPointLayout = nullptr;
@@ -96,6 +106,7 @@ private:
     QLabel* scaleVelocityFactorLabel = nullptr;
     QLabel* layerTypeLabel = nullptr;
     QLabel* spriteLabel = nullptr;
+    QLabel* flowSpriteLabel = nullptr;
     QLabel* innerEmitterLabel = nullptr;
     QLabel* pivotPointLabel = nullptr;
     QLabel* pivotPointXSpinBoxLabel = nullptr;
@@ -110,6 +121,8 @@ private:
     QLabel* loopVariationSpinLabel = nullptr;
 
     QCheckBox* enableCheckBox = nullptr;
+    QCheckBox* enableFlowCheckBox = nullptr;
+    QCheckBox* enableNoiseCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
     QCheckBox* isLoopedCheckBox = nullptr;
     QCheckBox* inheritPostionCheckBox = nullptr;
@@ -132,11 +145,17 @@ private:
 
     QLineEdit* layerNameLineEdit = nullptr;
     QLineEdit* spritePathLabel = nullptr;
+    QLineEdit* flowSpritePathLabel = nullptr;
     QLineEdit* innerEmitterPathLabel = nullptr;
 
     QPushButton* spriteBtn = nullptr;
     QPushButton* spriteFolderBtn = nullptr;
+    QPushButton* flowTextureBtn = nullptr;
+    QPushButton* flowTextureFolderBtn = nullptr;
     QPushButton* pivotPointResetButton = nullptr;
+
+    TimeLineWidget* flowSpeedTimeLine = nullptr;
+    TimeLineWidget* flowOffsetTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
     TimeLineWidget* numberTimeLine = nullptr;
@@ -166,6 +185,9 @@ private:
 
     GradientPickerWidget* colorRandomGradient = nullptr;
     GradientPickerWidget* colorOverLifeGradient = nullptr;
+
+    QWidget* flowLayoutWidget = nullptr;
+    QWidget* noiseLayoutWidget = nullptr;
 
     bool blockSignals = false;
 };
