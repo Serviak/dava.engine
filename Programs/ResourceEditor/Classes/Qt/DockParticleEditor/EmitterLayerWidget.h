@@ -170,8 +170,7 @@ private:
     QPushButton* noiseTextureFolderBtn = nullptr;
     QPushButton* pivotPointResetButton = nullptr;
 
-    TimeLineWidget* flowSpeedOverLifeTimeLine = nullptr;
-    TimeLineWidget* flowOffsetOverLifeTimeLine = nullptr;
+    TimeLineWidget* flowSpeedAndOffsetOverLifeTimeLine = nullptr;
 
     TimeLineWidget* noiseScaleTimeLine = nullptr;
     // TODO: Merge
