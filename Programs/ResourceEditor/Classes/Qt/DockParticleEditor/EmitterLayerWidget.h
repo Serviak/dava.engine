@@ -52,15 +52,21 @@ protected slots:
     void OnValueChanged();
     void OnLayerMaterialValueChanged();
     void OnFlowPropertiesChanged();
+    void OnNoisePropertiesChanged();
     void OnSpriteBtn();
     void OnSpriteFolderBtn();
     void OnSpritePathChanged(const QString& text);
     void OnSpritePathEdited(const QString& text);
     void OnFlowSpritePathEdited(const QString& text);
+    void OnNoiseSpritePathEdited(const QString& text);
 
     void OnFlowSpriteBtn();
     void OnFlowFolderBtn();
     void OnFlowTexturePathChanged(const QString& text);
+
+    void OnNoiseSpriteBtn();
+    void OnNoiseFolderBtn();
+    void OnNoiseTexturePathChanged(const QString& text);
 
     void OnPivotPointReset();
     void OnSpriteUpdateTimerExpired();
@@ -70,7 +76,9 @@ private:
     void UpdateTooltip(QLineEdit* label);
     void UpdateLayerSprite();
     void UpdateFlowmapSprite();
+    void UpdateNoiseSprite();
     void CreateFlowmapLayoutWidget();
+    void CreateNoiseLayoutWidget();
     void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
     void OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc);
     void CheckPath(const QString& text);
@@ -108,6 +116,7 @@ private:
     QLabel* layerTypeLabel = nullptr;
     QLabel* spriteLabel = nullptr;
     QLabel* flowSpriteLabel = nullptr;
+    QLabel* noiseSpriteLabel = nullptr;
     QLabel* innerEmitterLabel = nullptr;
     QLabel* pivotPointLabel = nullptr;
     QLabel* pivotPointXSpinBoxLabel = nullptr;
@@ -124,6 +133,9 @@ private:
     QCheckBox* enableCheckBox = nullptr;
     QCheckBox* enableFlowCheckBox = nullptr;
     QCheckBox* enableNoiseCheckBox = nullptr;
+    QCheckBox* enableNoiseScrollCheckBox = nullptr;
+    QCheckBox* isNoiseAffectFlowCheckBox = nullptr;
+    QCheckBox* useNoiseScrollCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
     QCheckBox* isLoopedCheckBox = nullptr;
     QCheckBox* inheritPostionCheckBox = nullptr;
@@ -147,16 +159,24 @@ private:
     QLineEdit* layerNameLineEdit = nullptr;
     QLineEdit* spritePathLabel = nullptr;
     QLineEdit* flowSpritePathLabel = nullptr;
+    QLineEdit* noiseSpritePathLabel = nullptr;
     QLineEdit* innerEmitterPathLabel = nullptr;
 
     QPushButton* spriteBtn = nullptr;
     QPushButton* spriteFolderBtn = nullptr;
     QPushButton* flowTextureBtn = nullptr;
     QPushButton* flowTextureFolderBtn = nullptr;
+    QPushButton* noiseTextureBtn = nullptr;
+    QPushButton* noiseTextureFolderBtn = nullptr;
     QPushButton* pivotPointResetButton = nullptr;
 
-    TimeLineWidget* flowSpeedTimeLine = nullptr;
-    TimeLineWidget* flowOffsetTimeLine = nullptr;
+    TimeLineWidget* flowSpeedOverLifeTimeLine = nullptr;
+    TimeLineWidget* flowOffsetOverLifeTimeLine = nullptr;
+
+    TimeLineWidget* noiseScaleTimeLine = nullptr;
+    // TODO: Merge
+    TimeLineWidget* noiseUScrollSpeedTimeLine = nullptr;
+    TimeLineWidget* noiseVScrollSpeedTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
     TimeLineWidget* numberTimeLine = nullptr;
@@ -189,6 +209,7 @@ private:
 
     QWidget* flowLayoutWidget = nullptr;
     QWidget* noiseLayoutWidget = nullptr;
+    QWidget* noiseUvScrollLayoutWidget = nullptr;
 
     bool blockSignals = false;
 };
