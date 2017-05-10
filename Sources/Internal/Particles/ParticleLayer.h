@@ -85,6 +85,12 @@ struct ParticleLayer : public BaseObject
     bool enableFlow = false;
     void SetFlowmap(const FilePath& spritePath_);
 
+    FilePath noisePath;
+    ScopedPtr<Texture> noise;
+    bool enableNoise = false;
+    bool isNoiseAffectFlow = false;
+    bool useNoiseScroll = false;
+    void SetNoise(const FilePath& noisePath);
 
     bool isLooped;
     bool isLong;
@@ -105,8 +111,12 @@ struct ParticleLayer : public BaseObject
     RefPtr<PropertyLine<float32>> life; // in seconds
     RefPtr<PropertyLine<float32>> lifeVariation; // variation part of life that added to particle life during generation of the particle
 
-    RefPtr<PropertyLine<float32>> flowSpeed; // Flow animation speed.
-    RefPtr<PropertyLine<float32>> flowOffset; // Flow animation offset.
+    RefPtr<PropertyLine<float32>> flowSpeedOverLife; // Flow animation speed.
+    RefPtr<PropertyLine<float32>> flowOffsetOverLife; // Flow animation offset.
+
+    RefPtr<PropertyLine<float32>> noiseScale;
+    RefPtr<PropertyLine<float32>> noiseUScrollSpeed; // Noise texcoord u scrollSpeed;
+    RefPtr<PropertyLine<float32>> noiseVScrollSpeed; // Noise texcoord v scrollSpeed;
 
     RefPtr<PropertyLine<float32>> number; // number of particles per second
     RefPtr<PropertyLine<float32>> numberVariation; // variation part of number that added to particle count during generation of the particle
