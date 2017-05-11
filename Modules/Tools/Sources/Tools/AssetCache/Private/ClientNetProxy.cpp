@@ -96,12 +96,24 @@ bool ClientNetProxy::RequestServerStatus()
     return false;
 }
 
-bool ClientNetProxy::RequestAddData(const CacheItemKey& key, const CachedItemValue& value)
+bool ClientNetProxy::RequestAddData(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks)
 {
     if (openedChannel)
     {
         Logger::FrameworkDebug("Requesting to add data");
-        AddRequestPacket packet(key, value);
+        AddRequestPacket packet(key, dataSize, numOfChunks);
+        return packet.SendTo(openedChannel);
+    }
+
+    return false;
+}
+
+bool ClientNetProxy::RequestAddNextChunk(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
+{
+    if (openedChannel)
+    {
+        Logger::FrameworkDebug("Requesting to add next chunk");
+        AddChunkRequestPacket packet(key, chunkNumber, chunkData);
         return packet.SendTo(openedChannel);
     }
 
