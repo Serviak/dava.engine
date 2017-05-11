@@ -574,7 +574,8 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect& 
     /* Map to range -1 to 1 */
     in.x = in.x * 2 - 1;
     in.y = in.y * 2 - 1;
-    in.z = in.z * 2 - 1;
+    if (!rhi::DeviceCaps().isZeroBaseClipRange)
+        in.z = in.z * 2 - 1;
 
     Vector4 out = in * finalMatrix;
 
