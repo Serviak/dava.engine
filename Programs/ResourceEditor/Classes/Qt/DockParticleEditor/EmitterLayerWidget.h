@@ -77,6 +77,7 @@ private:
     void UpdateLayerSprite();
     void UpdateFlowmapSprite();
     void UpdateNoiseSprite();
+    void UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack);
     void CreateFlowmapLayoutWidget();
     void CreateNoiseLayoutWidget();
     void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
@@ -107,6 +108,7 @@ private:
     QTimer* spriteUpdateTimer = nullptr;
     DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> spriteUpdateTexturesStack;
     DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> flowSpriteUpdateTexturesStack;
+    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> noiseSpriteUpdateTexturesStack;
 
     QVBoxLayout* mainBox = nullptr;
     QVBoxLayout* pivotPointLayout = nullptr;
@@ -135,7 +137,6 @@ private:
     QCheckBox* enableNoiseCheckBox = nullptr;
     QCheckBox* enableNoiseScrollCheckBox = nullptr;
     QCheckBox* isNoiseAffectFlowCheckBox = nullptr;
-    QCheckBox* useNoiseScrollCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
     QCheckBox* isLoopedCheckBox = nullptr;
     QCheckBox* inheritPostionCheckBox = nullptr;
@@ -173,9 +174,7 @@ private:
     TimeLineWidget* flowSpeedAndOffsetOverLifeTimeLine = nullptr;
 
     TimeLineWidget* noiseScaleTimeLine = nullptr;
-    // TODO: Merge
-    TimeLineWidget* noiseUScrollSpeedTimeLine = nullptr;
-    TimeLineWidget* noiseVScrollSpeedTimeLine = nullptr;
+    TimeLineWidget* noiseUVScrollSpeedTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
     TimeLineWidget* numberTimeLine = nullptr;
@@ -208,7 +207,6 @@ private:
 
     QWidget* flowLayoutWidget = nullptr;
     QWidget* noiseLayoutWidget = nullptr;
-    QWidget* noiseUvScrollLayoutWidget = nullptr;
 
     bool blockSignals = false;
 };
