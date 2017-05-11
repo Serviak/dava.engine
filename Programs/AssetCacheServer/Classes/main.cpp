@@ -1,5 +1,6 @@
 #include "UI/AssetCacheServerWindow.h"
 #include "ServerCore.h"
+#include "Logger/ServerLogger.h"
 
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
@@ -11,10 +12,10 @@
 #include <QApplication>
 #include <QCryptographicHash>
 
-using namespace DAVA;
-
-int Process(Engine& e)
+int Process(DAVA::Engine& e)
 {
+    using namespace DAVA;
+
     const QString appUid = "{DAVA.AssetCacheServer.Version.1.0.0}";
     const QString appUidPath = QCryptographicHash::hash((appUid).toUtf8(), QCryptographicHash::Sha1).toHex();
     std::unique_ptr<QtHelpers::RunGuard> runGuard = std::make_unique<QtHelpers::RunGuard>(appUidPath);
@@ -29,8 +30,9 @@ int Process(Engine& e)
     QApplication a(argc, argv.data());
 
     const EngineContext* context = e.GetContext();
-    context->logger->SetLogFilename("AssetCacheServer.txt");
+    //context->logger->SetLogFilename("AssetCacheServer.txt");
     context->logger->SetLogLevel(DAVA::Logger::LEVEL_FRAMEWORK);
+    ServerLogger serverLogger("~doc:/AssetCacheServer.txt");
 
     std::unique_ptr<ServerCore> server = std::make_unique<ServerCore>();
     server->SetApplicationPath(QApplication::applicationFilePath().toStdString());
@@ -68,6 +70,8 @@ int Process(Engine& e)
 
 int DAVAMain(DAVA::Vector<DAVA::String> cmdLine)
 {
+    using namespace DAVA;
+
     Vector<String> modules =
     {
       "JobManager",
