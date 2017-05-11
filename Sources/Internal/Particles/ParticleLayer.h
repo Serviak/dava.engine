@@ -86,7 +86,7 @@ struct ParticleLayer : public BaseObject
     void SetFlowmap(const FilePath& spritePath_);
 
     FilePath noisePath;
-    ScopedPtr<Texture> noise;
+    ScopedPtr<Sprite> noise;
     bool enableNoise = false;
     bool isNoiseAffectFlow = false;
     bool useNoiseScroll = false;

@@ -36,4 +36,16 @@ private:
 
 private:
     DAVA::Vector<DAVA::Entity*> entities;
+
+    template <typename T>
+    void EmitValueChanged(const RECommand* command, SceneEditor2* activeScene);
 };
+
+template <typename T>
+void EditorParticlesSystem::EmitValueChanged(const RECommand* command, SceneEditor2* activeScene)
+{
+    RestartParticleEffects();
+
+    const T* cmd = static_cast<const T*>(command);
+    SceneSignals::Instance()->EmitParticleLayerValueChanged(activeScene, cmd->GetLayer());
+}
