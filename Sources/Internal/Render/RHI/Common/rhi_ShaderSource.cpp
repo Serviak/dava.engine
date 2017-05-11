@@ -37,7 +37,7 @@ public:
         inclDir.push_back(base_dir);
     }
 
-    virtual bool open(const char* file_name)
+    virtual bool Open(const char* file_name)
     {
         bool success = false;
 
@@ -85,16 +85,16 @@ public:
 
         return success;
     }
-    virtual void close()
+    virtual void Close()
     {
         _cur_data = nullptr;
         _cur_data_sz = 0;
     }
-    virtual unsigned size() const
+    virtual unsigned Size() const
     {
         return _cur_data_sz;
     }
-    virtual unsigned read(unsigned max_sz, void* dst)
+    virtual unsigned Read(unsigned max_sz, void* dst)
     {
         DVASSERT(_cur_data);
         DVASSERT(max_sz <= _cur_data_sz);
@@ -163,10 +163,10 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
     {
         const char* name = defines[i * 2 + 0].c_str();
         const char* value = defines[i * 2 + 1].c_str();
-        pre_proc.add_define(name, value);
+        pre_proc.AddDefine(name, value);
     }
 
-    if (pre_proc.process(srcText, &src))
+    if (pre_proc.Process(srcText, &src))
     {
 #if 0
 {
