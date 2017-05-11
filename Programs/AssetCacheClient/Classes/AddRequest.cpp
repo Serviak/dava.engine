@@ -37,7 +37,7 @@ DAVA::AssetCache::Error AddRequest::SendRequest(AssetCacheClient& cacheClient)
             if (dataSize64 > std::numeric_limits<uint32>::max())
             {
                 Logger::Error("%s File (%s) size is bigger than 2^32", __FUNCTION__, path.GetStringValue().c_str());
-                return AssetCache::Error::READ_FILES;
+                return AssetCache::Error::READ_FILES_ERROR;
             }
 
             uint32 dataSize = static_cast<uint32>(dataSize64);
@@ -52,7 +52,7 @@ DAVA::AssetCache::Error AddRequest::SendRequest(AssetCacheClient& cacheClient)
         else
         {
             Logger::Error("[AddRequest::%s] Cannot read file(%s)", __FUNCTION__, path.GetStringValue().c_str());
-            return AssetCache::Error::READ_FILES;
+            return AssetCache::Error::READ_FILES_ERROR;
         }
     }
 
