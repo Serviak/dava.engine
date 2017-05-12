@@ -94,7 +94,7 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     //data.scenePath = "~doc:/14_port_pt/14_port_pt.sc2";
     //data.scenePath = "~doc:/15_ordeal_ord/15_ordeal_ord.sc2";
     //data.scenePath = "~doc:/18_canal_cn/18_canal_cn.sc2";
-    data.scenePath = "~doc:/19_himmelsdorf_hm/19_himmelsdorf_hm.sc2";
+    //data.scenePath = "~doc:/19_himmelsdorf_hm/19_himmelsdorf_hm.sc2";
     //data.scenePath = "~doc:/20_lake_lk/20_lake_lk.sc2";
     //data.scenePath = "~doc:/21_mountain_mnt/21_mountain_mnt.sc2";
     //data.scenePath = "~doc:/23_karieri_kr/23_karieri_kr.sc2";
