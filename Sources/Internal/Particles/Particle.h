@@ -28,6 +28,10 @@ struct Particle
     float32 flowSpeedOverLife;
     float32 flowOffsetOverLife;
 
+    float32 noiseScale;
+    float32 noiseUScrollSpeed;
+    float32 noiseVScrollSpeed;
+
     float currRadius; //for bbox computation
     Vector2 baseSize, currSize;
 

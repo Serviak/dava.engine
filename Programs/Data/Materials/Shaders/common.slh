@@ -219,6 +219,18 @@
     #define FLAG_PARTICLES_FLOWMAP 0
 #endif
 
+#if !defined PARTICLES_NOISE
+    #define PARTICLES_NOISE 0
+#endif
+
+#if !defined PARTICLES_NOISE_SCROLL
+    #define PARTICLES_NOISE_SCROLL 0
+#endif
+
+#if !defined PARTICLES_NOISE_AFFECT_FLOW
+    #define PARTICLES_NOISE_AFFECT_FLOW 0
+#endif
+
 #if FLOWMAP_SKY
     #define FLOWMAP 1
 #endif
