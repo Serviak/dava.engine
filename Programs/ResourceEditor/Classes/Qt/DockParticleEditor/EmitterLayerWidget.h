@@ -136,7 +136,6 @@ private:
     QCheckBox* enableFlowCheckBox = nullptr;
     QCheckBox* enableNoiseCheckBox = nullptr;
     QCheckBox* enableNoiseScrollCheckBox = nullptr;
-    QCheckBox* isNoiseAffectFlowCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
     QCheckBox* isLoopedCheckBox = nullptr;
     QCheckBox* inheritPostionCheckBox = nullptr;

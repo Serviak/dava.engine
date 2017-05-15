@@ -88,7 +88,6 @@ struct ParticleLayer : public BaseObject
     FilePath noisePath;
     ScopedPtr<Sprite> noise;
     bool enableNoise = false;
-    bool isNoiseAffectFlow = false;
     bool enableNoiseScroll = false;
     void SetNoise(const FilePath& noisePath);
 
