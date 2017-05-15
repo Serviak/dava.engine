@@ -44,13 +44,13 @@ void RegisterFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
 {
     // HeightMap
     InitFilePathExtensions(accessor);
-    EmplaceFieldMeta<Landscape>("heightmapPath", CreateHeightMapValidator());
-    EmplaceFieldMeta<Landscape>("heightmapPath", CreateHeightMapFileMeta());
-    EmplaceFieldMeta<VegetationRenderObject>("lightmap", CreateTextureValidator());
-    EmplaceFieldMeta<VegetationRenderObject>("lightmap", CreateTextureFileMeta());
-    EmplaceFieldMeta<VegetationRenderObject>("customGeometry", CreateSceneValidator());
-    EmplaceFieldMeta<VegetationRenderObject>("customGeometry", CreateSceneFileMeta());
-    EmplaceFieldMeta<SlotComponent>("configPath", GenericFileMeta<REFileMeta>("Yaml (*.yaml);; XML(*.xml);; All supported formats (*.yaml *.xml)", "Open items list"));
+    EmplaceFieldMeta<Landscape>(DAVA::FastName("heightmapPath"), CreateHeightMapValidator());
+    EmplaceFieldMeta<Landscape>(DAVA::FastName("heightmapPath"), CreateHeightMapFileMeta());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("lightmap"), CreateTextureValidator());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("lightmap"), CreateTextureFileMeta());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("customGeometry"), CreateSceneValidator());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("customGeometry"), CreateSceneFileMeta());
+    EmplaceFieldMeta<SlotComponent>(DAVA::FastName("configPath"), GenericFileMeta<REFileMeta>("Yaml (*.yaml);; XML(*.xml);; All supported formats (*.yaml *.xml)", "Open items list"));
 }
 
 void RegisterComponentsExtensions()
