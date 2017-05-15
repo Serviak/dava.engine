@@ -37,7 +37,7 @@ void RegisterRenderComponentExtensions()
 
 void RegisterNMaterialExtensions()
 {
-    EmplaceFieldMeta<RenderBatch>("material", CreateNMaterialCommandProducer());
+    EmplaceFieldMeta<RenderBatch>(FastName("material"), CreateNMaterialCommandProducer());
 }
 
 void RegisterFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
