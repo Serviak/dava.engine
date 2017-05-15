@@ -172,7 +172,7 @@ private:
 
     TimeLineWidget* flowSpeedAndOffsetOverLifeTimeLine = nullptr;
 
-    TimeLineWidget* noiseScaleTimeLine = nullptr;
+    TimeLineWidget* noiseScaleOverLifeTimeLine = nullptr;
     TimeLineWidget* noiseUVScrollSpeedTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
