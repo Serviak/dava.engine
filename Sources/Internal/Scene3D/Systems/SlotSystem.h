@@ -73,6 +73,7 @@ public:
 
     Entity* LookUpLoadedEntity(SlotComponent* component) const;
     SlotComponent* LookUpSlot(Entity* entity) const;
+    Matrix4 GetJointTransform(SlotComponent* component) const;
 
 protected:
     void SetScene(Scene* scene) override;
