@@ -170,10 +170,23 @@ private:
     QPushButton* noiseTextureFolderBtn = nullptr;
     QPushButton* pivotPointResetButton = nullptr;
 
-    TimeLineWidget* flowSpeedAndOffsetOverLifeTimeLine = nullptr;
+    TimeLineWidget* flowSpeedTimeLine = nullptr;
+    TimeLineWidget* flowSpeedVariationTimeLine = nullptr;
+    TimeLineWidget* flowSpeedOverLifeTimeLine = nullptr;
 
+    TimeLineWidget* flowOffsetTimeLine = nullptr;
+    TimeLineWidget* flowOffsetVariationTimeLine = nullptr;
+    TimeLineWidget* flowOffsetOverLifeTimeLine = nullptr;
+
+    TimeLineWidget* noiseScaleTimeLine = nullptr;
+    TimeLineWidget* noiseScaleVariationTimeLine = nullptr;
     TimeLineWidget* noiseScaleOverLifeTimeLine = nullptr;
-    TimeLineWidget* noiseUVScrollSpeedOverLifeTimeLine = nullptr;
+    TimeLineWidget* noiseUScrollSpeedTimeLine = nullptr;
+    TimeLineWidget* noiseUScrollSpeedVariationTimeLine = nullptr;
+    TimeLineWidget* noiseUScrollSpeedOverLifeTimeLine = nullptr;
+    TimeLineWidget* noiseVScrollSpeedTimeLine = nullptr;
+    TimeLineWidget* noiseVScrollSpeedVariationTimeLine = nullptr;
+    TimeLineWidget* noiseVScrollSpeedOverLifeTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
     TimeLineWidget* numberTimeLine = nullptr;
