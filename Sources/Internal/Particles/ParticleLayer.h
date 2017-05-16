@@ -110,13 +110,29 @@ struct ParticleLayer : public BaseObject
     RefPtr<PropertyLine<float32>> life; // in seconds
     RefPtr<PropertyLine<float32>> lifeVariation; // variation part of life that added to particle life during generation of the particle
 
+    // Flow
+    RefPtr<PropertyLine<float32>> flowSpeed;
+    RefPtr<PropertyLine<float32>> flowSpeedVariation;
     RefPtr<PropertyLine<float32>> flowSpeedOverLife; // Flow animation speed.
+
+    RefPtr<PropertyLine<float32>> flowOffset;
+    RefPtr<PropertyLine<float32>> flowOffsetVariation;
     RefPtr<PropertyLine<float32>> flowOffsetOverLife; // Flow animation offset.
 
+    // Noise
+    RefPtr<PropertyLine<float32>> noiseScale;
+    RefPtr<PropertyLine<float32>> noiseScaleVariation;
     RefPtr<PropertyLine<float32>> noiseScaleOverLife;
-    RefPtr<PropertyLine<float32>> noiseUScrollSpeed; // Noise texcoord u scrollSpeed;
-    RefPtr<PropertyLine<float32>> noiseVScrollSpeed; // Noise texcoord v scrollSpeed;
 
+    RefPtr<PropertyLine<float32>> noiseUScrollSpeed;
+    RefPtr<PropertyLine<float32>> noiseUScrollSpeedVariation;
+    RefPtr<PropertyLine<float32>> noiseUScrollSpeedOverLife; // Noise texcoord u scrollSpeed;
+
+    RefPtr<PropertyLine<float32>> noiseVScrollSpeed;
+    RefPtr<PropertyLine<float32>> noiseVScrollSpeedVariation;
+    RefPtr<PropertyLine<float32>> noiseVScrollSpeedOverLife; // Noise texcoord v scrollSpeed;
+
+    // Number
     RefPtr<PropertyLine<float32>> number; // number of particles per second
     RefPtr<PropertyLine<float32>> numberVariation; // variation part of number that added to particle count during generation of the particle
 
