@@ -93,6 +93,9 @@ public:
     /** stops both network services and network announcement */
     void Stop();
 
+    /** return range of TCP ports that provider can use for its purposes */
+    static std::pair<uint16, uint16> GetPortsRange();
+
 private:
     class ServicesProviderImpl;
     std::unique_ptr<ServicesProviderImpl> impl;
