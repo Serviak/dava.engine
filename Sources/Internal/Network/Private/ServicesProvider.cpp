@@ -14,7 +14,7 @@ namespace Net
 namespace ServicesProviderDetails
 {
 uint16 FIRST_ALLOWED_TCP_PORT = 10000; // number of first TCP port allowed to be occupied.
-                                       // TCP ports are occupied 1) for providing of specified network services 2) for announcing
+// TCP ports are occupied 1) for providing of specified network services 2) for announcing
 uint16 LAST_ALLOWED_TCP_PORT = 10020; // number of last TCP port allowed
 float32 WAITING_CONTROLLER_START_SEC = 2.f;
 
@@ -101,7 +101,6 @@ private:
 
     Token updateSignalId;
     float32 elapsedSinceStartMs = 0.f;
-
 };
 
 ServicesProvider::ServicesProviderImpl::ServicesProviderImpl(Engine& engine, const String& appName)
@@ -118,7 +117,6 @@ ServicesProvider::ServicesProviderImpl::~ServicesProviderImpl()
         NetCore::Instance()->UnregisterService(serviceEntry.first);
     }
 }
-
 
 void ServicesProvider::ServicesProviderImpl::AddService(ServiceID serviceId, std::shared_ptr<NetService>& service)
 {

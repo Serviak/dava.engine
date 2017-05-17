@@ -137,7 +137,7 @@ void Discoverer::DiscoverDevice()
         {
             Logger::Debug("[Discoverer] can't discover on device %s: %s", tcpEndpoint.ToString().c_str(), ErrorToString(error));
             socket->Close();
-            if(isTerminating)
+            if (isTerminating)
             {
                 DoObjectClose();
                 return;
