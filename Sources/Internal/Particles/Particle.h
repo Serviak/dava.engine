@@ -25,12 +25,17 @@ struct Particle
     int32 frame;
     float32 animTime;
 
-    float32 flowSpeedOverLife;
-    float32 flowOffsetOverLife;
+    float32 baseFlowSpeed;
+    float32 currFlowSpeed;
+    float32 baseFlowOffset;
+    float32 currFlowOffset;
 
-    float32 noiseScale;
-    float32 noiseUScrollSpeed;
-    float32 noiseVScrollSpeed;
+    float32 baseNoiseScale;
+    float32 currNoiseScale;
+    float32 baseNoiseUScrollSpeed;
+    float32 currNoiseUScrollSpeed;
+    float32 baseNoiseVScrollSpeed;
+    float32 currNoiseVScrollSpeed;
 
     float currRadius; //for bbox computation
     Vector2 baseSize, currSize;
