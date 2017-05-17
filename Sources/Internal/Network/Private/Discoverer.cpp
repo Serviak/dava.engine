@@ -135,8 +135,13 @@ void Discoverer::DiscoverDevice()
         }
         else
         {
-            Logger::Error("[Discoverer] failed to discover device %s: %s", tcpEndpoint.ToString().c_str(), ErrorToString(error));
+            Logger::Debug("[Discoverer] can't discover on device %s: %s", tcpEndpoint.ToString().c_str(), ErrorToString(error));
             socket->Close();
+            if(isTerminating)
+            {
+                DoObjectClose();
+                return;
+            }
         }
     };
 
