@@ -41,9 +41,10 @@ Controls:
                 loopedPlayback: true
     -   class: "UIControl"
         name: "UIControl"
-        position: [381.000000, 468.000000]
-        size: [50.000000, 50.000000]
-        scale: [0.500000, 0.500000]
+        position: [325.000000, 437.000000]
+        size: [36.000000, 39.000000]
+        scale: [1.000000, 1.000000]
+        pivot: [0.000000, 0.000000]
         debugDraw: true
         components:
             Background:
@@ -56,3 +57,24 @@ Controls:
                 skinName: "goblin"
                 timeScale: 1.000000
                 loopedPlayback: true
+            SpineBones:
+                bonesBinds: "spear3,Spear;head,Head"
+        children:
+        -   class: "UIControl"
+            name: "Spear"
+            position: [78.088791, -287.147552]
+            size: [32.000000, 32.000000]
+            pivot: [0.500000, 0.500000]
+            components:
+                Background:
+                    drawType: "DRAW_FILL"
+                    color: [1.000000, 0.333333, 0.000000, 1.000000]
+        -   class: "UIControl"
+            name: "Head"
+            position: [-3.578794, -211.819046]
+            size: [32.000000, 32.000000]
+            pivot: [0.500000, 0.500000]
+            components:
+                Background:
+                    drawType: "DRAW_FILL"
+                    color: [1.000000, 0.333333, 0.000000, 1.000000]

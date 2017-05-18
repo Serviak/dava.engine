@@ -7,9 +7,6 @@
 #include <Math/Polygon2.h>
 
 // Spine types forward declaration
-struct spEvent;
-struct spTrackEntry;
-struct spAtlasPage;
 struct spAtlas;
 struct spSkeleton;
 struct spAnimationState;
@@ -127,10 +124,6 @@ private:
     Vector<uint16> mSpriteClippedIndecex;
     Vector<uint32> mColors;
     Polygon2 mPolygon;
-    
-    Map<String, UIControl*> mBones;
-    Vector<bool> mBonesVisibility;
-
 };
 
 }
