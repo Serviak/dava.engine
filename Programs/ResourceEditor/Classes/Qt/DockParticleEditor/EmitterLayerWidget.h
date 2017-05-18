@@ -50,6 +50,7 @@ signals:
 protected slots:
     void OnLodsChanged();
     void OnValueChanged();
+    void OnFresnelToAlphaChanged();
     void OnLayerMaterialValueChanged();
     void OnFlowPropertiesChanged();
     void OnNoisePropertiesChanged();
@@ -115,6 +116,8 @@ private:
 
     QLabel* scaleVelocityBaseLabel = nullptr;
     QLabel* scaleVelocityFactorLabel = nullptr;
+    QLabel* fresnelBiasLabel = nullptr;
+    QLabel* fresnelPowerLabel = nullptr;
     QLabel* layerTypeLabel = nullptr;
     QLabel* spriteLabel = nullptr;
     QLabel* flowSpriteLabel = nullptr;
@@ -137,6 +140,7 @@ private:
     QCheckBox* enableNoiseCheckBox = nullptr;
     QCheckBox* enableNoiseScrollCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
+    QCheckBox* fresnelToAlphaCheckbox = nullptr;
     QCheckBox* isLoopedCheckBox = nullptr;
     QCheckBox* inheritPostionCheckBox = nullptr;
     QCheckBox* layerLodsCheckBox[DAVA::LodComponent::MAX_LOD_LAYERS];
@@ -201,8 +205,8 @@ private:
     TimeLineWidget* animSpeedOverLifeTimeLine = nullptr;
     TimeLineWidget* angleTimeLine = nullptr;
 
-    EventFilterDoubleSpinBox* scaleVelocityBaseSpinBox;
-    EventFilterDoubleSpinBox* scaleVelocityFactorSpinBox;
+    EventFilterDoubleSpinBox* scaleVelocityBaseSpinBox = nullptr;
+    EventFilterDoubleSpinBox* scaleVelocityFactorSpinBox = nullptr;
     EventFilterDoubleSpinBox* pivotPointXSpinBox = nullptr;
     EventFilterDoubleSpinBox* pivotPointYSpinBox = nullptr;
     EventFilterDoubleSpinBox* startTimeSpin = nullptr;
@@ -211,6 +215,8 @@ private:
     EventFilterDoubleSpinBox* loopEndSpin = nullptr;
     EventFilterDoubleSpinBox* deltaVariationSpin = nullptr;
     EventFilterDoubleSpinBox* loopVariationSpin = nullptr;
+    EventFilterDoubleSpinBox* fresnelBiasSpinBox = nullptr;
+    EventFilterDoubleSpinBox* fresnelPowerSpinBox = nullptr;
 
     QSpinBox* frameOverlifeFPSSpin = nullptr;
 

@@ -93,6 +93,7 @@ struct ParticleLayer : public BaseObject
 
     bool isLooped;
     bool isLong;
+    bool useFresnelToAlpha = false;
     eBlending blending;
     bool enableFog;
     bool enableFrameBlend;
@@ -182,6 +183,9 @@ struct ParticleLayer : public BaseObject
     //for long particles
     float32 scaleVelocityBase;
     float32 scaleVelocityFactor;
+
+    float32 fresnelToAlphaBias;
+    float32 fresnelToAlphaPower;
 
     ParticleEmitter* innerEmitter = nullptr;
     FilePath innerEmitterPath;
