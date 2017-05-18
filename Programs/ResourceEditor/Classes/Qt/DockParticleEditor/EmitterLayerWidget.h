@@ -229,7 +229,6 @@ private:
     QWidget* noiseLayoutWidget = nullptr;
     QWidget* noiseScrollWidget = nullptr;
 
-
     bool blockSignals = false;
 };
 
