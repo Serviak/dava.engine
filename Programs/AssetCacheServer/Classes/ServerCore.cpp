@@ -113,7 +113,7 @@ bool ServerCore::ConnectRemote()
 
     if (!currentRemoteServer.IsEmpty())
     {
-        DAVA::Logger::Debug("Connecting to remote %s:%u", currentRemoteServer.ip, DAVA::AssetCache::ASSET_SERVER_PORT);
+        DAVA::Logger::Debug("Connecting to remote %s:%u", currentRemoteServer.ip.c_str(), DAVA::AssetCache::ASSET_SERVER_PORT);
         clientProxy.Connect(currentRemoteServer.ip, DAVA::AssetCache::ASSET_SERVER_PORT);
         connectTimer->start();
         remoteState = RemoteState::CONNECTING;
