@@ -115,7 +115,6 @@ private:
     QVBoxLayout* mainBox = nullptr;
     QVBoxLayout* pivotPointLayout = nullptr;
 
-    QLabel* fresnelToAlphaLabel = nullptr;
     QLabel* scaleVelocityBaseLabel = nullptr;
     QLabel* scaleVelocityFactorLabel = nullptr;
     QLabel* fresnelBiasLabel = nullptr;

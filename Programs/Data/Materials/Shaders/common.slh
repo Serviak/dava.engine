@@ -215,16 +215,12 @@
     #define VIEW_ALBEDO 0
 #endif
 
-#if !defined FLAG_PARTICLES_FLOWMAP
-    #define FLAG_PARTICLES_FLOWMAP 0
+#if !defined PARTICLES_FLOWMAP
+    #define PARTICLES_FLOWMAP 0
 #endif
 
 #if !defined PARTICLES_NOISE
     #define PARTICLES_NOISE 0
-#endif
-
-#if !defined PARTICLES_NOISE_SCROLL
-    #define PARTICLES_NOISE_SCROLL 0
 #endif
 
 #if !defined PARTICLES_NOISE_AFFECT_FLOW
