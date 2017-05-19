@@ -154,6 +154,7 @@ void ServicesProvider::ServicesProviderImpl::Stop()
 
 void ServicesProvider::ServicesProviderImpl::ChangeState(ServicesProvider::ServicesProviderImpl::State newState)
 {
+    DVASSERT(currentState != newState);
     QuitFromState(currentState);
     currentState = newState;
     EnterToState(currentState);
