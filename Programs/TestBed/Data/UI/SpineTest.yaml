@@ -62,7 +62,7 @@ Controls:
         children:
         -   class: "UIControl"
             name: "Spear"
-            position: [78.088791, -287.147552]
+            position: [106.531639, -271.676727]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
@@ -71,7 +71,7 @@ Controls:
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
         -   class: "UIControl"
             name: "Head"
-            position: [-3.578794, -211.819046]
+            position: [0.273958, -205.829544]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
