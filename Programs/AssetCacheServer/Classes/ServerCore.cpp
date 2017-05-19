@@ -61,6 +61,8 @@ void ServerCore::Start()
 {
     if (state != State::STARTED)
     {
+        DAVA::Logger::Debug("Server is starting");
+
         StartListening();
 
         ConnectRemote();
@@ -69,6 +71,7 @@ void ServerCore::Start()
 
         state = State::STARTED;
         emit ServerStateChanged(this);
+        DAVA::Logger::Info("Server is started");
     }
 }
 
@@ -76,12 +79,15 @@ void ServerCore::Stop()
 {
     if (state != State::STOPPED)
     {
+        DAVA::Logger::Debug("Server is stopping");
+
         updateTimer->stop();
 
         StopListening();
         DisconnectRemote();
 
         emit ServerStateChanged(this);
+        DAVA::Logger::Info("Server is stopped");
     }
 }
 
@@ -107,6 +113,7 @@ bool ServerCore::ConnectRemote()
 
     if (!currentRemoteServer.IsEmpty())
     {
+        DAVA::Logger::Debug("Connecting to remote %s:%u", currentRemoteServer.ip, DAVA::AssetCache::ASSET_SERVER_PORT);
         clientProxy.Connect(currentRemoteServer.ip, DAVA::AssetCache::ASSET_SERVER_PORT);
         connectTimer->start();
         remoteState = RemoteState::CONNECTING;
@@ -392,6 +399,7 @@ void ServerCore::OnSharedDataReceived(const DAVA::List<SharedPoolParams>& pools,
 
 void ServerCore::ClearStorage()
 {
+    DAVA::Logger::Info("Manual storage clearing");
     dataBase.ClearStorage();
 }
 
