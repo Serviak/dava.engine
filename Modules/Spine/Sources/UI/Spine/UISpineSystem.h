@@ -3,6 +3,7 @@
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
 #include <UI/UISystem.h>
+#include <UI/Components/UISingleComponent.h>
 #include <Functional/Signal.h>
 
 namespace DAVA
@@ -13,7 +14,17 @@ class UIComponent;
 class UISpineBonesComponent;
 class UISpineComponent;
 class UIControlBackground;
+class SpineBone;
 class SpineSkeleton;
+
+struct UISpineSingleComponent : public UISingleComponent
+{
+    UnorderedSet<UIControl*> spineModified;
+    UnorderedSet<UIControl*> spineNeedReload;
+    UnorderedSet<UIControl*> spineBonesModified;
+
+    void Clear() override;
+};
 
 class UISpineSystem final : public UISystem
 {
@@ -31,27 +42,38 @@ public:
 
     void Process(float32 elapsedTime) override;
 
+    void BuildBoneLinks(UIControl* control);
+
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationStart;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationFinish;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationComplete;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/, const String& /*event*/> onAnimationEvent;
 
 private:
+    struct BoneLink
+    {
+        RefPtr<SpineBone> bone;
+        RefPtr<UIControl> control;
+    };
+    
     struct SpineNode
     {
         RefPtr<UISpineComponent> spine;
         RefPtr<UISpineBonesComponent> bones;
         RefPtr<UIControlBackground> bg;
         RefPtr<SpineSkeleton> skeleton;
+        Vector<BoneLink> boneLinks;
     };
 
-    void AddNode(UISpineComponent* component);
-    void RemoveNode(UISpineComponent* component);
-    void BindBones(UISpineBonesComponent* component);
-    void UnbindBones(UISpineBonesComponent* component);
+    void AddNode(UISpineComponent* spine);
+    void RemoveNode(UISpineComponent* spine);
+    void BindBones(UISpineBonesComponent* bones);
+    void UnbindBones(UISpineBonesComponent* bones);
     void BindBackground(UIControlBackground* bg);
     void UnbindBackground(UIControlBackground* bg);
     
+    void BuildBoneLinks(SpineNode& node);
+
     Map<UIControl*, SpineNode> nodes;
 };
 

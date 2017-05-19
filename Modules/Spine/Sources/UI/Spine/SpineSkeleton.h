@@ -11,6 +11,7 @@ struct spAtlas;
 struct spSkeleton;
 struct spAnimationState;
 struct spActionsData;
+struct spBone;
 
 namespace DAVA
 {
@@ -25,8 +26,24 @@ class SpineTrackEntry
 {
 };
 
-class SpineBone
+class SpineBone : public BaseObject
 {
+public:
+    SpineBone();
+    SpineBone(spBone* bone);
+    
+    bool IsValid() const;
+    Vector2 GetPosition() const;
+    Vector2 GetScale() const;
+    float32 GetAngle() const;
+
+    //Color GetColor() const;
+
+protected:
+    ~SpineBone();
+
+private:
+    spBone* bonePtr = nullptr;
 };
 
 
@@ -82,7 +99,7 @@ public:
     const Vector<String>& GetAvailableSkinsNames() const;
 
     /** Find bone data by specified bone's name. Return nullptr if bone not found. */
-    SpineBone* FindBone(const String& boneName);
+    RefPtr<SpineBone> FindBone(const String& boneName);
 
     /** Emit then animation start */
     Signal<int32 /*trackIndex*/> onStart;
