@@ -231,6 +231,10 @@
     #define PARTICLES_NOISE_AFFECT_FLOW 0
 #endif
 
+#if !defined FLAG_PARTICLES_FRES_TO_ALPHA
+    #define FLAG_PARTICLES_FRES_TO_ALPHA 0
+#endif
+
 #if FLOWMAP_SKY
     #define FLOWMAP 1
 #endif
