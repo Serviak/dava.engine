@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -71,6 +72,7 @@ public:
 
     size_t GetQualitiesCount() const;
     FastName GetQualityName(size_t index) const;
+    int32 GetQualityIndex(const FastName& name) const;
 
     FastName GetCurrentQuality() const;
     void SetCurrentQuality(const FastName& name);
@@ -90,8 +92,6 @@ public:
     const FilepathSelector* GetOrCreateFilepathSelector();
 
 private:
-    int32 GetQualityIndex(const FastName& name) const;
-
     Vector<FastName> qualities;
     int32 defaultQualityIndex = -1;
     int32 currentQualityIndex = -1;

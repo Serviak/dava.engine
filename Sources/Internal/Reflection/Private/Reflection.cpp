@@ -1,14 +1,16 @@
-#include "Base/Platform.h"
-
 #include <iomanip>
 #include <algorithm>
 #include <cstring>
 
 #include "Reflection/Reflection.h"
+#include "Reflection/ReflectedTypeDB.h"
+#include "Reflection/Private/Wrappers/ValueWrapperAny.h"
+#include "Reflection/Private/Wrappers/ValueWrapperObject.h"
+#include "Reflection/Private/Wrappers/StructureWrapperDefault.h"
 
 namespace DAVA
 {
-namespace ReflectionDetail
+namespace ReflectedTypeDBDetail
 {
 struct Dumper
 {
@@ -136,46 +138,26 @@ struct Dumper
         }
     }
 
-    static void PrintHierarhy(std::ostringstream& out, const char* symbols, size_t level, int colWidth, bool isLastRow)
+    static void PrintHierarhy(std::ostringstream& out, size_t level, int colWidth)
     {
-        static const char* defaultSymbols = "    ";
-
-        if (nullptr == symbols)
-        {
-            symbols = defaultSymbols;
-        }
-
         if (level > 0)
         {
-            for (size_t i = 0; i < level - 1; ++i)
+            for (size_t i = 0; i < level; ++i)
             {
                 out << std::setw(colWidth);
-                out << std::left << symbols[1];
-            }
-
-            if (!isLastRow)
-            {
-                out << std::setw(colWidth);
-                out << std::setfill(symbols[0]);
-                out << std::left << symbols[2];
-            }
-            else
-            {
-                out << std::setw(colWidth);
-                out << std::setfill(symbols[0]);
-                out << std::left << symbols[3];
+                out << std::left << ' ';
             }
         }
 
         out << std::setfill(' ');
     }
 
-    static void Dump(std::ostream& out, const Reflection::Field& field, size_t level, size_t maxlevel, bool isLastRow = false)
+    static void Dump(std::ostream& out, const Reflection::Field& field, size_t level, size_t maxlevel)
     {
         if (level <= maxlevel || 0 == maxlevel)
         {
-            const size_t hierarchyColWidth = 4;
-            const size_t nameColWidth = 30;
+            const size_t hierarchyColWidth = 2;
+            const size_t nameColWidth = 40;
             const size_t valueColWidth = 25;
             const size_t typeColWidth = 20;
 
@@ -184,26 +166,36 @@ struct Dumper
             bool hasChildren = field.ref.IsValid() && field.ref.HasFields();
 
             // print hierarchy
-            PrintHierarhy(line, nullptr, level, hierarchyColWidth, isLastRow);
+            PrintHierarhy(line, level, hierarchyColWidth);
+
+            // print key setup
+            line << std::setw(nameColWidth - level * hierarchyColWidth) << std::left;
 
             // print key
-            line << std::setw(nameColWidth - level * hierarchyColWidth) << std::left;
-            if (0 == maxlevel || !hasChildren)
-            {
-                DumpAny(line, field.key);
-            }
-            else
             {
                 std::ostringstream name;
+
+                if (field.inheritFrom != nullptr)
+                {
+                    name << std::setw(6) << field.inheritFrom->GetType()->GetName() << "::";
+                }
+
                 DumpAny(name, field.key);
 
-                if ((level + 1) <= maxlevel)
+                if (0 == maxlevel || !hasChildren)
                 {
-                    line << name.str() + "[-]";
+                    line << name.str();
                 }
                 else
                 {
-                    line << name.str() + "[+]";
+                    if ((level + 1) <= maxlevel)
+                    {
+                        line << name.str() + "[-]";
+                    }
+                    else
+                    {
+                        line << name.str() + "[+]";
+                    }
                 }
             }
 
@@ -218,8 +210,7 @@ struct Dumper
             line << std::setw(typeColWidth);
             DumpType(line, field.ref);
 
-            // endl
-            out << line.str() << std::endl;
+            out << line.str() << "\n";
 
             // children
             if (hasChildren)
@@ -227,9 +218,35 @@ struct Dumper
                 Vector<Reflection::Field> children = field.ref.GetFields();
                 for (size_t i = 0; i < children.size(); ++i)
                 {
-                    bool isLast = (i == (children.size() - 1));
-                    Dump(out, children[i], level + 1, maxlevel, isLast);
+                    Dump(out, children[i], level + 1, maxlevel);
                 }
+            }
+
+            // methods
+            Vector<Reflection::Method> methods = field.ref.GetMethods();
+            for (auto& method : methods)
+            {
+                std::ostringstream methodline;
+                const AnyFn::Params& params = method.fn.GetInvokeParams();
+
+                // print hierarchy
+                PrintHierarhy(methodline, level + 1, hierarchyColWidth);
+                methodline << "{} ";
+                DumpAny(methodline, method.key);
+                methodline << "(";
+
+                for (size_t i = 0; i < params.argsType.size(); ++i)
+                {
+                    methodline << params.argsType[i]->GetName();
+                    if (i < (params.argsType.size() - 1))
+                    {
+                        methodline << ", ";
+                    }
+                }
+                methodline << ") -> ";
+                methodline << params.retType->GetName();
+
+                out << methodline.str() << "\n";
             }
         }
     }
@@ -243,6 +260,7 @@ const Dumper::PrintersTable Dumper::valuePrinters = {
     { Type::Instance<float32>(), [](std::ostringstream& out, const Any& any) { out << any.Get<float32>(); } },
     { Type::Instance<float64>(), [](std::ostringstream& out, const Any& any) { out << any.Get<float64>(); } },
     { Type::Instance<String>(), [](std::ostringstream& out, const Any& any) { out << any.Get<String>().c_str(); } },
+    { Type::Instance<FastName>(), [](std::ostringstream& out, const Any& any) { out << any.Get<FastName>().c_str(); } },
     { Type::Instance<size_t>(), [](std::ostringstream& out, const Any& any) { out << any.Get<size_t>(); } },
     { Type::Instance<void>(), [](std::ostringstream& out, const Any& any) { out << "???"; } }
 };
@@ -254,33 +272,239 @@ const Dumper::PrintersTable Dumper::pointerPrinters = {
 
 } // ReflectionDetail
 
-void Reflection::Dump(std::ostream& out, size_t maxlevel) const
+Reflection::Reflection(const ReflectedObject& object_, const ValueWrapper* vw, const StructureWrapper* sw, const ReflectedMeta* meta_)
+    : object(object_)
+    , valueWrapper(vw)
+    , structureWrapper(sw)
+    , meta(meta_)
 {
-    ReflectionDetail::Dumper::Dump(out, { "this", *this }, 0, maxlevel);
-}
-
-void Reflection::DumpMethods(std::ostream& out) const
-{
-    Vector<Method> methods = GetMethods();
-    for (auto& method : methods)
+    // try to get structureWrapper from object reflected type
+    const ReflectedType* reflectedType = valueWrapper->GetValueObject(object).GetReflectedType();
+    if (nullptr != reflectedType)
     {
-        const AnyFn::Params& params = method.fn.GetInvokeParams();
-
-        out << params.retType->GetName() << " ";
-        out << method.key << "(";
-
-        for (size_t i = 0; i < params.argsType.size(); ++i)
+        if (nullptr == structureWrapper)
         {
-            out << params.argsType[i]->GetName();
-
-            if (i < (params.argsType.size() - 1))
-            {
-                out << ", ";
-            }
+            structureWrapper = reflectedType->GetStrucutreWrapper();
         }
 
-        out << ");" << std::endl;
+        if (nullptr == meta)
+        {
+            const ReflectedStructure* rs = reflectedType->GetStructure();
+            if (nullptr != rs)
+            {
+                meta = rs->meta.get();
+            }
+        }
+    }
+
+    // if still no structureWrapper use empty one
+    if (nullptr == structureWrapper)
+    {
+        static StructureWrapperDefault emptyStructureWrapper;
+        structureWrapper = &emptyStructureWrapper;
     }
 }
+
+bool Reflection::HasFields() const
+{
+    return structureWrapper->HasFields(object, valueWrapper);
+}
+
+Reflection Reflection::GetField(const Any& key) const
+{
+    return structureWrapper->GetField(object, valueWrapper, key);
+}
+
+Vector<Reflection::Field> Reflection::GetFields() const
+{
+    return structureWrapper->GetFields(object, valueWrapper);
+}
+
+const Reflection::FieldCaps& Reflection::GetFieldsCaps() const
+{
+    return structureWrapper->GetFieldsCaps(object, valueWrapper);
+}
+
+AnyFn Reflection::GetFieldCreator() const
+{
+    return structureWrapper->GetFieldCreator(object, valueWrapper);
+}
+
+bool Reflection::AddField(const Any& key, const Any& value) const
+{
+    return structureWrapper->AddField(object, valueWrapper, key, value);
+}
+
+bool Reflection::InsertField(const Any& beforeKey, const Any& key, const Any& value) const
+{
+    return structureWrapper->InsertField(object, valueWrapper, beforeKey, key, value);
+}
+
+bool Reflection::RemoveField(const Any& key) const
+{
+    return structureWrapper->RemoveField(object, valueWrapper, key);
+}
+
+bool Reflection::HasMethods() const
+{
+    return structureWrapper->HasMethods(object, valueWrapper);
+}
+
+AnyFn Reflection::GetMethod(const String& key) const
+{
+    return structureWrapper->GetMethod(object, valueWrapper, key);
+}
+
+Vector<Reflection::Method> Reflection::GetMethods() const
+{
+    return structureWrapper->GetMethods(object, valueWrapper);
+}
+
+void Reflection::Dump(std::ostream& out, size_t maxlevel) const
+{
+    ReflectedTypeDBDetail::Dumper::Dump(out, Reflection::Field(Any("this"), Reflection(*this), nullptr), 0, maxlevel);
+}
+
+const void* Reflection::GetMeta(const Type* metaType) const
+{
+    const void* ret = nullptr;
+
+    if (nullptr != meta)
+    {
+        ret = meta->GetMeta(metaType);
+    }
+
+    return ret;
+}
+
+Reflection Reflection::Create(const ReflectedObject& object, const ReflectedMeta* objectMeta)
+{
+    if (object.IsValid())
+    {
+        static ValueWrapperObject valueWrapperObject;
+        return Reflection(object, &valueWrapperObject, nullptr, objectMeta);
+    }
+
+    return Reflection();
+}
+
+Reflection Reflection::Create(const Any& any, const ReflectedMeta* objectMeta)
+{
+    static ValueWrapperAny valueWrapperAny;
+
+    if (!any.IsEmpty())
+    {
+        if (any.GetType()->IsPointer())
+        {
+            const ReflectedType* objectType = ReflectedTypeDB::GetByType(any.GetType()->Deref());
+
+            if (nullptr != objectType)
+            {
+                ReflectedObject object(any.Get<void*>(), objectType);
+                return Reflection::Create(object, objectMeta);
+            }
+        }
+        else
+        {
+            return Reflection(ReflectedObject(&any), &valueWrapperAny, nullptr, objectMeta);
+        }
+    }
+
+    return Reflection();
+}
+
+Reflection Reflection::Create(const Reflection& etalon, const Reflection& metaProvider)
+{
+    return Reflection(etalon.object, etalon.valueWrapper, etalon.structureWrapper, metaProvider.meta);
+}
+
+Reflection::Field::Field(Any&& key_, Reflection&& ref_, const ReflectedType* inheritFrom_)
+    : key(key_)
+    , ref(ref_)
+    , inheritFrom(inheritFrom_)
+{
+}
+
+Reflection::Method::Method(Any key_, AnyFn&& fn_)
+    : key(key_)
+    , fn(fn_)
+{
+}
+
+// For future usage.
+// Function shows imGui dialog with Reflection memory statistics.
+#if 0
+void ProvideReflectionDebugInfo()
+{
+    GetPrimaryWindow()->update.Connect([](Window*, float32) {
+        if (ImGui::IsInitialized())
+        {
+            static int updateFrame = 0;
+            static TypeDetail::TypeDB::Stats typeStats;
+            static ReflectedTypeDB::Stats reflectionStats;
+
+            if (updateFrame > 0)
+            {
+                updateFrame--;
+            }
+            else
+            {
+                updateFrame = 120; // once per 120 frames
+                typeStats = TypeDetail::TypeDB::GetStats();
+                reflectionStats = ReflectedTypeDB::GetStats();
+            }
+
+            auto addRow = [](const char* name, const char* format, size_t value)
+            {
+                ImGui::Text(name);
+                ImGui::NextColumn();
+                ImGui::Text(Format(format, value).c_str());
+                ImGui::NextColumn();
+            };
+
+            ImGui::Begin("Reflection stats");
+
+            if (ImGui::CollapsingHeader("Static info"))
+            {
+                ImGui::Columns(2, nullptr, true);
+                addRow("Size of Any", "%u", sizeof(Any));
+                addRow("Size of Reflection", "%u", sizeof(Reflection));
+                addRow("Size of ReflectedObject", "%u", sizeof(ReflectedObject));
+                ImGui::Columns();
+            }
+
+            if (ImGui::CollapsingHeader("Dynamic info"))
+            {
+                ImGui::Columns(2, nullptr, true);
+                addRow("typesCount", "%u", typeStats.typesCount);
+                addRow("typesMemory", "%u bytes", typeStats.typesMemory);
+                addRow("typeInheritanceCount", "%u", typeStats.typeInheritanceCount);
+                addRow("typeInheritanceInfoCount", "%u", typeStats.typeInheritanceInfoCount);
+                addRow("typeInheritanceMemory", "%u bytes", typeStats.typeInheritanceMemory);
+                addRow("typeDBMemory", "%u bytes", typeStats.typeDBMemory);
+                addRow("reflectedTypeCount", "%u", reflectionStats.reflectedTypeCount);
+                addRow("reflectedTypeMemory", "%u", reflectionStats.reflectedTypeMemory);
+                addRow("reflectedTypeDBMemory", "%u bytes", reflectionStats.reflectedTypeDBMemory);
+                addRow("reflectedStructCount", "%u", reflectionStats.reflectedStructCount);
+                addRow("reflectedStructWrapperCount", "%u", reflectionStats.reflectedStructWrapperCount);
+                addRow("reflectedStructWrapperClassCount", "%u", reflectionStats.reflectedStructWrapperClassCount);
+                addRow("reflectedStructWrapperClassMemory", "%u bytes", reflectionStats.reflectedStructWrapperClassMemory);
+                addRow("reflectedStructFieldsCount", "%u", reflectionStats.reflectedStructFieldsCount);
+                addRow("reflectedStructMethodsCount", "%u", reflectionStats.reflectedStructMethodsCount);
+                addRow("reflectedStructEnumsCount", "%u", reflectionStats.reflectedStructEnumsCount);
+                addRow("reflectedStructCtorsCount", "%u", reflectionStats.reflectedStructCtorsCount);
+                addRow("reflectedStructDtorsCount", "%u", reflectionStats.reflectedStructDtorsCount);
+                addRow("reflectedStructMetasCount", "%u", reflectionStats.reflectedStructMetasCount);
+                addRow("reflectedStructMetaMCount", "%u", reflectionStats.reflectedStructMetaMCount);
+                addRow("reflectedStructMemory", "%u bytes", reflectionStats.reflectedStructMemory);
+                addRow("total", "%u bytes", typeStats.totalMemory + reflectionStats.totalMemory);
+                ImGui::Columns();
+            }
+
+            ImGui::End();
+        }
+    });
+}
+#endif
 
 } // namespace DAVA

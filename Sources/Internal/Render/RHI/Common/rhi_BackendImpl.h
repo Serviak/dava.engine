@@ -30,14 +30,14 @@ struct Dispatch
     void (*impl_ResetBlock)();
 
     Handle (*impl_VertexBuffer_Create)(const VertexBuffer::Descriptor& desc);
-    void (*impl_VertexBuffer_Delete)(Handle);
+    void (*impl_VertexBuffer_Delete)(Handle, bool);
     bool (*impl_VertexBuffer_Update)(Handle, const void*, uint32, uint32);
     void* (*impl_VertexBuffer_Map)(Handle, uint32, uint32);
     void (*impl_VertexBuffer_Unmap)(Handle);
     bool (*impl_VertexBuffer_NeedRestore)(Handle);
 
     Handle (*impl_IndexBuffer_Create)(const IndexBuffer::Descriptor& desc);
-    void (*impl_IndexBuffer_Delete)(Handle);
+    void (*impl_IndexBuffer_Delete)(Handle, bool);
     bool (*impl_IndexBuffer_Update)(Handle, const void*, uint32, uint32);
     void* (*impl_IndexBuffer_Map)(Handle, uint32, uint32);
     void (*impl_IndexBuffer_Unmap)(Handle);
@@ -48,7 +48,7 @@ struct Dispatch
     void (*impl_QueryBuffer_Delete)(Handle buf);
     bool (*impl_QueryBuffer_IsReady)(Handle buf);
     bool (*impl_QueryBuffer_ObjectIsReady)(Handle buf, uint32 objectIndex);
-    int (*impl_QueryBuffer_Value)(Handle buf, uint32 objectIndex);
+    int32 (*impl_QueryBuffer_Value)(Handle buf, uint32 objectIndex);
 
     Handle (*impl_PerfQuery_Create)();
     void (*impl_PerfQuery_Delete)(Handle query);
@@ -57,7 +57,7 @@ struct Dispatch
     uint64 (*impl_PerfQuery_Value)(Handle query);
 
     Handle (*impl_Texture_Create)(const Texture::Descriptor& desc);
-    void (*impl_Texture_Delete)(Handle);
+    void (*impl_Texture_Delete)(Handle, bool);
     void* (*impl_Texture_Map)(Handle, unsigned, TextureFace);
     void (*impl_Texture_Unmap)(Handle);
     void (*impl_Texture_Update)(Handle, const void*, uint32, TextureFace);
@@ -67,14 +67,7 @@ struct Dispatch
     void (*impl_PipelineState_Delete)(Handle);
     Handle (*impl_PipelineState_CreateVertexConstBuffer)(Handle, uint32);
     Handle (*impl_PipelineState_CreateFragmentConstBuffer)(Handle, uint32);
-    uint32 (*impl_PipelineState_VertexConstBufferCount)(Handle);
-    uint32 (*impl_PipelineState_VertexConstCount)(Handle, uint32);
-    bool (*impl_PipelineState_GetVertexConstInfo)(Handle, uint32, uint32, ProgConstInfo*);
-    uint32 (*impl_PipelineState_FragmentConstBufferCount)(Handle);
-    uint32 (*impl_PipelineState_FragmentConstCount)(Handle, uint32);
-    bool (*impl_PipelineState_GetFragmentConstInfo)(Handle, uint32, uint32, ProgConstInfo*);
 
-    uint32 (*impl_ConstBuffer_ConstCount)(Handle);
     bool (*impl_ConstBuffer_SetConst)(Handle, uint32, uint32, const float*);
     bool (*impl_ConstBuffer_SetConst1fv)(Handle, uint32, uint32, const float*, uint32);
     void (*impl_ConstBuffer_Delete)(Handle);

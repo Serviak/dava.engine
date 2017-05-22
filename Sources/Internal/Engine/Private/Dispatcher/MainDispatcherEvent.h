@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Base/BaseTypes.h"
+
 #if defined(__DAVAENGINE_COREV2__)
 
-#include "Base/BaseTypes.h"
 #include "Functional/Function.h"
 
 #include "Engine/EngineTypes.h"
+#include "DeviceManager/DeviceManagerTypes.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 
 namespace DAVA
@@ -24,6 +26,8 @@ struct MainDispatcherEvent final
         WINDOW_SIZE_CHANGED,
         WINDOW_DPI_CHANGED,
         WINDOW_CAPTURE_LOST,
+        WINDOW_CANCEL_INPUT,
+        WINDOW_VISIBLE_FRAME_CHANGED,
 
         FIRST_INPUT_EVENT,
         MOUSE_BUTTON_DOWN = FIRST_INPUT_EVENT,
@@ -57,6 +61,8 @@ struct MainDispatcherEvent final
 
         GAMEPAD_ADDED,
         GAMEPAD_REMOVED,
+
+        DISPLAY_CONFIG_CHANGED,
     };
 
     static bool IsInputEvent(eType type);
@@ -96,6 +102,7 @@ struct MainDispatcherEvent final
         float32 height;
         float32 surfaceWidth;
         float32 surfaceHeight;
+        float32 surfaceScale;
         float32 dpi; //< is set only by WINDOW_CREATED
         eFullscreen fullscreen;
     };
@@ -104,6 +111,15 @@ struct MainDispatcherEvent final
     struct WindowDpiEvent
     {
         float32 dpi;
+    };
+
+    /// Parameter for event WINDOW_VISIBLE_FRAME_CHANGED
+    struct WindowVisibleFrameEvent
+    {
+        float32 x;
+        float32 y;
+        float32 width;
+        float32 height;
     };
 
     /// Parameter for mouse events:
@@ -142,6 +158,8 @@ struct MainDispatcherEvent final
         float32 rotation;
         float32 deltaX;
         float32 deltaY;
+        float32 x;
+        float32 y;
         eModifierKeys modifierKeys;
     };
 
@@ -173,6 +191,14 @@ struct MainDispatcherEvent final
         bool isRepeated;
     };
 
+    // Parameter for DISPLAY_CONFIG_CHANGED event
+    // Handler is responsible for freeing displayInfo (delete[] displayInfo)
+    struct DisplayConfigEvent
+    {
+        DisplayInfo* displayInfo;
+        size_t count;
+    };
+
     MainDispatcherEvent() = default;
     MainDispatcherEvent(eType type)
         : type(type)
@@ -189,7 +215,7 @@ struct MainDispatcherEvent final
     }
 
     eType type = DUMMY;
-    uint64 timestamp = 0;
+    int64 timestamp = 0;
     Window* window = nullptr;
     Function<void()> functor;
     union
@@ -199,11 +225,13 @@ struct MainDispatcherEvent final
         WindowDestroyedEvent destroyedEvent;
         WindowSizeEvent sizeEvent;
         WindowDpiEvent dpiEvent;
+        WindowVisibleFrameEvent visibleFrameEvent;
         MouseEvent mouseEvent;
         TouchEvent touchEvent;
         TrackpadGestureEvent trackpadGestureEvent;
         GamepadEvent gamepadEvent;
         KeyEvent keyEvent;
+        DisplayConfigEvent displayConfigEvent;
     };
 
     template <typename F>
@@ -217,19 +245,23 @@ struct MainDispatcherEvent final
     static MainDispatcherEvent CreateGamepadMotionEvent(uint32 deviceId, uint32 axis, float32 value);
     static MainDispatcherEvent CreateGamepadButtonEvent(uint32 deviceId, eType gamepadButtonEventType, uint32 button);
 
+    static MainDispatcherEvent CreateDisplayConfigChangedEvent(DisplayInfo* displayInfo, size_t count);
+
     static MainDispatcherEvent CreateWindowCreatedEvent(Window* window, float32 w, float32 h, float32 surfaceW, float32 surfaceH, float32 dpi, eFullscreen fullscreen);
     static MainDispatcherEvent CreateWindowDestroyedEvent(Window* window);
-    static MainDispatcherEvent CreateWindowSizeChangedEvent(Window* window, float32 w, float32 h, float32 surfaceW, float32 surfaceH, eFullscreen fullscreen);
+    static MainDispatcherEvent CreateWindowSizeChangedEvent(Window* window, float32 w, float32 h, float32 surfaceW, float32 surfaceH, float32 surfaceScale, float32 dpi, eFullscreen fullscreen);
     static MainDispatcherEvent CreateWindowFocusChangedEvent(Window* window, bool focusState);
     static MainDispatcherEvent CreateWindowVisibilityChangedEvent(Window* window, bool visibilityState);
     static MainDispatcherEvent CreateWindowDpiChangedEvent(Window*, float32 dpi);
+    static MainDispatcherEvent CreateWindowCancelInputEvent(Window* window);
+    static MainDispatcherEvent CreateWindowVisibleFrameChangedEvent(Window* window, float32 x, float32 y, float32 width, float32 height);
 
     static MainDispatcherEvent CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 key, eModifierKeys modifierKeys, bool isRepeated);
     static MainDispatcherEvent CreateWindowMouseClickEvent(Window* window, eType mouseClickEventType, eMouseButtons button, float32 x, float32 y, uint32 clicks, eModifierKeys modifierKeys, bool isRelative);
     static MainDispatcherEvent CreateWindowMouseMoveEvent(Window* window, float32 x, float32 y, eModifierKeys modifierKeys, bool isRelative);
     static MainDispatcherEvent CreateWindowMouseWheelEvent(Window* window, float32 x, float32 y, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys, bool isRelative);
     static MainDispatcherEvent CreateWindowTouchEvent(Window* window, eType touchEventType, uint32 touchId, float32 x, float32 y, eModifierKeys modifierKeys);
-    static MainDispatcherEvent CreateWindowMagnificationGestureEvent(Window* window, float32 magnification, eModifierKeys modifierKeys);
+    static MainDispatcherEvent CreateWindowMagnificationGestureEvent(Window* window, float32 x, float32 y, float32 magnification, eModifierKeys modifierKeys);
     static MainDispatcherEvent CreateWindowRotationGestureEvent(Window* window, float32 rotation, eModifierKeys modifierKeys);
     static MainDispatcherEvent CreateWindowSwipeGestureEvent(Window* window, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys);
     static MainDispatcherEvent CreateWindowCaptureLostEvent(Window* window);

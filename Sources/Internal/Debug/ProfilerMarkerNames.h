@@ -10,12 +10,25 @@ extern const char* ENGINE_DO_EVENTS;
 extern const char* ENGINE_BEGIN_FRAME;
 extern const char* ENGINE_END_FRAME;
 extern const char* ENGINE_UPDATE;
+#if defined(__DAVAENGINE_COREV2__)
+extern const char* ENGINE_UPDATE_WINDOW;
+extern const char* ENGINE_DRAW_WINDOW;
+#else
 extern const char* ENGINE_DRAW;
+#endif
 extern const char* JOB_MANAGER;
 extern const char* SOUND_SYSTEM;
 extern const char* ANIMATION_MANAGER;
 extern const char* UI_UPDATE;
 extern const char* UI_DRAW;
+
+extern const char* UI_UPDATE_SYSTEM;
+extern const char* UI_LAYOUT_SYSTEM;
+extern const char* UI_STYLE_SHEET_SYSTEM;
+extern const char* UI_RENDER_SYSTEM;
+
+extern const char* UI_TEXTBLOCK_RECALC_PARAMS;
+extern const char* UI_TEXTBLOCK_PREPARE;
 
 //Scene
 extern const char* SCENE_UPDATE;

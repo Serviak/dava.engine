@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Reflection/Reflection.h"
 #include "Entity/Component.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
@@ -52,7 +53,7 @@ public:
 private:
     int32 currentLod = INVALID_LOD_LAYER;
     bool recursiveUpdate = false;
-    Array<float32, MAX_LOD_LAYERS> distances = Array<float32, MAX_LOD_LAYERS>{ 300.f, 600.f, 900.f, 1000.f }; //cause list initialization for members not implemented in MSVC https://msdn.microsoft.com/en-us/library/dn793970.aspx
+    Array<float32, MAX_LOD_LAYERS> distances = Array<float32, MAX_LOD_LAYERS>{ { 300.f, 600.f, 900.f, 1000.f } }; //cause list initialization for members not implemented in MSVC https://msdn.microsoft.com/en-us/library/dn793970.aspx
 
     friend class LodSystem;
 
@@ -60,6 +61,8 @@ public:
     INTROSPECTION_EXTEND(LodComponent, Component,
                          MEMBER(currentLod, "Current Lod", I_VIEW)
                          )
+
+    DAVA_VIRTUAL_REFLECTION(LodComponent, Component);
 };
 
 REGISTER_CLASS(LodComponent);

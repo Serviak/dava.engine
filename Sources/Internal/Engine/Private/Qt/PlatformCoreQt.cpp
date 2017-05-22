@@ -1,3 +1,4 @@
+
 #if defined(__DAVAENGINE_COREV2__)
 
 #include "Engine/Private/Qt/PlatformCoreQt.h"
@@ -5,7 +6,6 @@
 #if defined(__DAVAENGINE_QT__)
 
 #include "Engine/Window.h"
-#include "Engine/Qt/NativeServiceQt.h"
 #include "Engine/Qt/RenderWidget.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/WindowBackend.h"
@@ -20,7 +20,6 @@ namespace Private
 {
 PlatformCore::PlatformCore(EngineBackend* engineBackend)
     : engineBackend(*engineBackend)
-    , nativeService(new NativeService(this))
 {
 }
 
@@ -44,12 +43,15 @@ void PlatformCore::Run()
     QTimer timer;
     QObject::connect(&timer, &QTimer::timeout, [&]()
                      {
-                         DVASSERT(primaryWindowBackend != nullptr);
-                         primaryWindowBackend->Update();
+                         if (!EngineBackend::showingModalMessageBox)
+                         {
+                             DVASSERT(primaryWindowBackend != nullptr);
+                             primaryWindowBackend->Update();
+                         }
                      });
 
     // First of all we should init primaryWindowBackend, because in OnGameLoopStarted client code will try to get RenderWidget trough this pointer
-    primaryWindowBackend = engineBackend.GetPrimaryWindow()->GetBackend();
+    primaryWindowBackend = EngineBackend::GetWindowBackend(engineBackend.GetPrimaryWindow());
     engineBackend.OnGameLoopStarted();
     applicationFocusChanged.Connect(primaryWindowBackend, &WindowBackend::OnApplicationFocusChanged);
     if (engineBackend.IsStandaloneGUIMode())
@@ -58,9 +60,6 @@ void PlatformCore::Run()
         RenderWidget* widget = GetRenderWidget();
         widget->show();
     }
-    // After OnGameLoopStarted, and client code injected RenderWidget into MainWindow and shown it we can activate rendering
-    // We can't activate rendering before RenderWidget was shown, because it will produce DAVA::OnFrame on showing e.g. in OnGameLoopStarted handler
-    primaryWindowBackend->ActivateRendering();
 
     timer.start(16.0);
 
@@ -86,6 +85,11 @@ void PlatformCore::Quit()
     // Do nothing as application is terminated when window has closed.
     // In embedded mode this method should not be invoked
     DVASSERT(engineBackend.IsEmbeddedGUIMode() == false);
+}
+
+void PlatformCore::SetScreenTimeoutEnabled(bool enabled)
+{
+    // TODO
 }
 
 QApplication* PlatformCore::GetApplication()

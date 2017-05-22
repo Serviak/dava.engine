@@ -4,22 +4,45 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Material/NMaterial.h"
 #include "Utils/Random.h"
+#include "Utils/StringFormat.h"
 #include "Render/Image/ImageSystem.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene3D/Systems/FoliageSystem.h"
 #include "Render/RenderHelper.h"
 #include "Render/TextureDescriptor.h"
-#include "Platform/SystemTimer.h"
+#include "Time/SystemTimer.h"
 #include "Job/JobManager.h"
 
 #include "Render/Highlevel/Vegetation/VegetationGeometry.h"
 #include "Render/Highlevel/RenderPassNames.h"
-#include "Render/RenderCallbacks.h"
+#include "Render/Renderer.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+#include "Reflection/ReflectedMeta.h"
 #include "FileSystem/FileSystem.h"
+
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(VegetationRenderObject)
+{
+    ReflectionRegistrator<VegetationRenderObject>::Begin()
+    .Field("density", &VegetationRenderObject::GetLayerClusterLimit, &VegetationRenderObject::SetLayerClusterLimit)[M::DisplayName("Base density")]
+    .Field("scaleVariation", &VegetationRenderObject::GetScaleVariation, &VegetationRenderObject::SetScaleVariation)[M::DisplayName("Scale variation")]
+    .Field("rotationVariation", &VegetationRenderObject::GetRotationVariation, &VegetationRenderObject::SetRotationVariation)[M::DisplayName("Rotation variation")]
+    .Field("lightmap", &VegetationRenderObject::GetLightmapPath, &VegetationRenderObject::SetLightmapAndGenerateDensityMap)[M::DisplayName("Lightmap")]
+    .Field("lodRanges", &VegetationRenderObject::GetLodRange, &VegetationRenderObject::SetLodRange)[M::DisplayName("Lod ranges")]
+    .Field("visibilityDistance", &VegetationRenderObject::GetVisibilityDistance, &VegetationRenderObject::SetVisibilityDistance)[M::DisplayName("Visibility distances")]
+    .Field("maxVisibleQuads", &VegetationRenderObject::GetMaxVisibleQuads, &VegetationRenderObject::SetMaxVisibleQuads)[M::DisplayName("Max visible quads")]
+    .Field("customGeometry", &VegetationRenderObject::GetCustomGeometryPath, &VegetationRenderObject::SetCustomGeometryPath)[M::DisplayName("Custom geometry")]
+    .Field("cameraBias", &VegetationRenderObject::GetCameraBias, &VegetationRenderObject::SetCameraBias)[M::DisplayName("Camera Bias")]
+    .Field("animationAmplitude", &VegetationRenderObject::GetLayersAnimationAmplitude, &VegetationRenderObject::SetLayersAnimationAmplitude)[M::DisplayName("Animation Amplitude")]
+    .Field("animationSpring", &VegetationRenderObject::GetLayersAnimationSpring, &VegetationRenderObject::SetLayersAnimationSpring)[M::DisplayName("Animation Spring")]
+    .Field("animationDrag", &VegetationRenderObject::GetLayerAnimationDragCoefficient, &VegetationRenderObject::SetLayerAnimationDragCoefficient)[M::DisplayName("Animation Drag")]
+    .End();
+}
+
 static const uint32 MAX_CLUSTER_TYPES = 4;
 static const uint32 MAX_DENSITY_LEVELS = 16;
 //static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
@@ -119,7 +142,7 @@ VegetationRenderObject::VegetationRenderObject()
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
     ResetVisibilityDistance();
-    RenderCallbacks::RegisterResourceRestoreCallback(MakeFunction(this, &VegetationRenderObject::RestoreRenderData));
+    Renderer::GetSignals().needRestoreResources.Connect(this, &VegetationRenderObject::RestoreRenderData);
 }
 
 VegetationRenderObject::~VegetationRenderObject()
@@ -135,7 +158,7 @@ VegetationRenderObject::~VegetationRenderObject()
 
     SafeRelease(heightmap);
     SafeRelease(heightmapTexture);
-    RenderCallbacks::UnRegisterResourceRestoreCallback(MakeFunction(this, &VegetationRenderObject::RestoreRenderData));
+    Renderer::GetSignals().needRestoreResources.Disconnect(this);
 }
 
 RenderBatch* VegetationRenderObject::CreateRenderBatch()
@@ -166,13 +189,13 @@ RenderObject* VegetationRenderObject::Clone(RenderObject* newObject)
 {
     if (!newObject)
     {
-        DVASSERT_MSG(IsPointerToExactClass<VegetationRenderObject>(this), "Can clone only from VegetationRenderObject");
+        DVASSERT(IsPointerToExactClass<VegetationRenderObject>(this), "Can clone only from VegetationRenderObject");
         newObject = new VegetationRenderObject();
     }
     else
     {
-        DVASSERT_MSG(IsPointerToExactClass<VegetationRenderObject>(this), "Can clone only from VegetationRenderObject");
-        DVASSERT_MSG(IsPointerToExactClass<VegetationRenderObject>(newObject), "Can clone only to VegetationRenderObject");
+        DVASSERT(IsPointerToExactClass<VegetationRenderObject>(this), "Can clone only from VegetationRenderObject");
+        DVASSERT(IsPointerToExactClass<VegetationRenderObject>(newObject), "Can clone only to VegetationRenderObject");
     }
 
     VegetationRenderObject* vegetationRenderObject = static_cast<VegetationRenderObject*>(newObject);
@@ -413,14 +436,11 @@ void VegetationRenderObject::PrepareToRender(Camera* camera)
         ++renderBatchCount;
     }
 
-    Vector<Vector<Vector<VegetationSortedBufferItem>>>& indexRenderDataObject = renderData->GetIndexBuffers();
+    Vector<Vector<VegetationBufferItem>>& indexRenderDataObject = renderData->GetIndexBuffers();
 
     Vector3 posScale(0.0f, 0.0f, 0.0f);
     Vector2 switchLodScale;
     Vector4 vegetationAnimationOffset[2];
-
-    Vector3 cameraDirection = camera->GetDirection();
-    cameraDirection.Normalize();
 
     for (size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
@@ -431,15 +451,12 @@ void VegetationRenderObject::PrepareToRender(Camera* camera)
 
         uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
 
-        Vector<Vector<VegetationSortedBufferItem>>& rdoVector = indexRenderDataObject[resolutionIndex];
+        Vector<VegetationBufferItem>& rdoVector = indexRenderDataObject[resolutionIndex];
 
         uint32 indexBufferIndex = treeNode->data.rdoIndex;
         DVASSERT(indexBufferIndex < rdoVector.size());
 
-        Vector<VegetationSortedBufferItem>& indexBufferVector = rdoVector[indexBufferIndex];
-        size_t directionIndex = SelectDirectionIndex(cameraDirection, indexBufferVector);
-        VegetationSortedBufferItem& bufferItem = indexBufferVector[directionIndex];
-
+        VegetationBufferItem& bufferItem = rdoVector[indexBufferIndex];
         rb->startIndex = bufferItem.startIndex;
         rb->indexCount = bufferItem.indexCount;
 
@@ -668,8 +685,8 @@ void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap
     {
         uint32 hmSize = uint32(heightmap->Size());
         DVASSERT(IsPowerOf2(hmSize));
-        Texture* tx = Texture::CreateFromData(FORMAT_RGBA4444, reinterpret_cast<uint8*>(heightMap->Data()), hmSize, hmSize, false);
 
+        Texture* tx = Texture::CreateFromData(FORMAT_RGBA4444, reinterpret_cast<uint8*>(heightMap->Data()), hmSize, hmSize, false);
         tx->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
         tx->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
 
@@ -880,7 +897,7 @@ void VegetationRenderObject::CreateRenderData()
 void VegetationRenderObject::RestoreRenderData()
 {
     //#if defined(__DAVAENGINE_IPHONE__)
-    //    DVASSERT_MSG(false, "Should not even try to restore on iphone - render data is released");
+    //    DVASSERT(false, "Should not even try to restore on iphone - render data is released");
     //#endif
 
     if (renderData == nullptr)
@@ -904,6 +921,7 @@ void VegetationRenderObject::RestoreRenderData()
     {
         uint32 hmSize = uint32(heightmap->Size());
         DVASSERT(IsPowerOf2(hmSize));
+
         heightmapTexture->TexImage(0, hmSize, hmSize, reinterpret_cast<uint8*>(heightmap->Data()), hmSize * hmSize * sizeof(uint16), 0);
     }
 }
@@ -922,36 +940,6 @@ bool VegetationRenderObject::ReadyToRender()
 #endif
 
     return renderFlag && vegetationVisible && renderData;
-}
-
-size_t VegetationRenderObject::SelectDirectionIndex(const Vector3& cameraDirection, Vector<VegetationSortedBufferItem>& buffers)
-{
-    size_t index = 0;
-    float32 currentCosA = 0.0f;
-    size_t directionCount = buffers.size();
-    for (size_t i = 0; i < directionCount; ++i)
-    {
-        VegetationSortedBufferItem& item = buffers[i];
-        //cos (angle) = dotAB / (length A * lengthB)
-        //no need to calculate (length A * lengthB) since vectors are normalized
-
-        if (item.sortDirection == cameraDirection)
-        {
-            index = i;
-            break;
-        }
-        else
-        {
-            float32 cosA = cameraDirection.DotProduct(item.sortDirection);
-            if (cosA > currentCosA)
-            {
-                index = i;
-                currentCosA = cosA;
-            }
-        }
-    }
-
-    return index;
 }
 
 void VegetationRenderObject::DebugDrawVisibleNodes(RenderHelper* drawer)

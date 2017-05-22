@@ -4,171 +4,99 @@
 #include "Reflection/Reflection.h"
 #endif
 
-#include "Reflection/Private/ValueWrapperDefault.h"
+#include "Reflection/Private/Reflection_pre_impl.h"
+#include "Reflection/Private/Wrappers/ValueWrapperDefault.h"
+#include "Reflection/Private/Wrappers/ValueWrapperObject.h"
 
 namespace DAVA
 {
-inline Reflection::Reflection(const ReflectedObject& object_, const ValueWrapper* vw_, const ReflectedType* rtype_, const ReflectedMeta* meta_)
-    : object(object_)
-    , vw(vw_)
-    , meta(meta_)
-    , objectType(rtype_)
+namespace ReflectionDetail
 {
-    if (nullptr != rtype_)
-    {
-        sw = rtype_->structureWrapper.get();
-        sew = rtype_->structureEditorWrapper.get();
-    }
-
-    if (nullptr != meta)
-    {
-        if (meta->HasMeta<StructureWrapper>())
-        {
-            sw = meta->GetMeta<StructureWrapper>();
-        }
-
-        if (meta->HasMeta<StructureEditorWrapper>())
-        {
-            sew = meta->GetMeta<StructureEditorWrapper>();
-        }
-    }
-}
-
-inline bool Reflection::IsValid() const
-{
-    return (nullptr != vw && object.IsValid());
 }
 
 inline bool Reflection::IsReadonly() const
 {
-    return vw->IsReadonly();
+    return valueWrapper->IsReadonly(object);
 }
 
 inline const Type* Reflection::GetValueType() const
 {
-    return vw->GetType();
+    return valueWrapper->GetType(object);
 }
 
 inline ReflectedObject Reflection::GetValueObject() const
 {
-    return vw->GetValueObject(object);
-}
-
-inline const DAVA::ReflectedType* Reflection::GetReflectedType() const
-{
-    return objectType;
+    return valueWrapper->GetValueObject(object);
 }
 
 inline Any Reflection::GetValue() const
 {
-    return vw->GetValue(object);
+    return valueWrapper->GetValue(object);
 }
 
 inline bool Reflection::SetValue(const Any& value) const
 {
-    return vw->SetValue(object, value);
+    return valueWrapper->SetValue(object, value);
 }
 
-inline bool Reflection::HasFields() const
+inline bool Reflection::SetValueWithCast(const Any& value) const
 {
-    return sw->HasFields(object, vw);
+    return valueWrapper->SetValueWithCast(object, value);
 }
-
-inline Reflection::Field Reflection::GetField(const Any& key) const
+inline bool Reflection::IsValid() const
 {
-    return sw->GetField(object, vw, key);
-}
-
-inline Vector<Reflection::Field> Reflection::GetFields() const
-{
-    return sw->GetFields(object, vw);
-}
-
-inline bool Reflection::CanAddFields() const
-{
-    return sew->CanAdd(object, vw);
-}
-
-inline bool Reflection::CanInsertFields() const
-{
-    return sew->CanInsert(object, vw);
-}
-
-inline bool Reflection::CanRemoveFields() const
-{
-    return sew->CanRemove(object, vw);
-}
-
-inline bool Reflection::CanCreateFieldValue() const
-{
-    return sew->CanCreateValue(object, vw);
-}
-
-inline Any Reflection::CreateFieldValue() const
-{
-    return sew->CreateValue(object, vw);
-}
-
-inline bool Reflection::AddField(const Any& key, const Any& value) const
-{
-    return sew->AddField(object, vw, key, value);
-}
-
-inline bool Reflection::InsertField(const Any& beforeKey, const Any& key, const Any& value) const
-{
-    return sew->InsertField(object, vw, beforeKey, key, value);
-}
-
-inline bool Reflection::RemoveField(const Any& key) const
-{
-    return sew->RemoveField(object, vw, key);
-}
-
-inline bool Reflection::HasMethods() const
-{
-    return sw->HasMethods(object, vw);
-}
-
-inline Reflection::Method Reflection::GetMethod(const String& key) const
-{
-    return sw->GetMethod(object, vw, key);
-}
-
-inline Vector<Reflection::Method> Reflection::GetMethods() const
-{
-    return sw->GetMethods(object, vw);
-}
-
-template <typename Meta>
-inline bool Reflection::HasMeta() const
-{
-    return (nullptr != meta) ? meta->HasMeta<Meta>() : false;
-}
-
-template <typename Meta>
-inline const Meta* Reflection::GetMeta() const
-{
-    return (nullptr != meta) ? meta->GetMeta<Meta>() : nullptr;
+    return (nullptr != valueWrapper && object.IsValid());
 }
 
 template <typename T>
-Reflection Reflection::Create(T* ptr, const ReflectedMeta* meta)
+inline const T* Reflection::GetMeta() const
 {
-    static ValueWrapperDefault<T> vw;
+    return static_cast<const T*>(GetMeta(Type::Instance<T>()));
+}
 
-    if (nullptr != ptr)
+template <typename T>
+Reflection Reflection::Create(T* objectPtr, const ReflectedMeta* objectMeta)
+{
+    if (nullptr != objectPtr)
     {
-        const ReflectedType* rtype = ReflectedType::GetByPointer(ptr);
-        return Reflection(ReflectedObject(ptr), &vw, rtype, meta);
+        static ValueWrapperDefault<T> objectValueWrapper;
+        return Reflection(ReflectedObject(objectPtr), &objectValueWrapper, nullptr, objectMeta);
     }
 
     return Reflection();
 }
 
-template <typename T>
-Reflection::Field Reflection::Field::Create(const Any& key, T* ptr, const ReflectedMeta* meta)
+template <>
+struct AnyCompare<Reflection>
 {
-    return Reflection::Field{ key, Reflection::Create(ptr, meta) };
-}
+    static bool IsEqual(const Any& v1, const Any& v2)
+    {
+        const Reflection r1 = v1.Get<Reflection>();
+        const Reflection r2 = v2.Get<Reflection>();
+        return r1.GetValueObject() == r2.GetValueObject();
+    }
+};
 
+template <>
+struct AnyCompare<Vector<Reflection>>
+{
+    static bool IsEqual(const Any& v1, const Any& v2)
+    {
+        const Vector<Reflection> r1 = v1.Get<Vector<Reflection>>();
+        const Vector<Reflection> r2 = v2.Get<Vector<Reflection>>();
+        if (r1.size() != r2.size())
+        {
+            return false;
+        }
+
+        for (size_t i = 0; i < r1.size(); ++i)
+        {
+            if (AnyCompare<Reflection>::IsEqual(r1[i], r2[i]) == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+};
 } // namespace DAVA

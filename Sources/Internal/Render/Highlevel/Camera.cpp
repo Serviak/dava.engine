@@ -4,9 +4,41 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Renderer.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "Reflection/ReflectedMeta.h"
+#include "Base/GlobalEnum.h"
+
+ENUM_DECLARE(DAVA::Camera::eFlags)
+{
+    ENUM_ADD_DESCR(DAVA::Camera::REQUIRE_REBUILD, "Require rebuild");
+    ENUM_ADD_DESCR(DAVA::Camera::REQUIRE_REBUILD_MODEL, "Require rebuild model");
+    ENUM_ADD_DESCR(DAVA::Camera::REQUIRE_REBUILD_PROJECTION, "Require rebuild projection");
+    ENUM_ADD_DESCR(DAVA::Camera::REQUIRE_REBUILD_UNIFORM_PROJ_MODEL, "Require rebuild uniform projection model");
+}
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(Camera)
+{
+    ReflectionRegistrator<Camera>::Begin()
+    .Field("aspect", &Camera::GetAspect, &Camera::SetAspect)[M::DisplayName("Aspect")]
+    .Field("znear", &Camera::GetZNear, &Camera::SetZNear)[M::DisplayName("Near plane")]
+    .Field("zfar", &Camera::GetZFar, &Camera::SetZFar)[M::DisplayName("Far plane")]
+    .Field("fovx", &Camera::GetFOV, &Camera::SetFOV)[M::DisplayName("FovX")]
+    .Field("ortho", &Camera::GetIsOrtho, &Camera::SetIsOrtho)[M::DisplayName("Is Ortho")]
+    .Field("orthoWidth", &Camera::GetOrthoWidth, &Camera::SetOrthoWidth)[M::DisplayName("Ortho Width")]
+    .Field("position", &Camera::GetPosition, &Camera::SetPosition)[M::DisplayName("Position")]
+    .Field("target", &Camera::GetTarget, &Camera::SetTarget)[M::DisplayName("Target")]
+    .Field("up", &Camera::GetUp, &Camera::SetUp)[M::DisplayName("Up")]
+    .Field("left", &Camera::GetLeft, &Camera::SetLeft)[M::DisplayName("Left")]
+    .Field("direction", &Camera::direction)[M::ReadOnly(), M::DisplayName("Direction")]
+    .Field("flags", &Camera::flags)[M::ReadOnly(), M::DisplayName("Flags"), M::FlagsT<DAVA::Camera::eFlags>()]
+    .Field("cameraTransform", &Camera::cameraTransform)[M::ReadOnly(), M::DisplayName("Transform")]
+    .Field("viewMatrix", &Camera::viewMatrix)[M::ReadOnly(), M::DisplayName("View")]
+    .Field("projMatrix", &Camera::projMatrix)[M::ReadOnly(), M::DisplayName("Projection")]
+    .End();
+}
+
 Camera::Camera()
     : orthoWidth(35.f)
 {
@@ -427,9 +459,10 @@ void Camera::PrepareDynamicParameters(bool invertProjection, Vector4* externalCl
         m.Transpose();
         Vector4 v = Vector4(Sign(clipPlane.x), Sign(clipPlane.y), 1, 1) * m;
 
+        Vector4 m4(projMatrix.data[3], projMatrix.data[7], projMatrix.data[11], projMatrix.data[15]);
         if (rhi::DeviceCaps().isZeroBaseClipRange)
         {
-            Vector4 scaledPlane = clipPlane * (1.0f / v.DotProduct(clipPlane));
+            Vector4 scaledPlane = clipPlane * (v.DotProduct(m4) / v.DotProduct(clipPlane));
             projMatrix.data[2] = scaledPlane.x;
             projMatrix.data[6] = scaledPlane.y;
             projMatrix.data[10] = scaledPlane.z;
@@ -437,7 +470,7 @@ void Camera::PrepareDynamicParameters(bool invertProjection, Vector4* externalCl
         }
         else
         {
-            Vector4 scaledPlane = clipPlane * (2.0f / v.DotProduct(clipPlane));
+            Vector4 scaledPlane = clipPlane * (2.0f * v.DotProduct(m4) / v.DotProduct(clipPlane));
             projMatrix.data[2] = scaledPlane.x;
             projMatrix.data[6] = scaledPlane.y;
             projMatrix.data[10] = scaledPlane.z + 1.0f;
@@ -480,7 +513,7 @@ BaseObject* Camera::Clone(BaseObject* dstNode)
 {
     if (!dstNode)
     {
-        DVASSERT_MSG(IsPointerToExactClass<Camera>(this), "Can clone only Camera");
+        DVASSERT(IsPointerToExactClass<Camera>(this), "Can clone only Camera");
         dstNode = new Camera();
     }
     // SceneNode::Clone(dstNode);

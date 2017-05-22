@@ -1,6 +1,6 @@
 #pragma once
-#ifndef DAVAENGINE_AUTO_STORAGE__H
-// include AutoStorage.h for help IDE parse types here.
+
+#ifndef __DAVA_AutoStorage__
 #include "Base/Private/AutoStorage.h"
 #endif
 
@@ -94,6 +94,7 @@ inline void AutoStorage<Count>::SetSimple(T&& value)
     static_assert(IsSimpleType<U>::value, "Type should be simple");
 
     Clear();
+
     type = StorageType::Simple;
     new (storage.data()) U(std::forward<T>(value));
 }
@@ -145,7 +146,7 @@ inline const T& AutoStorage<Count>::GetSimple() const
 {
     using U = StorableType<T>;
 
-    assert(StorageType::Simple == type);
+    DVASSERT(StorageType::Simple == type);
     return *(reinterpret_cast<const U*>(const_cast<void* const*>(storage.data())));
 }
 
@@ -155,7 +156,7 @@ const T& AutoStorage<Count>::GetShared() const
 {
     using U = StorableType<T>;
 
-    assert(StorageType::Shared == type);
+    DVASSERT(StorageType::Shared == type);
     return *(static_cast<const U*>(SharedPtr()->get()));
 }
 
@@ -165,7 +166,7 @@ inline const T& AutoStorage<Count>::GetAuto() const
 {
     using U = StorableType<T>;
 
-    assert(StorageType::Empty != type);
+    DVASSERT(StorageType::Empty != type);
 
     auto tp = std::integral_constant<bool, IsSimpleType<U>::value>();
     return GetAutoImpl<U>(tp);
@@ -174,7 +175,7 @@ inline const T& AutoStorage<Count>::GetAuto() const
 template <size_t Count>
 inline const void* AutoStorage<Count>::GetData() const
 {
-    assert(StorageType::Empty != type);
+    DVASSERT(StorageType::Empty != type);
 
     return (StorageType::Simple == type) ? storage.data() : static_cast<const void*>(SharedPtr()->get());
 }

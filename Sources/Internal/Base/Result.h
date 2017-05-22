@@ -11,7 +11,7 @@ struct Result
     enum ResultType
     {
         RESULT_SUCCESS,
-        RESULT_FAILURE,
+        RESULT_WARNING,
         RESULT_ERROR
     };
     Result(const ResultType type = RESULT_SUCCESS, const String& message = String());
@@ -26,7 +26,7 @@ struct Result
 
 inline Result::operator bool() const
 {
-    return type == RESULT_SUCCESS;
+    return type == RESULT_SUCCESS || type == RESULT_WARNING;
 }
 
 class ResultList
@@ -40,6 +40,8 @@ public:
     ~ResultList() = default;
     operator bool() const;
     bool IsSuccess() const;
+    bool HasErrors() const;
+    bool HasWarnings() const;
     ResultList& operator=(const ResultList& resultList) = default;
     ResultList& operator=(ResultList&& resultList);
     ResultList& operator<<(const Result& result);
@@ -51,20 +53,32 @@ public:
     ResultList& AddResultList(ResultList&& resultList);
 
     const Deque<Result>& GetResults() const;
+    String GetResultMessages() const;
 
 private:
-    bool allOk;
+    bool hasErrors = false;
+    bool hasWarnings = false;
     Deque<Result> results;
 };
 
 inline ResultList::operator bool() const
 {
-    return allOk;
+    return !hasErrors;
 }
 
 inline bool ResultList::IsSuccess() const
 {
-    return allOk;
+    return !hasErrors;
+}
+
+inline bool ResultList::HasErrors() const
+{
+    return hasErrors;
+}
+
+inline bool ResultList::HasWarnings() const
+{
+    return hasWarnings;
 }
 
 inline const Deque<Result>& ResultList::GetResults() const
