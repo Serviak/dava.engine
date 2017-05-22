@@ -186,12 +186,9 @@ private:
     TimeLineWidget* noiseScaleTimeLine = nullptr;
     TimeLineWidget* noiseScaleVariationTimeLine = nullptr;
     TimeLineWidget* noiseScaleOverLifeTimeLine = nullptr;
-    TimeLineWidget* noiseUScrollSpeedTimeLine = nullptr;
-    TimeLineWidget* noiseUScrollSpeedVariationTimeLine = nullptr;
-    TimeLineWidget* noiseUScrollSpeedOverLifeTimeLine = nullptr;
-    TimeLineWidget* noiseVScrollSpeedTimeLine = nullptr;
-    TimeLineWidget* noiseVScrollSpeedVariationTimeLine = nullptr;
-    TimeLineWidget* noiseVScrollSpeedOverLifeTimeLine = nullptr;
+    TimeLineWidget* noiseUVScrollSpeedTimeLine = nullptr;
+    TimeLineWidget* noiseUVScrollSpeedVariationTimeLine = nullptr;
+    TimeLineWidget* noiseUVScrollSpeedOverLifeTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
     TimeLineWidget* numberTimeLine = nullptr;
