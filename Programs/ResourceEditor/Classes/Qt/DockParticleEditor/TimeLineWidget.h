@@ -20,8 +20,8 @@ public:
     explicit TimeLineWidget(QWidget* parent = 0);
     ~TimeLineWidget();
 
-    void Init(DAVA::float32 minT, DAVA::float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
-    void Init(DAVA::float32 minT, DAVA::float32 maxT, DAVA::float32 generalMinT, DAVA::float32 generalMaxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+    void Init(DAVA::float32 minT, DAVA::float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false, DAVA::int32 valueDecimalsPrecision = 2);
+    void Init(DAVA::float32 minT, DAVA::float32 maxT, DAVA::float32 generalMinT, DAVA::float32 generalMaxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false, DAVA::int32 valueDecimalsPrecision = 2);
     void SetMinLimits(DAVA::float32 minV);
     void SetMaxLimits(DAVA::float32 maxV);
 
@@ -104,6 +104,7 @@ private:
     DAVA::int32 selectedPoint;
     DAVA::int32 selectedLine;
     DAVA::int32 drawLine;
+    DAVA::int32 valueDecimalsPrecision;
 
     bool isLockEnable;
     bool isLocked;
@@ -141,7 +142,7 @@ class SetPointValueDlg : public QDialog
 
 public:
     explicit SetPointValueDlg(DAVA::float32 time, DAVA::float32 minTime, DAVA::float32 maxTime, DAVA::float32 value,
-                              DAVA::float32 minValue, DAVA::float32 maxValue, QWidget* parent = 0, bool integer = false);
+                              DAVA::float32 minValue, DAVA::float32 maxValue, QWidget* parent = 0, bool integer = false, DAVA::int32 valueDecimalsPrecision = 2);
 
     DAVA::float32 GetTime() const;
     DAVA::float32 GetValue() const;
