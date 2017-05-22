@@ -34,14 +34,14 @@ ShaderFileCallback
 public:
     ShaderFileCallback(const char* base_dir)
     {
-        inclDir.push_back(base_dir);
+        inclDir.emplace_back(base_dir);
     }
 
-    virtual bool Open(const char* file_name)
+    bool Open(const char* file_name) override
     {
         bool success = false;
 
-        for (unsigned k = 0; k != _file.size(); ++k)
+        for (size_t k = 0; k != _file.size(); ++k)
         {
             if (_file[k].name == file_name)
             {
@@ -85,16 +85,16 @@ public:
 
         return success;
     }
-    virtual void Close()
+    void Close() override
     {
         _cur_data = nullptr;
         _cur_data_sz = 0;
     }
-    virtual unsigned Size() const
+    unsigned Size() const override
     {
         return _cur_data_sz;
     }
-    virtual unsigned Read(unsigned max_sz, void* dst)
+    unsigned Read(unsigned max_sz, void* dst) override
     {
         DVASSERT(_cur_data);
         DVASSERT(max_sz <= _cur_data_sz);
@@ -104,7 +104,7 @@ public:
 
     void AddIncludeDirectory(const char* dir)
     {
-        inclDir.push_back(dir);
+        inclDir.emplace_back(dir);
     }
 
 private:
