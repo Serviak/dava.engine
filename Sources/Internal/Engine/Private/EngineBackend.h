@@ -1,8 +1,9 @@
-#if defined(__DAVAENGINE_COREV2__)
-
 #pragma once
 
 #include "Base/BaseTypes.h"
+
+#if defined(__DAVAENGINE_COREV2__)
+
 #include "Base/RefPtr.h"
 #include "Functional/Functional.h"
 
@@ -10,6 +11,8 @@
 #include "Engine/Private/EnginePrivateFwd.h"
 
 #include "UI/UIEvent.h"
+
+#include "Render/RHI/rhi_Type.h"
 
 namespace DAVA
 {
@@ -20,6 +23,9 @@ class EngineBackend final
 {
 public:
     static EngineBackend* Instance();
+    static bool showingModalMessageBox;
+
+    static WindowBackend* GetWindowBackend(Window* w);
 
     EngineBackend(const Vector<String>& cmdargs);
     ~EngineBackend();
@@ -36,8 +42,9 @@ public:
     bool IsEmbeddedGUIMode() const;
     bool IsConsoleMode() const;
 
-    EngineContext* GetEngineContext() const;
+    const EngineContext* GetContext() const;
     Window* GetPrimaryWindow() const;
+    const Vector<Window*>& GetWindows() const;
     uint32 GetGlobalFrameIndex() const;
     int32 GetExitCode() const;
     const Vector<String>& GetCommandLine() const;
@@ -45,10 +52,11 @@ public:
 
     Engine* GetEngine() const;
     MainDispatcher* GetDispatcher() const;
-    NativeService* GetNativeService() const;
     PlatformCore* GetPlatformCore() const;
 
     const KeyedArchive* GetOptions() const;
+
+    bool IsSuspended() const;
 
     Window* InitializePrimaryWindow();
 
@@ -74,6 +82,16 @@ public:
     void ResetRenderer(Window* w, bool resetToNull);
     void DeinitRender(Window* w);
 
+    void UpdateDisplayConfig();
+
+    // Proxy method that calls SystemTimer::Adjust to prevent many friends to SystemTimer
+    static void AdjustSystemTimer(int64 adjustMicro);
+
+    void SetScreenTimeoutEnabled(bool enabled);
+    bool IsScreenTimeoutEnabled() const;
+
+    bool IsRunning() const;
+
 private:
     void RunConsole();
 
@@ -81,10 +99,11 @@ private:
 
     void OnFrameConsole();
 
-    void OnBeginFrame();
-    void OnUpdate(float32 frameDelta);
-    void OnDraw();
-    void OnEndFrame();
+    void BeginFrame();
+    void Update(float32 frameDelta);
+    void UpdateWindows(float32 frameDelta);
+    void EndFrame();
+    void BackgroundUpdate(float32 frameDelta);
 
     void EventHandler(const MainDispatcherEvent& e);
     void HandleAppSuspended(const MainDispatcherEvent& e);
@@ -96,6 +115,10 @@ private:
     void CreateSubsystems(const Vector<String>& modules);
     void DestroySubsystems();
 
+    void OnWindowVisibilityChanged(Window* window, bool visible);
+
+    static void OnRenderingError(rhi::RenderingError err, void* param);
+
     // TODO: replace raw pointers with std::unique_ptr after work is done
     MainDispatcher* dispatcher = nullptr;
     PlatformCore* platformCore = nullptr;
@@ -106,10 +129,10 @@ private:
 
     Window* primaryWindow = nullptr;
     Set<Window*> justCreatedWindows; // Just created Window instances which do not have native windows yet
-    Set<Window*> aliveWindows; // Windows which have native windows and take part in update cycle
+    Vector<Window*> aliveWindows; // Windows which have native windows and take part in update cycle
     Set<Window*> dyingWindows; // Windows which will be deleted soon; native window may be already destroyed
 
-    // Applciation-supplied functor which is invoked when user is trying to close window or application
+    // Application-supplied functor which is invoked when user is trying to close window or application
     Function<bool(Window*)> closeRequestHandler;
 
     eEngineRunMode runMode = eEngineRunMode::GUI_STANDALONE;
@@ -122,6 +145,11 @@ private:
 
     RefPtr<KeyedArchive> options;
     uint32 globalFrameIndex = 1;
+
+    bool isRunning = false;
+
+    bool atLeastOneWindowIsVisible = false;
+    bool screenTimeoutEnabled = true;
 
     static EngineBackend* instance;
 };
@@ -146,7 +174,7 @@ inline bool EngineBackend::IsConsoleMode() const
     return runMode == eEngineRunMode::CONSOLE_MODE;
 }
 
-inline EngineContext* EngineBackend::GetEngineContext() const
+inline const EngineContext* EngineBackend::GetContext() const
 {
     return context;
 }
@@ -154,6 +182,11 @@ inline EngineContext* EngineBackend::GetEngineContext() const
 inline Window* EngineBackend::GetPrimaryWindow() const
 {
     return primaryWindow;
+}
+
+inline const Vector<Window*>& EngineBackend::GetWindows() const
+{
+    return aliveWindows;
 }
 
 inline uint32 EngineBackend::GetGlobalFrameIndex() const
@@ -184,6 +217,11 @@ inline MainDispatcher* EngineBackend::GetDispatcher() const
 inline PlatformCore* EngineBackend::GetPlatformCore() const
 {
     return platformCore;
+}
+
+inline bool EngineBackend::IsScreenTimeoutEnabled() const
+{
+    return screenTimeoutEnabled;
 }
 
 } // namespace Private

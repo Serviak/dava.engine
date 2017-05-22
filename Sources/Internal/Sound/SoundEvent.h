@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SOUND_EVENT_H__
-#define __DAVAENGINE_SOUND_EVENT_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/EventDispatcher.h"
@@ -33,7 +32,8 @@ public:
     };
 
     SoundEvent()
-        : volume(1.f)
+        : volume(1.0f)
+        , speed(1.0f)
         , isDirectional(false)
     {
     }
@@ -45,6 +45,9 @@ public:
 
     virtual void SetVolume(float32 volume) = 0;
     inline float32 GetVolume() const;
+
+    virtual void SetSpeed(float32 speed) = 0;
+    inline float32 GetSpeed() const;
 
     virtual void SetPosition(const Vector3& position) = 0;
     virtual void SetDirection(const Vector3& direction) = 0;
@@ -64,6 +67,7 @@ public:
 
 protected:
     float32 volume;
+    float32 speed;
     bool isDirectional;
 };
 
@@ -72,10 +76,13 @@ inline float32 SoundEvent::GetVolume() const
     return volume;
 }
 
+inline float32 SoundEvent::GetSpeed() const
+{
+    return speed;
+}
+
 inline bool SoundEvent::IsDirectional() const
 {
     return isDirectional;
 }
 };
-
-#endif

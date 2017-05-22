@@ -5,16 +5,25 @@
 #include <type_traits>
 #include <bitset>
 
-#include "Base/BaseTypes.h"
-
 namespace DAVA
 {
+namespace TypeDetail
+{
+template <typename T>
+struct TypeHolder;
+}
+
 class TypeInheritance;
 class Type final
 {
     friend class TypeInheritance;
 
+    template <typename T>
+    friend struct TypeDetail::TypeHolder;
+
 public:
+    struct Seed;
+
     template <typename T>
     using DecayT = std::conditional_t<std::is_pointer<T>::value, std::add_pointer_t<std::decay_t<std::remove_pointer_t<T>>>, std::decay_t<T>>;
 
@@ -24,19 +33,27 @@ public:
     template <typename T>
     using PointerT = std::add_pointer_t<std::decay_t<T>>;
 
+    using SeedCastOP = const Type::Seed* (*)(const void*);
+
     Type(Type&&) = delete;
     Type(const Type&) = delete;
     Type& operator=(const Type&) = delete;
 
     size_t GetSize() const;
     const char* GetName() const;
+    std::type_index GetTypeIndex() const;
     const TypeInheritance* GetInheritance() const;
+    unsigned long GetTypeFlags() const;
+    SeedCastOP GetSeedCastOP() const;
 
     bool IsConst() const;
     bool IsPointer() const;
     bool IsReference() const;
     bool IsFundamental() const;
     bool IsTrivial() const;
+    bool IsIntegral() const;
+    bool IsFloatingPoint() const;
+    bool IsEnum() const;
 
     const Type* Decay() const;
     const Type* Deref() const;
@@ -46,60 +63,36 @@ public:
     static const Type* Instance();
 
 private:
-    enum TypeFlag
+    enum eTypeFlag
     {
         isConst,
         isPointer,
+        isPointerToConst,
         isReference,
+        isReferenceToConst,
         isFundamental,
         isTrivial,
+        isIntegral,
+        isFloatingPoint,
+        isEnum
     };
 
     size_t size = 0;
     const char* name = nullptr;
+    const std::type_info* stdTypeInfo = &typeid(void);
+    SeedCastOP seedCastOP = nullptr;
 
-    const Type* derefType = nullptr;
-    const Type* decayType = nullptr;
-    const Type* pointerType = nullptr;
+    Type* const* derefType = nullptr;
+    Type* const* decayType = nullptr;
+    Type* const* pointerType = nullptr;
 
     std::bitset<sizeof(int) * 8> flags;
-    mutable std::unique_ptr<TypeInheritance> inheritance;
+    std::unique_ptr<const TypeInheritance, void (*)(const TypeInheritance*)> inheritance;
 
-    Type() = default;
+    Type();
 
     template <typename T>
-    static void Init(Type** ptype);
-};
-
-class TypeInheritance final
-{
-public:
-    using CastOP = void* (*)(void*);
-    using InheritanceMap = UnorderedMap<const Type*, CastOP>;
-
-    const InheritanceMap& GetBaseTypes() const;
-    const InheritanceMap& GetDerivedTypes() const;
-
-    template <typename T, typename... Bases>
-    static void RegisterBases();
-
-    static bool CanUpCast(const Type* from, const Type* to);
-    static bool CanDownCast(const Type* from, const Type* to);
-    static bool CanCast(const Type* from, const Type* to);
-
-    static bool UpCast(const Type* from, void* inPtr, const Type* to, void** outPtr);
-    static bool DownCast(const Type* from, void* inPtr, const Type* to, void** outPtr);
-    static bool Cast(const Type* from, void* inPtr, const Type* to, void** outPtr);
-
-private:
-    InheritanceMap baseTypes;
-    InheritanceMap derivedTypes;
-
-    template <typename T, typename B>
-    static bool AddBaseType();
-
-    template <typename T, typename D>
-    static bool AddDerivedType();
+    static Type* Init();
 };
 
 } // namespace DAVA

@@ -15,9 +15,10 @@
 
 #include "Logger/Logger.h"
 
-#include "Platform/SystemTimer.h"
-#include "Platform/DateTime.h"
 #include "Platform/DeviceInfo.h"
+
+#include "Time/DateTime.h"
+#include "Time/SystemTimer.h"
 
 // system stuff
 #include "Utils/Utils.h"
@@ -217,8 +218,8 @@
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
-#include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"

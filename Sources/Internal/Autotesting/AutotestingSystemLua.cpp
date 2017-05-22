@@ -103,7 +103,7 @@ void AutotestingSystemLua::SetDelegate(AutotestingSystemLuaDelegate* _delegate)
     delegate = _delegate;
 }
 
-void AutotestingSystemLua::InitFromFile(const String& luaFilePath)
+void AutotestingSystemLua::InitFromFile(const FilePath& luaFilePath)
 {
     if (luaState)
     {
@@ -111,7 +111,7 @@ void AutotestingSystemLua::InitFromFile(const String& luaFilePath)
         return;
     }
 
-    Logger::Debug("AutotestingSystemLua::InitFromFile luaFilePath=%s", luaFilePath.c_str());
+    Logger::Debug("AutotestingSystemLua::InitFromFile luaFilePath=%s", luaFilePath.GetAbsolutePathname().c_str());
 
 #if !defined(DAVA_MEMORY_PROFILING_ENABLE)
     memoryPool = malloc(LUA_MEMORY_POOL_SIZE);
@@ -132,31 +132,47 @@ void AutotestingSystemLua::InitFromFile(const String& luaFilePath)
     {
         AutotestingSystem::Instance()->ForceQuit("Load wrapped lua objects was failed.");
     }
-    String automationAPIStrPath = AutotestingSystem::ResolvePathToAutomation("/Autotesting/Scripts/autotesting_api.lua");
-    if (automationAPIStrPath.empty() || !RunScriptFromFile(automationAPIStrPath))
+
+    FilePath automationAPIStrPath = AutotestingSystem::Instance()->GetPathTo("/Scripts/autotesting_api.lua");
+    if (!FileSystem::Instance()->Exists(automationAPIStrPath) || !RunScriptFromFile(automationAPIStrPath))
     {
         AutotestingSystem::Instance()->ForceQuit("Initialization of 'autotesting_api.lua' was failed.");
     }
 
     lua_getglobal(luaState, "SetPackagePath");
-    lua_pushstring(luaState, AutotestingSystem::ResolvePathToAutomation("/Autotesting/").c_str());
+    lua_pushstring(luaState, AutotestingSystem::Instance()->GetPathTo("/").GetAbsolutePathname().c_str());
     if (lua_pcall(luaState, 1, 1, 0))
     {
         const char* err = lua_tostring(luaState, -1);
         AutotestingSystem::Instance()->ForceQuit(Format("AutotestingSystemLua::InitFromFile SetPackagePath failed: %s", err));
     }
 
-    if (!LoadScriptFromFile(luaFilePath))
+    if (!luaFilePath.IsEmpty())
     {
-        AutotestingSystem::Instance()->ForceQuit("Load of '" + luaFilePath + "' was failed failed");
+        if (!LoadScriptFromFile(luaFilePath))
+        {
+            AutotestingSystem::Instance()->ForceQuit("Load of '" + luaFilePath.GetAbsolutePathname() + "' was failed failed");
+        }
+    }
+    else //Empty 'luaFilePath' means we start record&play mode. In this mode we load all requirements beforehand.
+    {
+        for (const FilePath& path : FileSystem::Instance()->EnumerateFilesInDirectory(AutotestingSystem::Instance()->GetPathTo("/Actions/")))
+        {
+            RunScript(Format("require '%s'", path.GetBasename().c_str()));
+            Logger::FrameworkDebug("Used memory after '%s': %d", path.GetBasename().c_str(), GetUsedMemory());
+        }
     }
 
     lua_getglobal(luaState, "ResumeTest");
     resumeTestFunctionRef = luaL_ref(luaState, LUA_REGISTRYINDEX);
-
     AutotestingSystem::Instance()->OnInit();
-    String baseName = FilePath(luaFilePath).GetBasename();
-    lua_pushstring(luaState, baseName.c_str());
+
+    if (!luaFilePath.IsEmpty())
+    {
+        String baseName = FilePath(luaFilePath).GetBasename();
+        lua_pushstring(luaState, baseName.c_str());
+    }
+
     AutotestingSystem::Instance()->RunTests();
 }
 
@@ -297,7 +313,7 @@ String AutotestingSystemLua::GetDeviceName()
     }
     else
     {
-        deviceName = WStringToString(DeviceInfo::GetName());
+        deviceName = UTF8Utils::EncodeToUTF8(DeviceInfo::GetName());
     }
     replace(deviceName.begin(), deviceName.end(), ' ', '_');
     replace(deviceName.begin(), deviceName.end(), '-', '_');
@@ -335,7 +351,7 @@ void AutotestingSystemLua::Update(float32 timeElapsed)
 
 float32 AutotestingSystemLua::GetTimeElapsed()
 {
-    return SystemTimer::RealFrameDelta();
+    return SystemTimer::GetRealFrameDelta();
 }
 
 void AutotestingSystemLua::OnError(const String& errorMessage)
@@ -421,6 +437,13 @@ UIControl* AutotestingSystemLua::FindControl(const String& path, UIControl* srcC
         return nullptr;
     }
 
+    String zeroOrMoreLevelsWildcard = "**";
+
+    if (controlPath[0] == zeroOrMoreLevelsWildcard)
+    {
+        return srcControl->FindByPath(path);
+    }
+
     UIControl* control = FindControl(srcControl, controlPath[0]);
     for (uint32 i = 1; i < controlPath.size(); ++i)
     {
@@ -439,10 +462,13 @@ UIControl* AutotestingSystemLua::FindControl(UIControl* srcControl, const String
     {
         return nullptr;
     }
+
     int32 index = atoi(controlName.c_str());
+    // not number
     if (Format("%d", index) != controlName)
     {
-        // not number
+        if (srcControl->GetName().c_str() == controlName)
+            return srcControl;
         return srcControl->FindByName(controlName);
     }
     // number
@@ -508,7 +534,7 @@ bool AutotestingSystemLua::SetText(const String& path, const String& text)
     UITextField* tf = dynamic_cast<UITextField*>(FindControl(path));
     if (tf)
     {
-        tf->SetText(StringToWString(text));
+        tf->SetText(UTF8Utils::EncodeToWideString(text));
         return true;
     }
     return false;
@@ -572,6 +598,12 @@ void AutotestingSystemLua::ClickSystemBack()
     AutotestingSystem::Instance()->ClickSystemBack();
 }
 
+void AutotestingSystemLua::PressEscape()
+{
+    Logger::FrameworkDebug("AutotestingSystemLua::PressEscape");
+    AutotestingSystem::Instance()->PressEscape();
+}
+
 String AutotestingSystemLua::GetText(UIControl* control)
 {
     UIStaticText* uiStaticText = dynamic_cast<UIStaticText*>(control);
@@ -583,6 +615,16 @@ String AutotestingSystemLua::GetText(UIControl* control)
     if (uiTextField != nullptr)
     {
         return UTF8Utils::EncodeToUTF8(uiTextField->GetText());
+    }
+    return "";
+}
+
+String AutotestingSystemLua::GetTaggedClass(UIControl* control, const String& tag)
+{
+    const FastName& value = control->GetTaggedClass(FastName(tag));
+    if (value.IsValid())
+    {
+        return value.c_str();
     }
     return "";
 }
@@ -690,13 +732,13 @@ bool AutotestingSystemLua::CheckText(UIControl* control, const String& expectedT
     UIStaticText* uiStaticText = dynamic_cast<UIStaticText*>(control);
     if (uiStaticText)
     {
-        String actualText = WStringToString(uiStaticText->GetText());
+        String actualText = UTF8Utils::EncodeToUTF8(uiStaticText->GetText());
         return (actualText == expectedText);
     }
     UITextField* uiTextField = dynamic_cast<UITextField*>(control);
     if (uiTextField)
     {
-        String actualText = WStringToString(uiTextField->GetText());
+        String actualText = UTF8Utils::EncodeToUTF8(uiTextField->GetText());
         return (actualText == expectedText);
     }
     return false;
@@ -704,7 +746,7 @@ bool AutotestingSystemLua::CheckText(UIControl* control, const String& expectedT
 
 bool AutotestingSystemLua::CheckMsgText(UIControl* control, const String& key)
 {
-    WideString expectedText = StringToWString(key);
+    WideString expectedText = UTF8Utils::EncodeToWideString(key);
 
     UIStaticText* uiStaticText = dynamic_cast<UIStaticText*>(control);
     if (uiStaticText)
@@ -726,7 +768,7 @@ void AutotestingSystemLua::TouchDown(const Vector2& point, int32 touchId)
     UIEvent touchDown;
     touchDown.phase = UIEvent::Phase::BEGAN;
     touchDown.touchId = touchId;
-    touchDown.timestamp = SystemTimer::Instance()->AbsoluteMS() / 1000.0;
+    touchDown.timestamp = SystemTimer::GetMs() / 1000.0;
     touchDown.physPoint = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(point);
     touchDown.point = point;
     ProcessInput(touchDown);
@@ -736,7 +778,7 @@ void AutotestingSystemLua::TouchMove(const Vector2& point, int32 touchId)
 {
     UIEvent touchMove;
     touchMove.touchId = touchId;
-    touchMove.timestamp = SystemTimer::Instance()->AbsoluteMS() / 1000.0;
+    touchMove.timestamp = SystemTimer::GetMs() / 1000.0;
     touchMove.physPoint = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(point);
     touchMove.point = point;
 
@@ -765,7 +807,7 @@ void AutotestingSystemLua::TouchUp(int32 touchId)
     }
     touchUp.phase = UIEvent::Phase::ENDED;
     touchUp.touchId = touchId;
-    touchUp.timestamp = SystemTimer::Instance()->AbsoluteMS() / 1000.0;
+    touchUp.timestamp = SystemTimer::GetMs() / 1000.0;
 
     ProcessInput(touchUp);
 }
@@ -774,14 +816,9 @@ void AutotestingSystemLua::LeftMouseClickDown(const Vector2& point)
 {
     UIEvent clickDown;
     clickDown.phase = UIEvent::Phase::BEGAN;
-#if defined(__DAVAENGINE_COREV2__)
-    clickDown.mouseButton = eMouseButtons::LEFT;
     clickDown.device = eInputDevices::MOUSE;
-#else
-    clickDown.mouseButton = UIEvent::MouseButton::LEFT;
-    clickDown.device = UIEvent::Device::MOUSE;
-#endif
-    clickDown.timestamp = SystemTimer::Instance()->AbsoluteMS() / 1000.0;
+    clickDown.mouseButton = eMouseButtons::LEFT;
+    clickDown.timestamp = SystemTimer::GetMs() / 1000.0;
     clickDown.physPoint = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(point);
     clickDown.point = point;
     ProcessInput(clickDown);
@@ -790,23 +827,14 @@ void AutotestingSystemLua::LeftMouseClickDown(const Vector2& point)
 void AutotestingSystemLua::LeftMouseClickUp(const Vector2& point)
 {
     UIEvent clickUp;
-#if defined(__DAVAENGINE_COREV2__)
     if (!AutotestingSystem::Instance()->FindTouch(static_cast<int32>(eMouseButtons::LEFT), clickUp))
-#else
-    if (!AutotestingSystem::Instance()->FindTouch(static_cast<int32>(UIEvent::MouseButton::LEFT), clickUp))
-#endif
     {
         AutotestingSystem::Instance()->OnError("ClickAction::LeftMouseClickUp click down not found");
     }
     clickUp.phase = UIEvent::Phase::ENDED;
-#if defined(__DAVAENGINE_COREV2__)
-    clickUp.mouseButton = eMouseButtons::LEFT;
     clickUp.device = eInputDevices::MOUSE;
-#else
-    clickUp.mouseButton = UIEvent::MouseButton::LEFT;
-    clickUp.device = UIEvent::Device::MOUSE;
-#endif
-    clickUp.timestamp = SystemTimer::Instance()->AbsoluteMS() / 1000.0;
+    clickUp.mouseButton = eMouseButtons::LEFT;
+    clickUp.timestamp = SystemTimer::GetMs() / 1000.0;
     clickUp.physPoint = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(point);
     clickUp.point = point;
     ProcessInput(clickUp);
@@ -818,12 +846,8 @@ void AutotestingSystemLua::MouseWheel(const Vector2& point, float32 x, float32 y
     wheel.wheelDelta.x = x;
     wheel.wheelDelta.y = y;
     wheel.phase = UIEvent::Phase::WHEEL;
-#if defined(__DAVAENGINE_COREV2__)
     wheel.device = eInputDevices::MOUSE;
-#else
-    wheel.device = UIEvent::Device::MOUSE;
-#endif
-    wheel.timestamp = SystemTimer::Instance()->AbsoluteMS() / 1000.0;
+    wheel.timestamp = SystemTimer::GetMs() / 1000.0;
     wheel.physPoint = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(point);
     wheel.point = point;
     ProcessInput(wheel);

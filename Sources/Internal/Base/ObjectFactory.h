@@ -5,6 +5,7 @@
 #include "Base/BaseObject.h"
 #include "Base/StaticSingleton.h"
 #include "Base/ObjectCreator.h"
+#include "Utils/StringFormat.h"
 #include <typeinfo>
 
 namespace DAVA
@@ -68,10 +69,21 @@ public:
     ObjectFactory();
 
     /**
+     \brief check an ability to create class with given name
+     
+     \param[in] name name of class you want to create
+     */
+    bool IsTypeRegistered(const String& name) const
+    {
+        return (creatorMap.find(name) != creatorMap.end());
+    }
+
+    /**
 		\brief creates a class with given name
 		
 		\param[in] name name of class you want to create
 	 */
+
     template <class T>
     T* New(const String& name)
     {
@@ -84,7 +96,7 @@ public:
             //VI: but cast_if_equal casts to the exact types only
             return static_cast<T*>((newFunc)());
         }
-        DVASSERT_MSG(false, Format("Class %s creator not found.", name.c_str()).c_str());
+        DVASSERT(false, Format("Class %s creator not found.", name.c_str()).c_str());
         return 0;
     }
 

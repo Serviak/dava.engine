@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "Math/Math2D.h"
 
 namespace DAVA
 {
@@ -48,10 +49,21 @@ enum ResourceType
 
 enum Api
 {
-    RHI_DX11,
+    RHI_DX11 = 0,
     RHI_DX9,
     RHI_GLES2,
-    RHI_METAL
+    RHI_METAL,
+    RHI_NULL_RENDERER,
+
+    RHI_API_COUNT
+};
+
+enum class RenderingError : uint32_t
+{
+    FailedToCreateDevice,
+    DriverError,
+    UnsupportedShaderModel,
+    FailedToInitialize
 };
 
 enum ProgType
@@ -76,10 +88,12 @@ enum FillMode
 enum
 {
     MAX_CONST_BUFFER_COUNT = 8,
-    MAX_RENDER_TARGET_COUNT = 2,
+    MAX_RENDER_TARGET_COUNT = 4,
     MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT = 8,
     MAX_VERTEX_TEXTURE_SAMPLER_COUNT = 2,
-    MAX_VERTEX_STREAM_COUNT = 4
+    MAX_VERTEX_STREAM_COUNT = 4,
+    MAX_SHADER_PROPERTY_COUNT = 1024,
+    MAX_SHADER_CONST_BUFFER_COUNT = 1024,
 };
 
 //------------------------------------------------------------------------------
@@ -538,6 +552,20 @@ enum ColorMask
     COLORMASK_ALL = COLORMASK_R | COLORMASK_G | COLORMASK_B | COLORMASK_A
 };
 
+enum BlendFunc
+{
+};
+
+enum BlendOp
+{
+    BLENDOP_ZERO,
+    BLENDOP_ONE,
+    BLENDOP_SRC_ALPHA,
+    BLENDOP_INV_SRC_ALPHA,
+    BLENDOP_SRC_COLOR,
+    BLENDOP_DST_COLOR
+};
+
 struct BlendState
 {
     struct
@@ -557,25 +585,17 @@ struct BlendState
     {
         for (uint32 i = 0; i != MAX_RENDER_TARGET_COUNT; ++i)
         {
+            rtBlend[i].colorFunc = 0;
+            rtBlend[i].colorSrc = static_cast<uint32>(BLENDOP_ONE);
+            rtBlend[i].colorDst = static_cast<uint32>(BLENDOP_ZERO);
+            rtBlend[i].alphaFunc = 0;
+            rtBlend[i].alphaSrc = static_cast<uint32>(BLENDOP_ONE);
+            rtBlend[i].alphaDst = static_cast<uint32>(BLENDOP_ZERO);
             rtBlend[i].writeMask = COLORMASK_ALL;
             rtBlend[i].blendEnabled = false;
             rtBlend[i].alphaToCoverage = false;
         }
     }
-};
-
-enum BlendFunc
-{
-};
-
-enum BlendOp
-{
-    BLENDOP_ZERO,
-    BLENDOP_ONE,
-    BLENDOP_SRC_ALPHA,
-    BLENDOP_INV_SRC_ALPHA,
-    BLENDOP_SRC_COLOR,
-    BLENDOP_DST_COLOR
 };
 
 namespace PipelineState
@@ -848,6 +868,24 @@ namespace CommandBuffer
 {
 struct
 Descriptor
+{
+};
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// perf-query
+namespace PerfQuery
+{
+struct Descriptor
+{
+};
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// const-buffer
+namespace ConstBuffer
+{
+struct Descriptor
 {
 };
 }

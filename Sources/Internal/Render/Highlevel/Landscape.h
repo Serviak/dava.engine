@@ -1,14 +1,15 @@
-#ifndef __DAVAENGINE_LANDSCAPE_NODE_H__
-#define __DAVAENGINE_LANDSCAPE_NODE_H__
+#pragma once
 
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Reflection/Reflection.h"
 #include "Render/RenderBase.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "FileSystem/FilePath.h"
 #include "MemoryManager/MemoryProfiler.h"
 #include "Render/Highlevel/LandscapeSubdivision.h"
+#include "Concurrency/Mutex.h"
 
 namespace DAVA
 {
@@ -56,7 +57,7 @@ public:
 
     enum RenderMode
     {
-        RENDERMODE_NO_INSTANCING,
+        RENDERMODE_NO_INSTANCING = 0,
         RENDERMODE_INSTANCING,
         RENDERMODE_INSTANCING_MORPHING,
     };
@@ -209,7 +210,6 @@ protected:
     void DrawPatchNoInstancing(uint32 level, uint32 x, uint32 y, uint32 xNegSizePow2, uint32 yNegSizePow2, uint32 xPosSizePow2, uint32 yPosSizePow2);
 
     void FlushQueue();
-    void ClearQueue();
 
     inline uint16 GetVertexIndex(uint16 x, uint16 y);
 
@@ -303,6 +303,8 @@ public:
                          MEMBER(debugDrawMetrics, "debugDrawMetrics", I_VIEW | I_EDIT)
                          MEMBER(subdivision, "subdivision", I_VIEW | I_EDIT)
                          );
+
+    DAVA_VIRTUAL_REFLECTION(Landscape, RenderObject);
 };
 
 // Inline functions
@@ -320,6 +322,4 @@ inline Landscape::RenderMode Landscape::GetRenderMode() const
 {
     return renderMode;
 }
-};
-
-#endif // __DAVAENGINE_LANDSCAPE_NODE_H__
+}

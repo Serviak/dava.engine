@@ -9,17 +9,31 @@
 #include "Scene3D/Systems/Controller/RotationControllerSystem.h"
 #include "Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h"
 #include "Scene3D/Systems/Controller/WASDControllerSystem.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "UI/Update/UIUpdateComponent.h"
+#include "UI/Render/UISceneComponent.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(UI3DView)
+{
+    ReflectionRegistrator<UI3DView>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UI3DView* o) { o->Release(); })
+    .Field("drawToFrameBuffer", &UI3DView::GetDrawToFrameBuffer, &UI3DView::SetDrawToFrameBuffer)
+    .Field("frameBufferScaleFactor", &UI3DView::GetFrameBufferScaleFactor, &UI3DView::SetFrameBufferScaleFactor)
+    .End();
+}
+
 UI3DView::UI3DView(const Rect& rect)
     : UIControl(rect)
     , scene(nullptr)
-    , registeredInUIControlSystem(false)
     , drawToFrameBuffer(false)
     , fbScaleFactor(1.f)
     , fbRenderSize()
 {
+    GetOrCreateComponent<UIUpdateComponent>(); //TODO Remove this code. move Update And Draw methods to UIRenderSystem.
+    GetOrCreateComponent<UISceneComponent>();
 }
 
 UI3DView::~UI3DView()
@@ -193,12 +207,22 @@ void UI3DView::CopyDataFrom(UIControl* srcControl)
 
 void UI3DView::Input(UIEvent* currentInput)
 {
-    if (scene)
+    if (scene != nullptr)
     {
         scene->Input(currentInput);
     }
 
     UIControl::Input(currentInput);
+}
+
+void UI3DView::InputCancelled(UIEvent* currentInput)
+{
+    if (scene != nullptr)
+    {
+        scene->InputCancelled(currentInput);
+    }
+
+    UIControl::InputCancelled(currentInput);
 }
 
 void UI3DView::SetDrawToFrameBuffer(bool enable)
@@ -233,23 +257,5 @@ void UI3DView::PrepareFrameBuffer()
     Vector2 fbSize = Vector2(static_cast<float32>(frameBuffer->GetWidth()), static_cast<float32>(frameBuffer->GetHeight()));
 
     fbTexSize = fbRenderSize / fbSize;
-}
-
-void UI3DView::OnVisible()
-{
-    if (!registeredInUIControlSystem)
-    {
-        registeredInUIControlSystem = true;
-        UIControlSystem::Instance()->UI3DViewAdded();
-    }
-}
-
-void UI3DView::OnInvisible()
-{
-    if (registeredInUIControlSystem)
-    {
-        registeredInUIControlSystem = false;
-        UIControlSystem::Instance()->UI3DViewRemoved();
-    }
 }
 }

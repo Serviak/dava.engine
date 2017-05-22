@@ -29,7 +29,7 @@ DAVA::int32 panichandler(lua_State* L)
 {
     std::ostringstream os;
     DAVA::LuaBridge::DumpStack(L, os);
-    DAVA::Logger::Error("PANIC: unhandled error during Lua call:\n%s\n%s", lua_tostring(L, -1), os.str().c_str());
+    DAVA::Logger::Debug("PANIC: unhandled error during Lua call:\n%s\n%s", lua_tostring(L, -1), os.str().c_str());
     return 0;
 }
 
@@ -37,7 +37,7 @@ DAVA::int32 errorhandler(lua_State* L)
 {
     std::ostringstream os;
     DAVA::LuaBridge::DumpStack(L, os);
-    DAVA::Logger::Error(os.str().c_str());
+    DAVA::Logger::Info(os.str().c_str());
     DAVA_THROW(DAVA::LuaException, LUA_ERRRUN, DAVA::LuaBridge::PopString(L));
 }
 
@@ -116,7 +116,7 @@ int32 LuaScript::ExecStringSafe(const String& script)
     }
     catch (const LuaException& e)
     {
-        Logger::Error("LuaException: %s", e.what());
+        Logger::Info("LuaException: %s", e.what());
         return -1;
     }
 }
@@ -135,7 +135,7 @@ bool LuaScript::GetResultSafe(int32 index, Any& any, const Type* preferredType /
     }
     catch (const LuaException& e)
     {
-        Logger::Error("LuaException: %s", e.what());
+        Logger::Info("LuaException: %s", e.what());
         return false;
     }
 }
@@ -183,7 +183,7 @@ void LuaScript::PushArg(const Any& any)
 int32 LuaScript::EndCallFunction(int32 nargs)
 {
     int32 base = lua_gettop(state->lua) - nargs; // store function stack index
-    DVASSERT_MSG(base >= 1, "Lua stack corrupted!");
+    DVASSERT(base >= 1, "Lua stack corrupted!");
     int32 errfunc = PushErrorHandler(base); // stack +1: insert error handler function before function
     int32 res = lua_pcall(state->lua, nargs, LUA_MULTRET, errfunc); // stack -(nargs+1), +nresults: return value or error message
     if (res != 0)
@@ -193,7 +193,7 @@ int32 LuaScript::EndCallFunction(int32 nargs)
     int32 top = lua_gettop(state->lua); // store current stack size (must contains error handler if it has setted
     if (errfunc)
     {
-        DVASSERT_MSG(top >= 1, "Lua stack corrupted!");
+        DVASSERT(top >= 1, "Lua stack corrupted!");
         lua_remove(state->lua, base); // stack -1: remove error hander function
     }
     return top - base; // calculate number of function results

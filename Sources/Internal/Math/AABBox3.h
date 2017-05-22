@@ -1,11 +1,10 @@
-#ifndef __DAVAENGINE_AABBOX3_H__
-#define __DAVAENGINE_AABBOX3_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/Any.h"
 #include "Math/Vector.h"
 #include "Math/Ray.h"
-#include "Base/Introspection.h"
 
 namespace DAVA
 {
@@ -107,13 +106,6 @@ public:
 
     float32 GetBoundingSphereRadius() const;
     AABBox3 GetMaxRotationExtentBox(const Vector3& rotationCenter) const;
-
-public:
-    //Dizz: introspection changes
-    //INTROSPECTION(AABBox3,
-    //    MEMBER(min, "Min", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-    //    MEMBER(max, "Max", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-    //);
 };
 
 //! \brief construct empty bounding box
@@ -261,6 +253,8 @@ inline Vector3 AABBox3::GetSize() const
 {
     return Vector3(Abs(max.x - min.x), Abs(max.y - min.y), Abs(max.z - min.z));
 }
-};
 
-#endif // __DAVAENGINE_AABBOX3_H__
+template <>
+bool AnyCompare<AABBox3>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<AABBox3>;
+}
