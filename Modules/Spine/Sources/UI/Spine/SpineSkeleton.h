@@ -29,7 +29,6 @@ class SpineTrackEntry
 class SpineBone : public BaseObject
 {
 public:
-    SpineBone();
     SpineBone(spBone* bone);
     
     bool IsValid() const;

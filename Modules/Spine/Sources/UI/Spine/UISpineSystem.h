@@ -42,8 +42,6 @@ public:
 
     void Process(float32 elapsedTime) override;
 
-    void BuildBoneLinks(UIControl* control);
-
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationStart;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationFinish;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationComplete;
@@ -55,7 +53,7 @@ private:
         RefPtr<SpineBone> bone;
         RefPtr<UIControl> control;
     };
-    
+
     struct SpineNode
     {
         RefPtr<UISpineComponent> spine;
@@ -71,7 +69,7 @@ private:
     void UnbindBones(UISpineBonesComponent* bones);
     void BindBackground(UIControlBackground* bg);
     void UnbindBackground(UIControlBackground* bg);
-    
+
     void BuildBoneLinks(SpineNode& node);
 
     Map<UIControl*, SpineNode> nodes;
