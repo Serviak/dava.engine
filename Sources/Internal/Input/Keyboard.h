@@ -48,7 +48,7 @@ private:
 
 private:
     InputSystem* inputSystem = nullptr;
-    std::unique_ptr<Private::KeyboardImpl> impl = nullptr;
+    Private::KeyboardImpl* impl = nullptr;
 
     // State of each physical key
     Array<DigitalElementState, INPUT_ELEMENTS_KB_COUNT> keys;

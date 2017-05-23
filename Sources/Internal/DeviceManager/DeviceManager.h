@@ -31,7 +31,7 @@ struct MainDispatcherEvent;
     Class which keeps current device configuration, listens for device addition, removal or devices' properties changes.
     Application can subscribe to appropriate signals to receive notification about configuration changes.
 
-    \todo For now `DeviceManager` observes only display devices, further add other devices (input, storage, maybe network).
+    \todo For now `DeviceManager` observes only display devices and cpu stats, further add other devices (input, storage, maybe network).
 */
 class DeviceManager final
 {
@@ -62,6 +62,12 @@ public:
     // Signals
 
     Signal<> displayConfigChanged; //<! Emited when display has been added/removed or properties of any display have changed
+
+    /**
+        Get CPU temperature in celsius.
+        \note Only supported on Android for now.
+    */
+    float32 GetCpuTemperature() const;
 
 private:
     void UpdateDisplayConfig();

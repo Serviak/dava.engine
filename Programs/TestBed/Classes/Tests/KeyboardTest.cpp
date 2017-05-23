@@ -255,7 +255,7 @@ bool KeyboardTest::InputEventLogHandler(const DAVA::InputEvent& inputEvent)
                 s += "|JUST_RELEASED";
             }
         }
-        Logger::Debug("============= %s [D]: 0x%X {%s}", info.name.c_str(), inputEvent.digitalState, s.c_str());
+        Logger::Debug("============= %s [D]: 0x%X {%s}", info.name.c_str(), s.c_str());
     }
     else if (info.type == eInputElementTypes::ANALOG)
     {

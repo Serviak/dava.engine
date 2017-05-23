@@ -505,7 +505,7 @@ bool OnInput(const DAVA::InputEvent& input)
         }
     }
 
-    return false;
+    return (io.WantCaptureMouse || io.WantCaptureKeyboard || io.WantTextInput);
 }
 
 void Uninitialize()

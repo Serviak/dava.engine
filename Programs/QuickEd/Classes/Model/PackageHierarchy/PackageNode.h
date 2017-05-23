@@ -3,8 +3,9 @@
 
 #include "PackageBaseNode.h"
 
-#include "FileSystem/FilePath.h"
-#include "Base/Any.h"
+#include <FileSystem/FilePath.h>
+#include <Base/Any.h>
+#include <Base/Result.h>
 
 class ImportedPackagesNode;
 class PackageControlsNode;
@@ -106,10 +107,6 @@ private:
 
     void RefreshPropertiesInInstances(ControlNode* node, AbstractProperty* property);
 
-    void RefreshControlStylesAndLayout(ControlNode* node, bool canUpdateAll = true);
-    void RefreshStyles(ControlNode* node);
-    void CollectRootControlsToRefreshLayout(ControlNode* node, DAVA::Vector<ControlNode*>& roots);
-    void RestoreProperties(ControlNode* control);
     void NotifyPropertyChanged(ControlNode* control);
     DAVA::Vector<DepthPackageNode> CollectImportedPackagesRecursively();
 
@@ -132,6 +129,8 @@ private:
     DAVA::UIControlPackageContext* packageContext = nullptr;
     DAVA::Vector<PackageListener*> listeners;
     bool canUpdateAll = true;
+
+    DAVA::ResultList results;
 };
 
 #endif // __UI_EDITOR_PACKAGE_NODE_H__
