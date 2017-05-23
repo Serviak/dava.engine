@@ -39,39 +39,51 @@
 extern "C" {
 #endif
 
-typedef struct spSlot {
-	spSlotData* const data;
-	spBone* const bone;
-	float r, g, b, a;
-	spAttachment* const attachment;
+typedef struct spSlot
+{
+    spSlotData* const data;
+    spBone* const bone;
+    float r, g, b, a;
+    spAttachment* const attachment;
 
-	int attachmentVerticesCapacity;
-	int attachmentVerticesCount;
-	float* attachmentVertices;
+    int attachmentVerticesCapacity;
+    int attachmentVerticesCount;
+    float* attachmentVertices;
 
 #ifdef __cplusplus
-	spSlot() :
-		data(0),
-		bone(0),
-		r(0), g(0), b(0), a(0),
-		attachment(0),
-		attachmentVerticesCapacity(0),
-		attachmentVerticesCount(0),
-		attachmentVertices(0) {
-	}
+    spSlot()
+        :
+        data(0)
+        ,
+        bone(0)
+        ,
+        r(0)
+        , g(0)
+        , b(0)
+        , a(0)
+        ,
+        attachment(0)
+        ,
+        attachmentVerticesCapacity(0)
+        ,
+        attachmentVerticesCount(0)
+        ,
+        attachmentVertices(0)
+    {
+    }
 #endif
 } spSlot;
 
-spSlot* spSlot_create (spSlotData* data, spBone* bone);
-void spSlot_dispose (spSlot* self);
+spSlot* spSlot_create(spSlotData* data, spBone* bone);
+void spSlot_dispose(spSlot* self);
 
 /* @param attachment May be 0 to clear the attachment for the slot. */
-void spSlot_setAttachment (spSlot* self, spAttachment* attachment);
+void spSlot_setAttachment(spSlot* self, spAttachment* attachment);
 
-void spSlot_setAttachmentTime (spSlot* self, float time);
-float spSlot_getAttachmentTime (const spSlot* self);
+void spSlot_setAttachmentTime(spSlot* self, float time);
+float spSlot_getAttachmentTime(const spSlot* self);
 
-void spSlot_setToSetupPose (spSlot* self);
+void spSlot_setToSetupPose(spSlot* self);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spSlot Slot;

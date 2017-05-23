@@ -37,30 +37,38 @@
 extern "C" {
 #endif
 
-typedef struct spIkConstraintData {
-	const char* const name;
-	
-	int bonesCount;
-	spBoneData** bones;
-	
-	spBoneData* target;
-	int bendDirection;
-	float mix;
+typedef struct spIkConstraintData
+{
+    const char* const name;
+
+    int bonesCount;
+    spBoneData** bones;
+
+    spBoneData* target;
+    int bendDirection;
+    float mix;
 
 #ifdef __cplusplus
-	spIkConstraintData() :
-		name(0),
-		bonesCount(0),
-		bones(0),
-		target(0),
-		bendDirection(0),
-		mix(0) {
-	}
+    spIkConstraintData()
+        :
+        name(0)
+        ,
+        bonesCount(0)
+        ,
+        bones(0)
+        ,
+        target(0)
+        ,
+        bendDirection(0)
+        ,
+        mix(0)
+    {
+    }
 #endif
 } spIkConstraintData;
 
-spIkConstraintData* spIkConstraintData_create (const char* name);
-void spIkConstraintData_dispose (spIkConstraintData* self);
+spIkConstraintData* spIkConstraintData_create(const char* name);
+void spIkConstraintData_dispose(spIkConstraintData* self);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spIkConstraintData IkConstraintData;
