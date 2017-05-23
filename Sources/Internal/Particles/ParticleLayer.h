@@ -114,11 +114,9 @@ struct ParticleLayer : public BaseObject
     // Flow
     RefPtr<PropertyLine<float32>> flowSpeed;
     RefPtr<PropertyLine<float32>> flowSpeedVariation;
-    RefPtr<PropertyLine<float32>> flowSpeedOverLife; // Flow animation speed.
 
     RefPtr<PropertyLine<float32>> flowOffset;
     RefPtr<PropertyLine<float32>> flowOffsetVariation;
-    RefPtr<PropertyLine<float32>> flowOffsetOverLife; // Flow animation offset.
 
     // Noise
     RefPtr<PropertyLine<float32>> noiseScale;

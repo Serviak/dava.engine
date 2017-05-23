@@ -177,11 +177,9 @@ private:
 
     TimeLineWidget* flowSpeedTimeLine = nullptr;
     TimeLineWidget* flowSpeedVariationTimeLine = nullptr;
-    TimeLineWidget* flowSpeedOverLifeTimeLine = nullptr;
 
     TimeLineWidget* flowOffsetTimeLine = nullptr;
     TimeLineWidget* flowOffsetVariationTimeLine = nullptr;
-    TimeLineWidget* flowOffsetOverLifeTimeLine = nullptr;
 
     TimeLineWidget* noiseScaleTimeLine = nullptr;
     TimeLineWidget* noiseScaleVariationTimeLine = nullptr;
