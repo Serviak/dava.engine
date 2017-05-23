@@ -226,4 +226,12 @@ private:
     bool blockSignals = false;
 };
 
+class WheellIgnorantComboBox : public QComboBox
+{
+public:
+    explicit WheellIgnorantComboBox(QWidget* parent = 0);
+
+    bool event(QEvent* e) override;
+};
+
 #endif /* defined(__ResourceEditorQt__EmitterLayerWidget__) */

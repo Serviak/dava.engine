@@ -33,9 +33,9 @@ struct Particle
     float32 baseNoiseScale;
     float32 currNoiseScale;
     float32 baseNoiseUScrollSpeed;
-    float32 currNoiseUScrollSpeed;
+    float32 currNoiseUOffset;
     float32 baseNoiseVScrollSpeed;
-    float32 currNoiseVScrollSpeed;
+    float32 currNoiseVOffset;
 
     float32 fresnelToAlphaPower;
     float32 fresnelToAlphaBias;
