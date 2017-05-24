@@ -138,6 +138,7 @@ private:
 
     QCheckBox* enableCheckBox = nullptr;
     QCheckBox* enableFlowCheckBox = nullptr;
+    QCheckBox* enableFlowAnimationCheckBox = nullptr;
     QCheckBox* enableNoiseCheckBox = nullptr;
     QCheckBox* enableNoiseScrollCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
@@ -220,6 +221,7 @@ private:
     GradientPickerWidget* colorOverLifeGradient = nullptr;
 
     QWidget* flowLayoutWidget = nullptr;
+    QWidget* flowSettingsLayoutWidget = nullptr;
     QWidget* noiseLayoutWidget = nullptr;
     QWidget* noiseScrollWidget = nullptr;
 
