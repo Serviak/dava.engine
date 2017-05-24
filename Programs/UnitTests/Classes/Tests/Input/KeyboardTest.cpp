@@ -21,6 +21,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
         {
+            Logger::Info("Skipping KeyboardSupportedElementsTest since there is no keyboard device");
             return;
         }
 
@@ -38,6 +39,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
         {
+            Logger::Info("Skipping KeyboardDefaultStateTest since there is no keyboard device");
             return;
         }
 
@@ -63,21 +65,17 @@ DAVA_TESTCLASS (KeyboardTestClass)
         //   - Wait for the next frame, check it has changed to pressed
         //   - Imititate platform sending KEY_UP event
         //   - Check that state has changed to just released
-        //   - Wait for the next frame, check it has changed to released
+        //   - Wait for the next frame, check that it has changed to released
         //
         // Handled in Update()
 
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
         {
+            Logger::Info("Skipping KeyboardEventHandlingTest since there is no keyboard device");
             keyboardEventHandlingTestFinished = true;
             return;
         }
-    }
-
-    DAVA_TEST (KeyboardMultipleKeysEventHandlingTest)
-    {
-        // TODO
     }
 
     void CheckSingleState(Keyboard * keyboard, eInputElements requiredElement, DigitalElementState requiredState)
@@ -99,6 +97,13 @@ DAVA_TESTCLASS (KeyboardTestClass)
         }
     }
 
+    enum class EventHandlingTestState
+    {
+        INITIAL,
+        SENT_KEY_DOWN,
+        SENT_KEY_UP
+    };
+
     void Update(float32 timeElapsed, const String& testName) override
     {
         if (testName == "KeyboardEventHandlingTest" && !keyboardEventHandlingTestFinished)
@@ -106,8 +111,10 @@ DAVA_TESTCLASS (KeyboardTestClass)
             using namespace DAVA::Private;
 
             Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
+            Window* primaryWindow = GetPrimaryWindow();
+            MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
 
-            if (!waitingForFirstFrame && !waitingForSecondFrame)
+            if (eventHandlingTestState == EventHandlingTestState::INITIAL)
             {
                 // Check that button is released
                 // Send KEY_DOWN and check that button is just pressed
@@ -118,17 +125,15 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 DigitalElementState currentElementStateBeforeEvent = kb->GetDigitalElementState(currentElement);
                 CheckSingleState(kb, currentElement, DigitalElementState::Released());
 
-                Window* primaryWindow = GetPrimaryWindow();
-                MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
                 uint32 currentElementNativeScancode = kb->GetElementNativeScancode(currentElement);
                 dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_DOWN, currentElementNativeScancode, DAVA::eModifierKeys::NONE, false));
 
                 DigitalElementState currentElementStateAfterEvent = kb->GetDigitalElementState(currentElement);
                 CheckSingleState(kb, currentElement, DigitalElementState::JustPressed());
 
-                waitingForFirstFrame = true;
+                eventHandlingTestState = EventHandlingTestState::SENT_KEY_DOWN;
             }
-            else if (waitingForFirstFrame)
+            else if (eventHandlingTestState == EventHandlingTestState::SENT_KEY_DOWN)
             {
                 // Check that button is pressed
                 // Send KEY_UP and check that button is just released
@@ -137,17 +142,14 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 DigitalElementState currentElementStateBeforeEvent = kb->GetDigitalElementState(currentElement);
                 CheckSingleState(kb, currentElement, DigitalElementState::Pressed());
 
-                Window* primaryWindow = GetPrimaryWindow();
-                MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
                 dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_UP, kb->GetElementNativeScancode(currentElement), DAVA::eModifierKeys::NONE, false));
 
                 DigitalElementState currentElementStateAfterEvent = kb->GetDigitalElementState(currentElement);
                 CheckSingleState(kb, currentElement, DigitalElementState::JustReleased());
 
-                waitingForFirstFrame = false;
-                waitingForSecondFrame = true;
+                eventHandlingTestState = EventHandlingTestState::SENT_KEY_UP;
             }
-            else if (waitingForSecondFrame)
+            else if (eventHandlingTestState == EventHandlingTestState::SENT_KEY_UP)
             {
                 // Check that button is released
                 // Go to the next element (if not finished yet)
@@ -163,7 +165,10 @@ DAVA_TESTCLASS (KeyboardTestClass)
                     currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
                 }
 #elif defined(__DAVAENGINE_MACOS__)
-                while (currentElement == eInputElements::KB_LWIN || currentElement == eInputElements::KB_RWIN)
+                while (currentElement == eInputElements::KB_LWIN ||
+                       currentElement == eInputElements::KB_RWIN ||
+                       currentElement == eInputElements::KB_SCROLLLOCK ||
+                       currentElement == eInputElements::KB_PAUSE)
                 {
                     currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
                 }
@@ -174,7 +179,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
                     keyboardEventHandlingTestFinished = true;
                 }
 
-                waitingForSecondFrame = false;
+                eventHandlingTestState = EventHandlingTestState::INITIAL;
             }
         }
     }
@@ -194,7 +199,6 @@ DAVA_TESTCLASS (KeyboardTestClass)
 private:
     // KeyboardEventHandlingTest variables
     eInputElements currentElement = eInputElements::KB_FIRST;
-    bool waitingForFirstFrame = false; // Button has been pressed, wait for the next frame to check that its status has changed
-    bool waitingForSecondFrame = false; // Button has been released, wait for the next frame to check that its status has changed
+    EventHandlingTestState eventHandlingTestState = EventHandlingTestState::INITIAL;
     bool keyboardEventHandlingTestFinished = false;
 };
