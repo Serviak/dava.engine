@@ -15,7 +15,6 @@ struct spBone;
 
 namespace DAVA
 {
-
 // Dava types forward declaration
 struct BatchDescriptor;
 class UIControl;
@@ -30,7 +29,7 @@ class SpineBone : public BaseObject
 {
 public:
     SpineBone(spBone* bone);
-    
+
     bool IsValid() const;
     Vector2 GetPosition() const;
     Vector2 GetScale() const;
@@ -44,7 +43,6 @@ protected:
 private:
     spBone* bonePtr = nullptr;
 };
-
 
 /**
     
@@ -120,19 +118,19 @@ private:
 
     FilePath mPath;
     FilePath mSequencePath;
-    
+
     Vector<String> mAnimations;
     Vector<String> mSkins;
     int32 mAnimationType = 0;
     bool mRun = false;
     bool mLoop = false;
     bool mNeedInitialize = false;
-    
+
     spActionsData* mActionsData = nullptr;
     spAtlas* mAtlas = nullptr;
     spSkeleton* mSkeleton = nullptr;
     spAnimationState* mState = nullptr;
-    
+
     float32* mWorldVertices = nullptr;
     Texture* mTexture = nullptr;
     float32 mTimeScale = 1.0f;
@@ -141,5 +139,4 @@ private:
     Vector<uint32> mColors;
     Polygon2 mPolygon;
 };
-
 }

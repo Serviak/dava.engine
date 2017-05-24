@@ -8,7 +8,6 @@
 
 namespace DAVA
 {
-
 class UIControl;
 class UIComponent;
 class UISpineBonesComponent;
@@ -74,5 +73,4 @@ private:
 
     Map<UIControl*, SpineNode> nodes;
 };
-
 }
