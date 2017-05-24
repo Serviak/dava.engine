@@ -83,6 +83,7 @@ struct ParticleLayer : public BaseObject
     FilePath flowmapPath;
     ScopedPtr<Sprite> flowmap;
     bool enableFlow = false;
+    bool enableFlowAnimation = false;
     void SetFlowmap(const FilePath& spritePath_);
 
     FilePath noisePath;
