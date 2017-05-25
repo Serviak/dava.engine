@@ -5,6 +5,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputElements.h"
 #include "Input/InputSystem.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -27,13 +28,13 @@ Mouse::~Mouse()
 
 bool Mouse::IsElementSupported(eInputElements elementId) const
 {
-    return eInputElements::MOUSE_FIRST <= elementId && elementId <= eInputElements::MOUSE_LAST;
+    return IsMouseInputElement(elementId);
 }
 
 DigitalElementState Mouse::GetDigitalElementState(eInputElements elementId) const
 {
-    DVASSERT(eInputElements::MOUSE_LBUTTON <= elementId && elementId <= eInputElements::MOUSE_EXT2BUTTON);
-    return buttons[elementId - eInputElements::MOUSE_LBUTTON];
+    DVASSERT(IsMouseButtonInputElement(elementId));
+    return buttons[elementId - eInputElements::MOUSE_FIRST_BUTTON];
 }
 
 AnalogElementState Mouse::GetAnalogElementState(eInputElements elementId) const
@@ -45,7 +46,7 @@ AnalogElementState Mouse::GetAnalogElementState(eInputElements elementId) const
     case eInputElements::MOUSE_POSITION:
         return mousePosition;
     default:
-        DVASSERT(0, "Invalid elementId");
+        DVASSERT(false, Format("Invalid element id passed to Mouse::GetAnalogElementState: %u", static_cast<uint32>(elementId)).c_str());
         return AnalogElementState();
     }
 }

@@ -25,6 +25,7 @@ struct AnalogBindingCompare final
 // (CTRL + SPACE should be checked before SPACE, otherwise we might end up with SPACE action being triggered even though CTRL is also pressed)
 struct BoundActionSet final
 {
+    String name;
     Vector<uint32> devices;
     std::multiset<DigitalBinding, DigitalBindingCompare> digitalBindings;
     std::multiset<AnalogBinding, AnalogBindingCompare> analogBindings;
@@ -41,7 +42,7 @@ public:
 
 private:
     bool OnInputEvent(const InputEvent& event);
-    bool CheckDigitalStates(const Array<eInputElements, MAX_DIGITAL_STATES_COUNT>& digitalElements, const Array<DigitalElementState, MAX_DIGITAL_STATES_COUNT>& digitalStates, const Vector<uint32>& devices);
+    bool CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& digitalElements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& digitalStates, const Vector<uint32>& devices);
     bool CompareDigitalStates(const DigitalElementState& requiredState, const DigitalElementState& state);
 
 private:

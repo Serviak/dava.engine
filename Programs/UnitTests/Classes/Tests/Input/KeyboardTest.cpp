@@ -58,9 +58,9 @@ DAVA_TESTCLASS (KeyboardTestClass)
 
     DAVA_TEST (KeyboardEventHandlingTest)
     {
-        // Check event handling by the keyboard, for each key:
+        // Check key event handling by the keyboard, for each key:
         //   - Check that initial state is released
-        //   - Imitate platform sending KEY_DOWN event (it also tests `GetElementNativeScancode` method)
+        //   - Imitate platform sending KEY_DOWN event
         //   - Check that state has changed to just pressed
         //   - Wait for the next frame, check it has changed to pressed
         //   - Imititate platform sending KEY_UP event
@@ -73,14 +73,14 @@ DAVA_TESTCLASS (KeyboardTestClass)
         if (kb == nullptr)
         {
             Logger::Info("Skipping KeyboardEventHandlingTest since there is no keyboard device");
-            keyboardEventHandlingTestFinished = true;
+            eventHandlingTestState = EventHandlingTestState::FINISHED;
             return;
         }
     }
 
+    // Check that all elements are in released state, except specified `requiredElement` that should be in `requiredState`
     void CheckSingleState(Keyboard * keyboard, eInputElements requiredElement, DigitalElementState requiredState)
     {
-        // All elements should be in released state, `requiredElement` must be in `requiredState`
         for (uint32 i = static_cast<uint32>(eInputElements::KB_FIRST); i <= static_cast<uint32>(eInputElements::KB_LAST); ++i)
         {
             eInputElements element = static_cast<eInputElements>(i);
@@ -101,12 +101,13 @@ DAVA_TESTCLASS (KeyboardTestClass)
     {
         INITIAL,
         SENT_KEY_DOWN,
-        SENT_KEY_UP
+        SENT_KEY_UP,
+        FINISHED
     };
 
     void Update(float32 timeElapsed, const String& testName) override
     {
-        if (testName == "KeyboardEventHandlingTest" && !keyboardEventHandlingTestFinished)
+        if (testName == "KeyboardEventHandlingTest" && eventHandlingTestState != EventHandlingTestState::FINISHED)
         {
             using namespace DAVA::Private;
 
@@ -176,10 +177,12 @@ DAVA_TESTCLASS (KeyboardTestClass)
 
                 if (currentElement > eInputElements::KB_LAST)
                 {
-                    keyboardEventHandlingTestFinished = true;
+                    eventHandlingTestState = EventHandlingTestState::FINISHED;
                 }
-
-                eventHandlingTestState = EventHandlingTestState::INITIAL;
+                else
+                {
+                    eventHandlingTestState = EventHandlingTestState::INITIAL;
+                }
             }
         }
     }
@@ -192,7 +195,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
         }
         else
         {
-            return keyboardEventHandlingTestFinished;
+            return eventHandlingTestState == EventHandlingTestState::FINISHED;
         }
     }
 
@@ -200,5 +203,4 @@ private:
     // KeyboardEventHandlingTest variables
     eInputElements currentElement = eInputElements::KB_FIRST;
     EventHandlingTestState eventHandlingTestState = EventHandlingTestState::INITIAL;
-    bool keyboardEventHandlingTestFinished = false;
 };
