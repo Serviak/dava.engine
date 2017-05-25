@@ -26,10 +26,17 @@ class ParticleEmitter;
  */
 struct ParticleLayer : public BaseObject
 {
+    float32 stripeLifetime = 0.0f;
+    float32 stripeRate = 0.0f;
+    float32 stripeSpeed = 0.0f;
+    float32 stripeStartSize = 0.0f;
+    float32 stripeSizeOverLife = 0.0f;
+
     enum eType
     {
         TYPE_SINGLE_PARTICLE,
         TYPE_PARTICLES, // default for any particle layer loaded from yaml file
+        TYPE_PARTICLE_STRIPE,
         TYPE_SUPEREMITTER_PARTICLES
     };
 

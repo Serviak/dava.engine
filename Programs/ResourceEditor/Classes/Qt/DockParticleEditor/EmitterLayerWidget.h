@@ -1,5 +1,4 @@
-#ifndef __ResourceEditorQt__EmitterLayerWidget__
-#define __ResourceEditorQt__EmitterLayerWidget__
+#pragma once
 
 #include <DAVAEngine.h>
 #include "TimeLineWidget.h"
@@ -53,6 +52,7 @@ protected slots:
     void OnFresnelToAlphaChanged();
     void OnLayerMaterialValueChanged();
     void OnFlowPropertiesChanged();
+    void OnStripePropertiesChanged();
     void OnNoisePropertiesChanged();
     void OnSpriteBtn();
     void OnSpriteFolderBtn();
@@ -81,6 +81,7 @@ private:
     void UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack);
     void CreateFlowmapLayoutWidget();
     void CreateNoiseLayoutWidget();
+    QLayout* CreateStripeLayout();
     QLayout* CreateFresnelToAlphaLayout();
     void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
     void OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc);
@@ -215,6 +216,20 @@ private:
     EventFilterDoubleSpinBox* fresnelBiasSpinBox = nullptr;
     EventFilterDoubleSpinBox* fresnelPowerSpinBox = nullptr;
 
+
+    //////////////////////////////////////////////////////////////////////////
+    EventFilterDoubleSpinBox* stripeLifetimeSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeRateSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeSpeedSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeStartSizeSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeSizeOverLifeSpin = nullptr;
+    QLabel* stripeLabel = nullptr;
+    QLabel* stripeLifetimeLabel = nullptr;
+    QLabel* stripeRateLabel = nullptr;
+    QLabel* stripeSpeedLabel = nullptr;
+    QLabel* stripeStartSizeLabel = nullptr;
+    QLabel* stripeSizeOverLifeLabel = nullptr;
+    //////////////////////////////////////////////////////////////////////////
     QSpinBox* frameOverlifeFPSSpin = nullptr;
 
     GradientPickerWidget* colorRandomGradient = nullptr;
@@ -236,4 +251,3 @@ public:
     bool event(QEvent* e) override;
 };
 
-#endif /* defined(__ResourceEditorQt__EmitterLayerWidget__) */
