@@ -1,52 +1,42 @@
-#ifndef __GAMECORE_H__
-#define __GAMECORE_H__
+#pragma once
 
-#include "DAVAEngine.h"
-#include "Database/MongodbClient.h"
+#include <DAVAEngine.h>
+#include <Base/ScopedPtr.h>
+#include <Base/Vector.h>
+#include <FileSystem/FilePath.h>
 
+#include "Render/RHI/rhi_Type.h"
 #include "Render/RHI/Common/rhi_Private.h"
 #include "Render/RHI/rhi_Public.h"
 
-//#include "SceneRenderTestV3.h"
-
-#include <memory>
-
-using namespace DAVA;
-
-class GameCore : public ApplicationCore
+namespace DAVA
 {
-protected:
-    virtual ~GameCore();
+class Engine;
+class Window;
+}
 
+using DAVA::uint32;
+using DAVA::uint64;
+
+class RhiCubeApp final
+{
 public:
-    GameCore();
+    RhiCubeApp(DAVA::Engine& e);
 
-    static GameCore* Instance()
-    {
-        return (GameCore*)DAVA::Core::GetApplicationCore();
-    };
+    void OnAppStarted();
+    void OnWindowCreated(DAVA::Window* w);
+    void OnAppFinished();
 
-    virtual void OnAppStarted();
-    virtual void OnAppFinished();
+    void OnSuspend();
+    void OnResume();
 
-    virtual void OnSuspend();
-    virtual void OnResume();
+    void BeginFrame();
+    void Draw(DAVA::Window* window);
+    void EndFrame();
 
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    virtual void OnBackground();
-    virtual void OnForeground();
-    virtual void OnDeviceLocked();
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+private:
+    void CreateDocumentsFolder();
 
-    virtual void Update(float32 timeElapsed);
-
-    virtual void BeginFrame();
-    virtual void Draw();
-    virtual void EndFrame();
-
-    void OnKeyUp(UIEvent* evt);
-
-protected:
     void SetupTriangle();
     void SetupCube();
     void rtInit();
@@ -138,9 +128,9 @@ protected:
 
     struct Tank
     {
-        Vector<rhi::Handle> vb;
-        Vector<rhi::Handle> ib;
-        Vector<uint32> indCount;
+        DAVA::Vector<rhi::Handle> vb;
+        DAVA::Vector<rhi::Handle> ib;
+        DAVA::Vector<uint32> indCount;
         rhi::Handle ps;
         rhi::Handle vp_const[2];
         rhi::Handle fp_const;
@@ -158,10 +148,4 @@ protected:
 */
     //    rhi::HPerfQuerySet perfQuerySet;
     bool perfQuerySetFired;
-
-    //    std::unique_ptr<SceneRenderTestV3> sceneRenderTest;
 };
-
-
-
-#endif // __GAMECORE_H__
