@@ -361,6 +361,8 @@ DAVA_TESTCLASS (ActionSystemTestClass)
         }
     }
 
+    // TODO: test outputAnalogState
+
     void SendKeyboardKeyDown(Keyboard * kb, eInputElements key)
     {
         using namespace DAVA::Private;

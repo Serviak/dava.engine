@@ -26,6 +26,26 @@ Mouse::~Mouse()
     Engine::Instance()->endFrame.Disconnect(this);
 }
 
+DigitalElementState Mouse::GetLeftButtonState() const
+{
+    return GetDigitalElementState(eInputElements::MOUSE_LBUTTON);
+}
+
+DigitalElementState Mouse::GetRightButtonState() const
+{
+    return GetDigitalElementState(eInputElements::MOUSE_RBUTTON);
+}
+
+DigitalElementState Mouse::GetMiddleButtonState() const
+{
+    return GetDigitalElementState(eInputElements::MOUSE_MBUTTON);
+}
+
+AnalogElementState Mouse::GetPosition() const
+{
+    return GetAnalogElementState(eInputElements::MOUSE_POSITION);
+}
+
 bool Mouse::IsElementSupported(eInputElements elementId) const
 {
     return IsMouseInputElement(elementId);

@@ -15,6 +15,7 @@ struct MainDispatcherEvent;
 
 /**
     \ingroup input
+
     Represents keyboard input device.
 */
 class Keyboard final : public InputDevice
@@ -22,16 +23,33 @@ class Keyboard final : public InputDevice
     friend class DeviceManager; // For creation
 
 public:
+    /**
+        Return state of a specified `key`.
+
+        \note It's essentialy a shorter and more readable placeholder for `GetDigitalElementState(key)`.
+        \pre `key` should be a keyboard element.
+    */
+    DigitalElementState GetKeyState(eInputElements key) const;
+
+    /**
+        Translate a keyboard key into a wide string, using curring keyboard layout.
+
+        \pre `elementId` should be a keyboard element.
+    */
+    WideString TranslateElementToWideString(eInputElements elementId) const;
+
+    /**
+        Convert keyboard input element to native platform scancode.
+
+        \pre `elementId` should be a keyboard element.
+    */
+    uint32 GetKeyNativeScancode(eInputElements elementId) const;
+
     // InputDevice overrides
+
     bool IsElementSupported(eInputElements elementId) const override;
     DigitalElementState GetDigitalElementState(eInputElements elementId) const override;
     AnalogElementState GetAnalogElementState(eInputElements elementId) const override;
-
-    /** Translate a keyboard key into a wide string, using curring keyboard layout. */
-    WideString TranslateElementToWideString(eInputElements elementId) const;
-
-    /** Convert keyboard input element to native platform scancode. */
-    uint32 GetElementNativeScancode(eInputElements elementId) const;
 
 private:
     explicit Keyboard(uint32 id);
