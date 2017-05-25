@@ -62,6 +62,10 @@ struct DigitalElementState final
             pressed = true;
             justChanged = true;
         }
+        else
+        {
+            justChanged = false;
+        }
     }
 
     void Release()
@@ -70,6 +74,10 @@ struct DigitalElementState final
         {
             pressed = false;
             justChanged = true;
+        }
+        else
+        {
+            justChanged = false;
         }
     }
 
