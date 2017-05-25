@@ -455,6 +455,7 @@ const Intrinsic _intrinsic[] =
   INTRINSIC_FLOAT1_FUNCTION("atan"),
   INTRINSIC_FLOAT2_FUNCTION("atan2"),
   INTRINSIC_FLOAT3_FUNCTION("clamp"),
+  Intrinsic("clamp", HLSLBaseType_Int, HLSLBaseType_Int, HLSLBaseType_Int, HLSLBaseType_Int),
   INTRINSIC_FLOAT1_FUNCTION("cos"),
 
   INTRINSIC_FLOAT3_FUNCTION("lerp"),
