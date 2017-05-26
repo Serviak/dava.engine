@@ -81,9 +81,9 @@ void ReflectedButton::UpdateControl(const ControlDescriptor& changedFields)
     }
     setAutoRaise(autoRaise);
 
-    if (changedFields.IsChanged(Fields::ToolTip) == true)
+    if (changedFields.IsChanged(Fields::Tooltip) == true)
     {
-        setToolTip(GetFieldValue<QString>(Fields::ToolTip, QString("")));
+        setToolTip(GetFieldValue<QString>(Fields::Tooltip, QString("")));
     }
 
     if (changedFields.IsChanged(Fields::Enabled) == true)
