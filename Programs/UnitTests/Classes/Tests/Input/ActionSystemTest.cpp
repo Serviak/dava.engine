@@ -405,7 +405,7 @@ DAVA_TESTCLASS (ActionSystemTestClass)
 
             // Release W, no action should be triggered
             SendKeyboardKeyUp(kb, eInputElements::KB_W);
-            TEST_VERIFY(triggeredActionsCounter == 2);
+            TEST_VERIFY(triggeredActionsCounter == 1);
 
             ResetTriggeredActionsInfo();
         }
