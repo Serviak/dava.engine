@@ -30,12 +30,7 @@ const DAVA::Any& SetFieldValueCommand::GetNewValue() const
     return newValue;
 }
 
-const DAVA::Reflection& SetFieldValueCommand::GetTarget() const
+const DAVA::Reflection::Field& SetFieldValueCommand::GetField() const
 {
-    return field.ref;
-}
-
-const DAVA::Any& SetFieldValueCommand::GetFieldName() const
-{
-    return field.key;
+    return field;
 }

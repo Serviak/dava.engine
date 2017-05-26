@@ -29,7 +29,7 @@ inline ReflectedObject Reflection::GetValueObject() const
     return valueWrapper->GetValueObject(object);
 }
 
-inline ReflectedObject Reflection::GetParentValueObject() const
+inline ReflectedObject Reflection::GetDirectObject() const
 {
     return object;
 }
