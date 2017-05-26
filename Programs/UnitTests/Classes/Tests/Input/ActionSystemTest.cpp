@@ -361,7 +361,58 @@ DAVA_TESTCLASS (ActionSystemTestClass)
         }
     }
 
-    // TODO: test outputAnalogState
+    DAVA_TEST (ActionSystemActionTriggerDigitalAnalogStateTest)
+    {
+        // Check that digital binding correctly outputs overrided analog state
+
+        Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
+        if (kb == nullptr)
+        {
+            Logger::Info("Skipping ActionSystemActionTriggerDigitalAnalogStateTest since there is no keyboard device");
+            return;
+        }
+
+        ActionSystem* actionSystem = GetEngineContext()->actionSystem;
+        actionSystem->ActionTriggered.Connect(this, &ActionSystemTestClass::OnActionTriggered);
+
+        // Bind test set
+
+        ActionSet set;
+
+        const AnalogElementState overridenAnalogState{ 14.3f, -3.04f, 12.12f };
+
+        // W, triggered continuously, analog data overriden
+        DigitalBinding action1;
+        action1.actionId = ACTION_1;
+        action1.digitalElements[0] = eInputElements::KB_W;
+        action1.digitalStates[0] = DigitalElementState::Pressed();
+        action1.outputAnalogState = overridenAnalogState;
+        set.digitalBindings.push_back(action1);
+
+        actionSystem->BindSet(set, kb->GetId());
+
+        // Check action1 (W Pressed)
+        {
+            // Press W, action1 should be triggered once, analog data should be equal to outputAnalogState
+            SendKeyboardKeyDown(kb, eInputElements::KB_W);
+            TEST_VERIFY(triggeredActionsCounter == 1);
+            TEST_VERIFY(lastTriggeredAction != nullptr);
+            TEST_VERIFY(lastTriggeredAction->actionId == ACTION_1);
+            TEST_VERIFY(lastTriggeredAction->triggeredDevice == kb);
+            TEST_VERIFY(lastTriggeredAction->analogState.x == overridenAnalogState.x);
+            TEST_VERIFY(lastTriggeredAction->analogState.y == overridenAnalogState.y);
+            TEST_VERIFY(lastTriggeredAction->analogState.z == overridenAnalogState.z);
+
+            // Release W, no action should be triggered
+            SendKeyboardKeyUp(kb, eInputElements::KB_W);
+            TEST_VERIFY(triggeredActionsCounter == 2);
+
+            ResetTriggeredActionsInfo();
+        }
+
+        actionSystem->UnbindAllSets();
+        actionSystem->ActionTriggered.Disconnect(this);
+    }
 
     void SendKeyboardKeyDown(Keyboard * kb, eInputElements key)
     {
@@ -370,7 +421,7 @@ DAVA_TESTCLASS (ActionSystemTestClass)
         Window* primaryWindow = GetPrimaryWindow();
         MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
 
-        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_DOWN, kb->GetElementNativeScancode(key), DAVA::eModifierKeys::NONE, false));
+        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_DOWN, kb->GetKeyNativeScancode(key), DAVA::eModifierKeys::NONE, false));
     }
 
     void SendKeyboardKeyUp(Keyboard * kb, eInputElements key)
@@ -380,7 +431,7 @@ DAVA_TESTCLASS (ActionSystemTestClass)
         Window* primaryWindow = GetPrimaryWindow();
         MainDispatcher* dispatcher = EngineBackend::Instance()->GetDispatcher();
 
-        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_UP, kb->GetElementNativeScancode(key), DAVA::eModifierKeys::NONE, false));
+        dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_UP, kb->GetKeyNativeScancode(key), DAVA::eModifierKeys::NONE, false));
     }
 
     void SendMouseButtonDown(Mouse * mouse, eInputElements button)

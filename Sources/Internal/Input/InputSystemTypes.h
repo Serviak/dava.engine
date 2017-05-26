@@ -45,25 +45,25 @@ namespace DAVA
 */
 struct DigitalElementState final
 {
-    /** Return flag indicating if button is pressed */
+    /** Return flag indicating if a button is pressed. */
     bool IsPressed() const
     {
         return pressed;
     }
 
-    /** Return flag indicating if button has just been pressed */
+    /** Return flag indicating if a button has just been pressed. */
     bool IsJustPressed() const
     {
         return (pressed && justChanged);
     }
 
-    /** Return flag indicating if button is released */
+    /** Return flag indicating if a button is released. */
     bool IsReleased() const
     {
         return !pressed;
     }
 
-    /** Return flag indicating if button has just been released */
+    /** Return flag indicating if a button has just been released. */
     bool IsJustReleased() const
     {
         return (!pressed && justChanged);
@@ -73,7 +73,7 @@ struct DigitalElementState final
 
     /**
         Drops `justChanged` internal flag, thus changing JustPressed and JustReleased states to Pressed and Released accordingly.
-        This method should be called at the end of the frame by `InputDevice` implementations, hence the name.
+        This method should be called at the end of a frame by `InputDevice` implementations, hence the name.
     */
     void OnEndFrame()
     {
@@ -117,7 +117,7 @@ struct DigitalElementState final
         return result;
     }
 
-    /** Modifies state as if the button it is associated with has been pressed. */
+    /** Modify the state as if the button it is associated with has been pressed. */
     void Press()
     {
         if (!pressed)
@@ -131,7 +131,7 @@ struct DigitalElementState final
         }
     }
 
-    /** Modifies state as if the button it is associated with has been released. */
+    /** Modify the state as if the button it is associated with has been released. */
     void Release()
     {
         if (pressed)
