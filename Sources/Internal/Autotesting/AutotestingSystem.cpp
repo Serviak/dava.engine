@@ -516,7 +516,7 @@ void AutotestingSystem::PressEscape()
     inputEvent.window = GetPrimaryWindow();
     inputEvent.timestamp = SystemTimer::GetMs() / 1000.0;
     inputEvent.deviceType = eInputDeviceTypes::KEYBOARD;
-    inputEvent.digitalState = eDigitalElementStates::JUST_PRESSED;
+    inputEvent.digitalState = DigitalElementState::JustPressed();
     inputEvent.elementId = eInputElements::KB_ESCAPE;
     inputEvent.keyboardEvent.charCode = 0;
 

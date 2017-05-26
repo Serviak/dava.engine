@@ -219,7 +219,7 @@ bool ProfilerOverlay::OnInput(UIEvent* input)
 
         if (keyboard != nullptr)
         {
-            const bool lctrlPressed = keyboard->GetDigitalElementState(eInputElements::KB_LCTRL).IsPressed();
+            const bool lctrlPressed = keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
 
             if (lctrlPressed && input->phase == UIEvent::Phase::KEY_DOWN && input->key == eInputElements::KB_F12)
             {
