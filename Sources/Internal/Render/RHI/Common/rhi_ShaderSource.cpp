@@ -23,13 +23,13 @@ using DAVA::LockGuard;
 #include "Parser/sl_GeneratorGLES.h"
 #include "Parser/sl_GeneratorMSL.h"
 
+#define RHI_DUMP_SHADERSOURCE 0
+
 namespace rhi
 {
 //==============================================================================
 
-class
-ShaderFileCallback
-: public PreProc::FileCallback
+class ShaderFileCallback : public PreProc::FileCallback
 {
 public:
     ShaderFileCallback(const char* base_dir)
@@ -108,8 +108,7 @@ public:
     }
 
 private:
-    struct
-    file_t
+    struct file_t
     {
         std::string name;
         unsigned data_sz;
@@ -168,38 +167,38 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
 
     if (pre_proc.Process(srcText, &src))
     {
-#if 0
-{
-    Logger::Info("\n\nsrc-code:");
-
-    char ss[64 * 1024];
-    unsigned line_cnt = 0;
-
-    if (src.size() < sizeof(ss))
-    {
-        strcpy(ss, &src[0]);
-
-        const char* line = ss;
-        for (char* s = ss; *s; ++s)
+        #if RHI_DUMP_SHADERSOURCE
         {
-            if( *s=='\r')
-                *s=' ';
+            Logger::Info("\n\nsrc-code:");
 
-            if (*s == '\n')
+            char ss[64 * 1024];
+            unsigned line_cnt = 0;
+
+            if (src.size() < sizeof(ss))
             {
-                *s = 0;
-                Logger::Info("%4u |  %s", 1 + line_cnt, line);
-                line = s+1;
-                ++line_cnt;
+                strcpy(ss, &src[0]);
+
+                const char* line = ss;
+                for (char* s = ss; *s; ++s)
+                {
+                    if (*s == '\r')
+                        *s = ' ';
+
+                    if (*s == '\n')
+                    {
+                        *s = 0;
+                        Logger::Info("%4u |  %s", 1 + line_cnt, line);
+                        line = s + 1;
+                        ++line_cnt;
+                    }
+                }
+            }
+            else
+            {
+                Logger::Info(&src[0]);
             }
         }
-    }
-    else
-    {
-        Logger::Info(&src[0]);
-    }
-}
-#endif
+        #endif
 
         static sl::Allocator alloc;
         sl::HLSLParser parser(&alloc, "<shader>", &(src[0]), src.size());
