@@ -47,8 +47,26 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
 
     const Size2f windowSize = { 1024.f, 1024.f / data.screenAspect };
 
-    DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit]", DAVAENGINE_VERSION,
-                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8));
+    const char* api = "";
+
+    switch (rhi::HostApi())
+    {
+    case rhi::RHI_GLES2:
+        api = "GLES2";
+        break;
+    case rhi::RHI_DX9:
+        api = "DX9";
+        break;
+    case rhi::RHI_DX11:
+        api = "DX11";
+        break;
+    case rhi::RHI_METAL:
+        api = "Metal";
+        break;
+    }
+
+    DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit] | %s", DAVAENGINE_VERSION,
+                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8), api);
 
     w->SetTitleAsync(title);
 
@@ -85,7 +103,7 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     performanceResultsScreen = new PerformanceResultsScreen(data);
 #endif
 
-    //data.scenePath = "~doc:/05_amigosville_am/05_amigosville_am.sc2";
+    data.scenePath = "~doc:/05_amigosville_am/05_amigosville_am.sc2";
     //data.scenePath = "~doc:/06_rudniki_rd/06_rudniki_rd.sc2";
     //data.scenePath = "~doc:/09_savanna_sv/09_savanna_sv.sc2";
     //data.scenePath = "~doc:/10_asia_as/10_asia_as.sc2";
@@ -228,7 +246,7 @@ DAVA::KeyedArchive* CreateOptions()
 
 #else
 #if defined(__DAVAENGINE_WIN32__)
-    //appOptions->SetInt32("renderer", rhi::RHI_DX9);
+    //appOptions->SetInt32("renderer", rhi::RHI_DX11);
     //appOptions->SetInt32("renderer", rhi::RHI_DX9);
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
     appOptions->SetInt32("rhi_threaded_frame_count", 2);

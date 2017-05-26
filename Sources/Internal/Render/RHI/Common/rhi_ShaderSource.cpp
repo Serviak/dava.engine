@@ -930,8 +930,16 @@ ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                 const char* attr_name;
             } attr[] =
             {
-              { "POSITION", "position" },
-              { "NORMAL", "normal" },
+              { "POSITION", "position0" },
+              { "POSITION0", "position0" },
+              { "POSITION1", "position1" },
+              { "POSITION2", "position2" },
+              { "POSITION3", "position3" },
+              { "NORMAL", "normal0" },
+              { "NORMAL0", "normal0" },
+              { "NORMAL1", "normal1" },
+              { "NORMAL2", "normal2" },
+              { "NORMAL3", "normal3" },
               { "TEXCOORD", "texcoord0" },
               { "TEXCOORD0", "texcoord0" },
               { "TEXCOORD1", "texcoord1" },
