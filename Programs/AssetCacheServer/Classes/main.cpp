@@ -1,20 +1,21 @@
 #include "UI/AssetCacheServerWindow.h"
 #include "ServerCore.h"
 
-#include "Engine/Engine.h"
-#include "Engine/EngineContext.h"
-#include "Logger/Logger.h"
+#include <QtHelpers/RunGuard.h>
+#include <QtHelpers/LauncherListener.h>
 
-#include "QtHelpers/RunGuard.h"
-#include "QtHelpers/LauncherListener.h"
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <Logger/Logger.h>
+#include <FileSystem/FileSystem.h>
 
 #include <QApplication>
 #include <QCryptographicHash>
 
-using namespace DAVA;
-
-int Process(Engine& e)
+int Process(DAVA::Engine& e)
 {
+    using namespace DAVA;
+
     const QString appUid = "{DAVA.AssetCacheServer.Version.1.0.0}";
     const QString appUidPath = QCryptographicHash::hash((appUid).toUtf8(), QCryptographicHash::Sha1).toHex();
     std::unique_ptr<QtHelpers::RunGuard> runGuard = std::make_unique<QtHelpers::RunGuard>(appUidPath);
@@ -29,6 +30,46 @@ int Process(Engine& e)
     QApplication a(argc, argv.data());
 
     const EngineContext* context = e.GetContext();
+    DAVA::FileSystem* fs = context->fileSystem;
+
+#ifdef __DAVAENGINE_MACOS__
+    DAVA::FilePath documentsFolder = "c:/Dava Engine/Asset Cache Server/";
+#else
+    DAVA::FilePath documentsFolder = fs->GetCurrentDocumentsDirectory() + "AssetServer/";
+#endif
+
+    DAVA::FileSystem::eCreateDirectoryResult createResult = fs->CreateDirectory(documentsFolder, true);
+#ifndef __DAVAENGINE_MACOS__
+    auto copyDocumentsFromOldFolder = [&]
+    {
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            ApplicationSettings settings;
+            settings.LoadFromOldPath();
+            FilePath cacheContentsPath = settings.GetFolder();
+            cacheContentsPath.MakeDirectoryPathname();
+
+            FilePath documentsFolderOld = fs->GetCurrentDocumentsDirectory();
+            if (cacheContentsPath.StartsWith(documentsFolderOld))
+            {
+                fs->SetCurrentDocumentsDirectory(documentsFolder);
+                FilePath cacheContentsDefaultPath = settings.GetDefaultFolder();
+                cacheContentsDefaultPath.MakeDirectoryPathname();
+                if (fs->CreateDirectory(cacheContentsDefaultPath, true) == FileSystem::DIRECTORY_CREATED)
+                {
+                    fs->RecursiveCopy(cacheContentsPath, cacheContentsDefaultPath);
+                    settings.SetFolder(cacheContentsDefaultPath);
+                }
+            }
+
+            fs->SetCurrentDocumentsDirectory(documentsFolder);
+            settings.Save(); // settings are saved in new place
+        }
+    };
+    copyDocumentsFromOldFolder(); // todo: remove some versions after
+#endif
+    fs->SetCurrentDocumentsDirectory(documentsFolder);
+
     context->logger->SetLogFilename("AssetCacheServer.txt");
     context->logger->SetLogLevel(DAVA::Logger::LEVEL_FRAMEWORK);
 
@@ -69,6 +110,8 @@ int Process(Engine& e)
 
 int DAVAMain(DAVA::Vector<DAVA::String> cmdLine)
 {
+    using namespace DAVA;
+
     Vector<String> modules =
     {
       "JobManager",

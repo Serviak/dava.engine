@@ -94,8 +94,14 @@ int Process(Engine& e)
 
     FileSystem* fileSystem = e.GetContext()->fileSystem;
 
-    fileSystem->SetDefaultDocumentsDirectory();
-    fileSystem->CreateDirectory(DAVA::FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "ResourcePatcher/";
+#else
+    FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "ResourcePatcher/";
+#endif
+    fileSystem->CreateDirectory(documentsDirectory, true);
+    fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
     const Vector<String>& cmdLine = e.GetCommandLine();
 
     bool paramsOk = false;

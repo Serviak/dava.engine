@@ -1,6 +1,7 @@
 #include <Base/BaseTypes.h>
 #include <Engine/Engine.h>
 #include <Logger/Logger.h>
+#include <FileSystem/FileSystem.h>
 #include <Debug/DVAssertDefaultHandlers.h>
 
 #include "CommandLineApplication.h"
@@ -29,6 +30,15 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     e.Init(eEngineRunMode::CONSOLE_MODE, modules, nullptr);
 
     const EngineContext* context = e.GetContext();
+
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "ResourceArchiver/";
+#else
+    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "ResourceArchiver/";
+#endif
+    context->fileSystem->CreateDirectory(documentsDirectory, true);
+    context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
     context->logger->SetLogLevel(Logger::LEVEL_INFO);
     context->logger->EnableConsoleMode();
 
