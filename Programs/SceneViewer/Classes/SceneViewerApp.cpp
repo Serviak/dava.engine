@@ -24,6 +24,26 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     engine.beginFrame.Connect(this, &SceneViewerApp::BeginFrame);
     engine.endFrame.Connect(this, &SceneViewerApp::EndFrame);
 
+    FileSystem* fileSystem = engine.GetContext()->fileSystem;
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "SceneViewer/";
+#else
+    FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "SceneViewer/";
+#endif
+    DAVA::FileSystem::eCreateDirectoryResult createResult = fileSystem->CreateDirectory(documentsDirectory, true);
+
+    if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS) // todo: remove this if-case some versions after
+    {
+        data.settings.Load(); // load from old doc directory
+        fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+        data.settings.Save();
+    }
+    else
+    {
+        fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+        data.settings.Load();
+    }
+
     DAVA::QualitySettingsSystem::Instance()->SetKeepUnusedEntities(true);
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);

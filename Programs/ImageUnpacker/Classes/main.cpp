@@ -204,7 +204,17 @@ void ProcessImageUnpacker()
 
 void Process(Engine& e)
 {
-    e.GetContext()->logger->SetLogLevel(Logger::LEVEL_INFO);
+    const EngineContext* context = e.GetContext();
+
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "ImageUnpacker/";
+#else
+    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "ImageUnpacker/";
+#endif
+    context->fileSystem->CreateDirectory(documentsDirectory, true);
+    context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
+    context->logger->SetLogLevel(Logger::LEVEL_INFO);
     DVASSERT(e.IsConsoleMode() == true);
 
     if (CommandLineParser::GetCommandsCount() < 2

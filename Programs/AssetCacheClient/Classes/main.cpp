@@ -13,6 +13,15 @@ using namespace DAVA;
 int Process(Engine& e)
 {
     const EngineContext* context = e.GetContext();
+
+#ifdef __DAVAENGINE_MACOS__
+    FilePath documentsDirectory = "AssetCacheClient/";
+#else
+    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "AssetCacheClient/";
+#endif
+    context->fileSystem->CreateDirectory(documentsDirectory, true);
+    context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
     context->logger->SetLogLevel(DAVA::Logger::LEVEL_INFO);
     context->logger->EnableConsoleMode();
 
