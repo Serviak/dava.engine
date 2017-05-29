@@ -10,6 +10,7 @@
 #include "TArc/Controls/PropertyPanel/Private/EmptyComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/FilePathComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/MatrixComponentValue.h"
+#include "TArc/Controls/PropertyPanel/Private/TooltipComponentValue.h"
 #include "TArc/Utils/ReflectionHelpers.h"
 
 #include <Debug/DVAssert.h>
@@ -176,6 +177,12 @@ std::unique_ptr<BaseComponentValue> DefaultEditorComponentExtension::GetEditor(c
 
         result->SetStyle(style);
         return result;
+    }
+
+    const M::Tooltip* tooltipMeta = node->field.ref.GetMeta<M::Tooltip>();
+    if (tooltipMeta != nullptr)
+    {
+        return std::make_unique<TooltipComponentValue>();
     }
 
     return EditorComponentExtension::GetEditor(node);
