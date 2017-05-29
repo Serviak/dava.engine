@@ -1968,7 +1968,7 @@ void ShaderSource::Dump() const
 //version increment history:
 //5 is for new shader language
 //6 is after fixing Add/Update problem
-//7 is after MCPP with in-house pre-processor
+//7 is after MCPP replaced with in-house pre-processor
 const uint32 ShaderSourceCache::FormatVersion = 7;
 
 Mutex shaderSourceEntryMutex;
