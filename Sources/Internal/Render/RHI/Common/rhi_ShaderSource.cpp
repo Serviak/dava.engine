@@ -36,6 +36,13 @@ public:
     {
         inclDir.emplace_back(base_dir);
     }
+    ~ShaderFileCallback()
+    {
+        for (size_t k = 0; k != _file.size(); ++k)
+        {
+            ::free(_file[k].data);
+        }
+    }
 
     bool Open(const char* file_name) override
     {
