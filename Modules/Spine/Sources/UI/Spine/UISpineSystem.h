@@ -10,7 +10,7 @@ namespace DAVA
 {
 class UIControl;
 class UIComponent;
-class UISpineBonesComponent;
+class UISpineAttachControlsToBonesComponent;
 class UISpineComponent;
 class UIControlBackground;
 class SpineBone;
@@ -49,14 +49,14 @@ public:
 private:
     struct BoneLink
     {
-        RefPtr<SpineBone> bone;
+        std::shared_ptr<SpineBone> bone;
         RefPtr<UIControl> control;
     };
 
     struct SpineNode
     {
         RefPtr<UISpineComponent> spine;
-        RefPtr<UISpineBonesComponent> bones;
+        RefPtr<UISpineAttachControlsToBonesComponent> bones;
         RefPtr<UIControlBackground> bg;
         RefPtr<SpineSkeleton> skeleton;
         Vector<BoneLink> boneLinks;
@@ -64,8 +64,8 @@ private:
 
     void AddNode(UISpineComponent* spine);
     void RemoveNode(UISpineComponent* spine);
-    void BindBones(UISpineBonesComponent* bones);
-    void UnbindBones(UISpineBonesComponent* bones);
+    void BindBones(UISpineAttachControlsToBonesComponent* bones);
+    void UnbindBones(UISpineAttachControlsToBonesComponent* bones);
     void BindBackground(UIControlBackground* bg);
     void UnbindBackground(UIControlBackground* bg);
 

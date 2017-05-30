@@ -11,6 +11,7 @@ struct spAtlas;
 struct spSkeleton;
 struct spAnimationState;
 struct spActionsData;
+struct spTrackEntry;
 struct spBone;
 
 namespace DAVA
@@ -23,29 +24,28 @@ class Texture;
 // Public wrappers
 class SpineTrackEntry
 {
+public:
+    SpineTrackEntry(spTrackEntry* track);
+
+private:
+    spTrackEntry* trackPtr = nullptr;
 };
 
-class SpineBone : public BaseObject
+class SpineBone
 {
 public:
     SpineBone(spBone* bone);
 
-    bool IsValid() const;
     Vector2 GetPosition() const;
     Vector2 GetScale() const;
     float32 GetAngle() const;
-
-    //Color GetColor() const;
-
-protected:
-    ~SpineBone();
 
 private:
     spBone* bonePtr = nullptr;
 };
 
 /**
-    
+
 */
 class SpineSkeleton final : public BaseObject
 {
@@ -72,12 +72,12 @@ public:
     const Vector<String>& GetAvailableAnimationsNames() const;
     /** Set current animation by specified name, track index and looping flag.
         Return track data of setted animation. */
-    SpineTrackEntry* SetAnimation(int32 trackIndex, const String& name, bool loop);
+    std::shared_ptr<SpineTrackEntry> SetAnimation(int32 trackIndex, const String& name, bool loop);
     /** Add next animation by specified name, track index and looping flag.
         Return track data of added animation. */
-    SpineTrackEntry* AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay);
+    std::shared_ptr<SpineTrackEntry> AddAnimation(int32 trackIndex, const String& name, bool loop, float32 delay);
     /** Return track data by specified track index. */
-    SpineTrackEntry* GetTrack(int32 trackIndex);
+    std::shared_ptr<SpineTrackEntry> GetTrack(int32 trackIndex);
     /** Create translation animation between two animation states specified by names. */
     void SetAnimationMix(const String& fromAnimation, const String& toAnimation, float32 duration);
     /** Clear all animation tracks and stop any animation. */
@@ -96,7 +96,7 @@ public:
     const Vector<String>& GetAvailableSkinsNames() const;
 
     /** Find bone data by specified bone's name. Return nullptr if bone not found. */
-    RefPtr<SpineBone> FindBone(const String& boneName);
+    std::shared_ptr<SpineBone> FindBone(const String& boneName);
 
     /** Emit then animation start */
     Signal<int32 /*trackIndex*/> onStart;
@@ -115,9 +115,6 @@ private:
     void ReleaseSkeleton();
 
     BatchDescriptor* batchDescriptor = nullptr;
-
-    FilePath mPath;
-    FilePath mSequencePath;
 
     Vector<String> mAnimations;
     Vector<String> mSkins;

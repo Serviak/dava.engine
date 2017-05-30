@@ -14,7 +14,7 @@ Controls:
         components:
             Background:
                 drawType: "DRAW_BATCH"
-            Spine:
+            UISpineComponent:
                 skeletonPath: "~res:/UI/Spine/powerup.json"
                 atlasPath: "~res:/UI/Spine/powerup.atlas"
                 animationName: "animation"
@@ -31,7 +31,7 @@ Controls:
         components:
             Background:
                 drawType: "DRAW_BATCH"
-            Spine:
+            UISpineComponent:
                 skeletonPath: "~res:/UI/Spine/spineboy.json"
                 atlasPath: "~res:/UI/Spine/spineboy.atlas"
                 animationName: "walk"
@@ -49,7 +49,7 @@ Controls:
         components:
             Background:
                 drawType: "DRAW_BATCH"
-            Spine:
+            UISpineComponent:
                 skeletonPath: "~res:/UI/Spine/goblins-mesh.json"
                 atlasPath: "~res:/UI/Spine/goblins-mesh.atlas"
                 animationName: "walk"
@@ -57,12 +57,12 @@ Controls:
                 skinName: "goblin"
                 timeScale: 1.000000
                 loopedPlayback: true
-            SpineBones:
+            UISpineAttachControlsToBonesComponent:
                 bonesBinds: "spear3,Spear;head,Head"
         children:
         -   class: "UIControl"
             name: "Spear"
-            position: [116.195099, -277.725037]
+            position: [77.124153, -285.829956]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
@@ -71,7 +71,7 @@ Controls:
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
         -   class: "UIControl"
             name: "Head"
-            position: [0.671380, -216.539154]
+            position: [-2.621923, -210.835922]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
