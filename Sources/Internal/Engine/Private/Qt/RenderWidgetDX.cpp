@@ -99,6 +99,7 @@ void RenderWidgetDX::InitCustomRenderParams(rhi::InitParam& params)
     params.threadedRenderEnabled = false;
     params.threadedRenderFrameCount = 1;
     params.window = reinterpret_cast<void*>(surface->winId());
+    params.useBackBufferExtraSize = true;
 }
 
 void RenderWidgetDX::AcquireContext()
