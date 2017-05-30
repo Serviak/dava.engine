@@ -6,9 +6,10 @@
 
 namespace DAVA
 {
-class UISpineAttachControlsToBonesComponent : public UIBaseComponent<UISpineAttachControlsToBonesComponent>
+class UISpineAttachControlsToBonesComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UISpineAttachControlsToBonesComponent, UIComponent);
+    IMPLEMENT_UI_COMPONENT(UISpineAttachControlsToBonesComponent);
 
 public:
     struct AttachInfo
