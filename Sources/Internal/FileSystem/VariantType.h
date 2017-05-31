@@ -63,6 +63,8 @@ public:
 
     VariantType();
     VariantType(const VariantType& value);
+    VariantType(VariantType&& value);
+
     explicit VariantType(bool value);
     explicit VariantType(int8 value);
     explicit VariantType(uint8 value);
@@ -518,6 +520,7 @@ public:
     bool operator!=(const VariantType& other) const;
 
     VariantType& operator=(const VariantType& other);
+    VariantType& operator=(VariantType&& other);
 
     const MetaInfo* Meta() const;
     void* MetaObject();
