@@ -2316,7 +2316,8 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
             // This is actually a type constructor like (float2(...
             if (Accept('('))
             {
-                needsEndParen = true;
+                // expressions like 'float3 f = (float3(x,x,x) ...' parsed incorrectly
+                // needsEndParen = true;
                 return ParsePartialConstructor(expression, type.baseType, type.typeName);
             }
             HLSLCastingExpression* castingExpression = m_tree->AddNode<HLSLCastingExpression>(fileName, line);
