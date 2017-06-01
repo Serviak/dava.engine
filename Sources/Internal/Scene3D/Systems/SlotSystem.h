@@ -2,6 +2,7 @@
 
 #include "Entity/SceneSystem.h"
 #include "FileSystem/FilePath.h"
+#include "Functional/Function.h"
 #include "Base/RefPtr.h"
 #include "Base/FastName.h"
 
@@ -55,17 +56,30 @@ public:
         UnorderedMap<String, Set<Item, ItemLess>> cachedItems;
     };
 
+    /** \brief Class that SlotSystem delegates loading of item */
     class ExternalEntityLoader
     {
     public:
-        virtual Entity* Load(const FilePath& path) = 0;
-        virtual void AddEntity(Entity* parent, Entity* child) = 0;
+        /**
+            Load item with path \c path, attach it into entity \c rootEntity and call \c finishCallback.
+            Loading can be processed in worker thread, but finishCallback should be called from 'Process' method.
+            If argument of finishCallback is empty, slot system think that loading was successful, else slot system set
+            state for slot as LOADING_FAILED and print argument into Logger::Error
+        */
+        virtual void Load(RefPtr<Entity> rootEntity, const FilePath& path, const Function<void(String&&)>& finishCallback) = 0;
+        /** Add root entity of slot item info scene hierarchy. Default implementation simple call parent->AddNode(child) */
+        virtual void AddEntity(Entity* parent, Entity* child);
+        /** Slot system call this method from every SlotSystem::Process */
         virtual void Process(float32 delta) = 0;
 
-        void SetScene(Scene* scene);
-
     protected:
+        /** Called before ExternalEntityLoader will be detached from slot system */
+        virtual void Reset() = 0;
         Scene* scene = 0;
+
+    private:
+        friend class SlotSystem;
+        void SetScene(Scene* scene);
     };
 
     SlotSystem(Scene* scene);
@@ -113,15 +127,37 @@ public:
     SlotComponent* LookUpSlot(Entity* entity) const;
     /** Helper function to get local transform of joint that \c component attached to. If \c component doesn't attached to joint, return Identity*/
     Matrix4 GetJointTransform(SlotComponent* component) const;
+    /** Helper function to get final local transform loaded item that \c component attached to.*/
+    Matrix4 GetResultTranform(SlotComponent* component) const;
+
+    /** Describe different state of slot */
+    enum class eSlotState
+    {
+        /** Slot is empty and the was not trying to load item into this slot */
+        NOT_LOADED,
+        /** Item for slot is currently is loading */
+        LOADING,
+        /** Item is completely loaded into slot */
+        LOADED,
+        /** Last loading of item for slot was failed */
+        LOADING_FAILED
+    };
+
+    /** Get current state of slot */
+    eSlotState GetSlotState(const SlotComponent* component) const;
 
 protected:
     void SetScene(Scene* scene) override;
 
 private:
+    void AttachEntityToSlotImpl(SlotComponent* component, Entity* entity, FastName itemName, SlotSystem::eSlotState state);
     void UnloadItem(SlotComponent* component);
 
-    UnorderedMap<Component*, Entity*> slotToLoadedEntity;
-    UnorderedMap<Entity*, Component*> loadedEntityToSlot;
+    size_t GetComponentIndex(const SlotComponent* component) const;
+
+    Vector<SlotComponent*> components;
+    Vector<Entity*> loadedEntities;
+    Vector<eSlotState> states;
 
     std::shared_ptr<ExternalEntityLoader> externalEntityLoader;
     std::shared_ptr<ItemsCache> sharedCache;

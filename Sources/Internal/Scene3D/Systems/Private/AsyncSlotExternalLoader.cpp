@@ -12,15 +12,13 @@
 
 namespace DAVA
 {
-Entity* AsyncSlotExternalLoader::Load(const FilePath& path)
+void AsyncSlotExternalLoader::Load(RefPtr<Entity> rootEntity, const FilePath& path, const DAVA::Function<void(String&&)>& finishCallback)
 {
-    RefPtr<Entity> rootEntity;
-    rootEntity.ConstructInplace();
-    rootEntity->SetName(path.GetBasename().c_str());
-
     {
         LockGuard<Mutex> guard(jobsMutex);
-        jobsMap.emplace(rootEntity, RefPtr<Scene>());
+        LoadingResult result;
+        result.finishCallback = finishCallback;
+        jobsMap.emplace(rootEntity, result);
     }
 
     {
@@ -32,12 +30,6 @@ Entity* AsyncSlotExternalLoader::Load(const FilePath& path)
     }
 
     ApplyNextJob();
-    return rootEntity.Get();
-}
-
-void AsyncSlotExternalLoader::AddEntity(Entity* parent, Entity* child)
-{
-    parent->AddNode(child);
 }
 
 void AsyncSlotExternalLoader::Process(float32 delta)
@@ -48,15 +40,19 @@ void AsyncSlotExternalLoader::Process(float32 delta)
     while (currentIter != endIter)
     {
         RefPtr<Entity> rootEntity = currentIter->first;
-        RefPtr<Scene> scene = currentIter->second;
-        if (scene.Get() != nullptr)
+        LoadingResult result = currentIter->second;
+        if (result.scene.Get() != nullptr)
         {
-            for (int32 childIndex = 0; childIndex < scene->GetChildrenCount(); ++childIndex)
+            while (int32 childCount = result.scene->GetChildrenCount() > 0)
             {
-                rootEntity->AddNode(scene->GetChild(childIndex));
+                rootEntity->AddNode(result.scene->GetChild(childCount - 1));
             }
 
             currentIter = jobsMap.erase(currentIter);
+            if (result.finishCallback)
+            {
+                result.finishCallback(std::move(result.error));
+            }
         }
         else
         {
@@ -76,18 +72,15 @@ void AsyncSlotExternalLoader::LoadImpl(RefPtr<Entity> rootEntity, const FilePath
 
     RefPtr<Scene> scene;
     scene.ConstructInplace();
-    SceneFileV2::eError result = scene->LoadScene(path);
-    if (result != SceneFileV2::ERROR_NO_ERROR)
-    {
-        Logger::Error("[AsyncSlotExternalLoader] Couldn't load scene %s", path.GetAbsolutePathname().c_str());
-        LockGuard<Mutex> guard(jobsMutex);
-        jobsMap.erase(rootEntity);
-        return;
-    }
-
+    SceneFileV2::eError sceneLoadResult = scene->LoadScene(path);
     {
         LockGuard<Mutex> guard(jobsMutex);
-        jobsMap[rootEntity] = scene;
+        LoadingResult& result = jobsMap[rootEntity];
+        result.scene = scene;
+        if (sceneLoadResult != SceneFileV2::ERROR_NO_ERROR)
+        {
+            result.error = Format("[AsyncSlotExternalLoader] Couldn't load scene %s with code %d", path.GetAbsolutePathname().c_str(), sceneLoadResult);
+        }
     }
 
     {
@@ -119,10 +112,25 @@ void AsyncSlotExternalLoader::ApplyNextJob()
     std::shared_ptr<AsyncSlotExternalLoader> loaderRef = shared_from_this();
     LoadTask task = loadingQueue.front();
     loadingQueue.pop_front();
-    jobMng->CreateWorkerJob([loaderRef, task]()
-                            {
-                                loaderRef->LoadImpl(task.rootEntity, task.filePath);
-                            });
+    jobMng->CreateWorkerJob([loaderRef, task]() {
+        loaderRef->LoadImpl(task.rootEntity, task.filePath);
+    });
+}
+
+void AsyncSlotExternalLoader::Reset()
+{
+    {
+        LockGuard<Mutex> loadingGuard(queueMutes);
+        loadingQueue.clear();
+    }
+
+    {
+        LockGuard<Mutex> jobGuard(jobsMutex);
+        for (auto& node : jobsMap)
+        {
+            node.second.finishCallback = Function<void(String && )>();
+        }
+    }
 }
 
 } // namespace DAVA

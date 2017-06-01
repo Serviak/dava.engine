@@ -11,9 +11,9 @@ namespace DAVA
 class AsyncSlotExternalLoader final : public SlotSystem::ExternalEntityLoader, public std::enable_shared_from_this<AsyncSlotExternalLoader>
 {
 public:
-    Entity* Load(const FilePath& path) override;
-    void AddEntity(Entity* parent, Entity* child) override;
+    void Load(RefPtr<Entity> rootEntity, const FilePath& path, const DAVA::Function<void(String&&)>& finishCallback) override;
     void Process(float32 delta) override;
+    void Reset();
 
     void LoadImpl(RefPtr<Entity> rootEntity, const FilePath& path);
 
@@ -24,7 +24,13 @@ private:
         size_t operator()(const RefPtr<Entity>& pointer) const;
     };
 
-    UnorderedMap<RefPtr<Entity>, RefPtr<Scene>, HashRefPtrEntity> jobsMap;
+    struct LoadingResult
+    {
+        RefPtr<Scene> scene;
+        String error;
+        Function<void(String&&)> finishCallback;
+    };
+    UnorderedMap<RefPtr<Entity>, LoadingResult, HashRefPtrEntity> jobsMap;
     Mutex jobsMutex;
 
     Mutex queueMutes;
