@@ -12,12 +12,13 @@ EntityForSlotLoader::EntityForSlotLoader(DAVA::TArc::ContextAccessor* accessor_)
 {
 }
 
-DAVA::Entity* EntityForSlotLoader::Load(const DAVA::FilePath& path)
+void EntityForSlotLoader::Load(DAVA::RefPtr<DAVA::Entity> rootEntity, const DAVA::FilePath& path, const DAVA::Function<void(DAVA::String&&)>& finishCallback)
 {
     DVASSERT(scene != nullptr);
     SceneEditor2* editorScene = DAVA::DynamicTypeCheck<SceneEditor2*>(scene);
 
-    return editorScene->structureSystem->Load(path);
+    rootEntity->AddNode(editorScene->structureSystem->Load(path));
+    callbacks.push_back(finishCallback);
 }
 
 void EntityForSlotLoader::AddEntity(DAVA::Entity* parent, DAVA::Entity* child)
@@ -44,4 +45,19 @@ void EntityForSlotLoader::AddEntity(DAVA::Entity* parent, DAVA::Entity* child)
         validator.SetPathForChecking(data->GetProjectPath());
     }
     validator.ValidateScene(editorScene, editorScene->GetScenePath());
+}
+
+void EntityForSlotLoader::Process(DAVA::float32 delta)
+{
+    for (auto& callbackNode : callbacks)
+    {
+        callbackNode(DAVA::String());
+    }
+
+    callbacks.clear();
+}
+
+void EntityForSlotLoader::Reset()
+{
+    callbacks.clear();
 }
