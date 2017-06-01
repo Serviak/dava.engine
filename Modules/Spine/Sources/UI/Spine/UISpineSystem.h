@@ -3,7 +3,6 @@
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
 #include <UI/UISystem.h>
-#include <UI/Components/UISingleComponent.h>
 #include <Functional/Signal.h>
 
 namespace DAVA
@@ -15,15 +14,6 @@ class UISpineComponent;
 class UIControlBackground;
 class SpineBone;
 class SpineSkeleton;
-
-struct UISpineSingleComponent : public UISingleComponent
-{
-    UnorderedSet<UIControl*> spineModified;
-    UnorderedSet<UIControl*> spineNeedReload;
-    UnorderedSet<UIControl*> spineBonesModified;
-
-    void Clear() override;
-};
 
 class UISpineSystem final : public UISystem
 {

@@ -10,9 +10,6 @@
 struct spAtlas;
 struct spSkeleton;
 struct spAnimationState;
-struct spActionsData;
-struct spTrackEntry;
-struct spBone;
 
 namespace DAVA
 {
@@ -20,29 +17,8 @@ namespace DAVA
 struct BatchDescriptor;
 class UIControl;
 class Texture;
-
-// Public wrappers
-class SpineTrackEntry
-{
-public:
-    SpineTrackEntry(spTrackEntry* track);
-
-private:
-    spTrackEntry* trackPtr = nullptr;
-};
-
-class SpineBone
-{
-public:
-    SpineBone(spBone* bone);
-
-    Vector2 GetPosition() const;
-    Vector2 GetScale() const;
-    float32 GetAngle() const;
-
-private:
-    spBone* bonePtr = nullptr;
-};
+class SpineBone;
+class SpineTrackEntry;
 
 /**
 
@@ -92,19 +68,44 @@ public:
 
     /** Select skin by specified skin's name. */
     bool SetSkin(const String& skinName);
+    /** Return current skin name. */
+    String GetSkinName() const;
     /** Return list of names of available skins. */
     const Vector<String>& GetAvailableSkinsNames() const;
 
     /** Find bone data by specified bone's name. Return nullptr if bone not found. */
     std::shared_ptr<SpineBone> FindBone(const String& boneName);
 
-    /** Emit then animation start */
+    /** Emit then animation start.
+    Start is raised when an animation starts playing:
+    - This applies to right when you call SetAnimation.
+    - I can also be raised when a queued animation starts playing.
+    */
     Signal<int32 /*trackIndex*/> onStart;
-    /** Emit then all animations finish */
+    /** Emit then all animations finish.
+    End is raised when an animation is cleared (or interrupted):
+    - This applies to immediately after the animation is done mixing/transitioning out.
+    - After end is fired, that entry will never be applied again.
+    - This is also raised when you clear the track using ClearTrack or ClearTracks.
+    - *NEVER* handle the End event with a method that calls SetAnimation. See the warning below.
+    */
     Signal<int32 /*trackIndex*/> onFinish;
-    /** Emit then one animation in queue finish */
+    /** Emit then one animation in queue finish.
+    Complete is raised an animation completes its full duration:
+    - This is raised when a non-looping animation finishes playing, whether or not a next animation is queued.
+    - This is also raised every time a looping animation finishes an loop.
+    */
     Signal<int32 /*trackIndex*/> onComplete;
-    /** Emit on each event during spine animation. */
+    /** Emit on each event during spine animation.
+    Event is raised whenever ANY user-defined event is detected:
+    - These are events you keyed in animations in Spine editor.
+      They are purple keys. A purple icon can also be found in the Tree view.
+    - To distinguish between different events, you need to check for its `event` string.
+    - This is useful for when you have to play sounds according to points
+      the animation like footsteps. It can also be used to synchronize or
+      signal non-Spine systems according to Spine animations.
+    - During a transition/mixing out, this is fired depending on the TrackEntry::EventThreshold.
+    */
     Signal<int32 /*trackIndex*/, const String& /*event*/> onEvent;
 
 protected:
@@ -116,24 +117,19 @@ private:
 
     BatchDescriptor* batchDescriptor = nullptr;
 
-    Vector<String> mAnimations;
-    Vector<String> mSkins;
-    int32 mAnimationType = 0;
-    bool mRun = false;
-    bool mLoop = false;
-    bool mNeedInitialize = false;
+    Vector<String> animationsNames;
+    Vector<String> skinsNames;
 
-    spActionsData* mActionsData = nullptr;
-    spAtlas* mAtlas = nullptr;
-    spSkeleton* mSkeleton = nullptr;
-    spAnimationState* mState = nullptr;
+    spAtlas* atlas = nullptr;
+    spSkeleton* skeleton = nullptr;
+    spAnimationState* state = nullptr;
 
-    float32* mWorldVertices = nullptr;
-    Texture* mTexture = nullptr;
-    float32 mTimeScale = 1.0f;
-    Vector<Vector2> mUVs;
-    Vector<uint16> mSpriteClippedIndecex;
-    Vector<uint32> mColors;
-    Polygon2 mPolygon;
+    float32* worldVertices = nullptr;
+    Texture* currentTexture = nullptr;
+    float32 timeScale = 1.0f;
+    Vector<Vector2> verticesUVs;
+    Vector<uint16> clippedIndecex;
+    Vector<uint32> verticesColors;
+    Polygon2 verticesPolygon;
 };
 }
