@@ -18,13 +18,23 @@ public:
     void LoadImpl(RefPtr<Entity> rootEntity, const FilePath& path);
 
 private:
+    void ApplyNextJob();
     struct HashRefPtrEntity
     {
         size_t operator()(const RefPtr<Entity>& pointer) const;
     };
 
     UnorderedMap<RefPtr<Entity>, RefPtr<Scene>, HashRefPtrEntity> jobsMap;
-    Mutex mutex;
+    Mutex jobsMutex;
+
+    Mutex queueMutes;
+    struct LoadTask
+    {
+        RefPtr<Entity> rootEntity;
+        FilePath filePath;
+    };
+    List<LoadTask> loadingQueue;
+    bool isLoadingActive = false;
 };
 
 inline size_t AsyncSlotExternalLoader::HashRefPtrEntity::operator()(const RefPtr<Entity>& pointer) const
