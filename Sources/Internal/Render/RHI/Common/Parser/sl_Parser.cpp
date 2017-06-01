@@ -1528,121 +1528,98 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
     }
     else if (Accept(HLSLToken_Blending))
     {
-        if (!Expect('{'))
-        {
-            return false;
-        }
-
-        BlendOp src = BLENDOP_ONE;
-        BlendOp dst = BLENDOP_ZERO;
-
-        if (Accept("src"))
-        {
-            if (Accept('='))
-            {
-                const char* op;
-
-                if (AcceptIdentifier(op))
-                {
-                    if (stricmp(op, "zero") == 0)
-                        src = BLENDOP_ZERO;
-                    else if (stricmp(op, "one") == 0)
-                        src = BLENDOP_ONE;
-                    else if (stricmp(op, "src_alpha") == 0)
-                        src = BLENDOP_SRC_ALPHA;
-                    else if (stricmp(op, "inv_src_alpha") == 0)
-                        src = BLENDOP_INV_SRC_ALPHA;
-                    else if (stricmp(op, "src_color") == 0)
-                        src = BLENDOP_SRC_COLOR;
-                    else if (stricmp(op, "dst_color") == 0)
-                        src = BLENDOP_DST_COLOR;
-                    else
-                        DAVA::Logger::Error("unsupported src blend-op \"%s\"", op);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        if (Accept("dst"))
-        {
-            if (Accept('='))
-            {
-                const char* op;
-
-                if (AcceptIdentifier(op))
-                {
-                    if (stricmp(op, "zero") == 0)
-                        dst = BLENDOP_ZERO;
-                    else if (stricmp(op, "one") == 0)
-                        dst = BLENDOP_ONE;
-                    else if (stricmp(op, "src_alpha") == 0)
-                        dst = BLENDOP_SRC_ALPHA;
-                    else if (stricmp(op, "inv_src_alpha") == 0)
-                        dst = BLENDOP_INV_SRC_ALPHA;
-                    else if (stricmp(op, "src_color") == 0)
-                        dst = BLENDOP_SRC_COLOR;
-                    else if (stricmp(op, "dst_color") == 0)
-                        dst = BLENDOP_DST_COLOR;
-                    else
-                        DAVA::Logger::Error("unsupported dst blend-op \"%s\"", op);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        if (!Expect('}'))
-        {
-            return false;
-        }
-
-        HLSLBlend* blend = m_tree->AddNode<HLSLBlend>(fileName, line);
-
-        blend->src_op = src;
-        blend->dst_op = dst;
-
-        m_tree->GetRoot()->blend = blend;
+        ParseBlending(0);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending0))
+    {
+        ParseBlending(0);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending1))
+    {
+        ParseBlending(1);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending2))
+    {
+        ParseBlending(2);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending3))
+    {
+        ParseBlending(3);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending4))
+    {
+        ParseBlending(4);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending5))
+    {
+        ParseBlending(5);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending6))
+    {
+        ParseBlending(6);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_Blending7))
+    {
+        ParseBlending(7);
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_ColorMask))
     {
-        if (Accept('='))
-        {
-            const char* msk;
-            ColorMask mask;
-
-            if (AcceptIdentifier(msk))
-            {
-                HLSLColorMask* m = m_tree->AddNode<HLSLColorMask>(fileName, line);
-
-                if (stricmp(msk, "none") == 0)
-                    mask = COLORMASK_NONE;
-                else if (stricmp(msk, "all") == 0)
-                    mask = COLORMASK_ALL;
-                else if (stricmp(msk, "rgb") == 0)
-                    mask = COLORMASK_RGB;
-                else if (stricmp(msk, "a") == 0)
-                    mask = COLORMASK_A;
-                else
-                    DAVA::Logger::Error("unsupported color-mask \"%s\"", msk);
-
-                m->mask = mask;
-                m_tree->GetRoot()->color_mask = m;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        ParseTargetColorMask(0);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask))
+    {
+        ParseTargetColorMask(0);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask0))
+    {
+        ParseTargetColorMask(0);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask1))
+    {
+        ParseTargetColorMask(1);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask2))
+    {
+        ParseTargetColorMask(2);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask3))
+    {
+        ParseTargetColorMask(3);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask4))
+    {
+        ParseTargetColorMask(4);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask5))
+    {
+        ParseTargetColorMask(5);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask6))
+    {
+        ParseTargetColorMask(6);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken_ColorMask7))
+    {
+        ParseTargetColorMask(7);
+        doesNotExpectSemicolon = true;
     }
 
     if (statement != NULL)
@@ -3204,6 +3181,129 @@ bool HLSLParser::ParseStage(HLSLStatement*& statement)
     // @@ To finish the stage definition we should traverse the statements recursively (including function calls) and find all the input/output declarations.
 
     statement = stage;
+    return true;
+}
+
+bool HLSLParser::ParseBlending(unsigned target_i)
+{
+    if (!Expect('{'))
+    {
+        return false;
+    }
+
+    BlendOp src = BLENDOP_ONE;
+    BlendOp dst = BLENDOP_ZERO;
+
+    if (Accept("src"))
+    {
+        if (Accept('='))
+        {
+            const char* op;
+
+            if (AcceptIdentifier(op))
+            {
+                if (stricmp(op, "zero") == 0)
+                    src = BLENDOP_ZERO;
+                else if (stricmp(op, "one") == 0)
+                    src = BLENDOP_ONE;
+                else if (stricmp(op, "src_alpha") == 0)
+                    src = BLENDOP_SRC_ALPHA;
+                else if (stricmp(op, "inv_src_alpha") == 0)
+                    src = BLENDOP_INV_SRC_ALPHA;
+                else if (stricmp(op, "src_color") == 0)
+                    src = BLENDOP_SRC_COLOR;
+                else if (stricmp(op, "dst_color") == 0)
+                    src = BLENDOP_DST_COLOR;
+                else
+                    DAVA::Logger::Error("unsupported src blend-op \"%s\"", op);
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    if (Accept("dst"))
+    {
+        if (Accept('='))
+        {
+            const char* op;
+
+            if (AcceptIdentifier(op))
+            {
+                if (stricmp(op, "zero") == 0)
+                    dst = BLENDOP_ZERO;
+                else if (stricmp(op, "one") == 0)
+                    dst = BLENDOP_ONE;
+                else if (stricmp(op, "src_alpha") == 0)
+                    dst = BLENDOP_SRC_ALPHA;
+                else if (stricmp(op, "inv_src_alpha") == 0)
+                    dst = BLENDOP_INV_SRC_ALPHA;
+                else if (stricmp(op, "src_color") == 0)
+                    dst = BLENDOP_SRC_COLOR;
+                else if (stricmp(op, "dst_color") == 0)
+                    dst = BLENDOP_DST_COLOR;
+                else
+                    DAVA::Logger::Error("unsupported dst blend-op \"%s\"", op);
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    if (!Expect('}'))
+    {
+        return false;
+    }
+
+    HLSLBlend* blend = m_tree->AddNode<HLSLBlend>(GetFileName(), GetLineNumber());
+
+    blend->src_op = src;
+    blend->dst_op = dst;
+
+    m_tree->GetRoot()->blend[target_i] = blend;
+
+    return true;
+}
+
+bool HLSLParser::ParseTargetColorMask(unsigned target_i)
+{
+    if (Accept('='))
+    {
+        const char* msk;
+        ColorMask mask;
+
+        if (AcceptIdentifier(msk))
+        {
+            HLSLColorMask* m = m_tree->AddNode<HLSLColorMask>(GetFileName(), GetLineNumber());
+
+            if (stricmp(msk, "none") == 0)
+                mask = COLORMASK_NONE;
+            else if (stricmp(msk, "all") == 0)
+                mask = COLORMASK_ALL;
+            else if (stricmp(msk, "rgb") == 0)
+                mask = COLORMASK_RGB;
+            else if (stricmp(msk, "a") == 0)
+                mask = COLORMASK_A;
+            else
+                DAVA::Logger::Error("unsupported color-mask \"%s\"", msk);
+
+            m->mask = mask;
+            m_tree->GetRoot()->color_mask[target_i] = m;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+
     return true;
 }
 
