@@ -541,6 +541,31 @@ private:
     VariantType(void*);
 
     void ReleasePointer();
+
+    template <class T>
+    void SetAllocatedMemoryValue(VariantType::eVariantType nextType, const T& value)
+    {
+        if (nextType != type)
+        {
+            ReleasePointer();
+
+            pointerValue = new T(value);
+        }
+        else
+        {
+            *(static_cast<T*>(pointerValue)) = value;
+        }
+
+        type = nextType;
+    }
+
+    inline void ReleasePointerIfNotCurrentType(eVariantType nextType)
+    {
+        if (nextType != type)
+        {
+            ReleasePointer();
+        }
+    }
 };
 
 VariantType::eVariantType VariantType::GetType() const
