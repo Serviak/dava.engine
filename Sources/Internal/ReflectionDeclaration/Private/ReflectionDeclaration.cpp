@@ -84,6 +84,7 @@
 #include "UI/Scroll/UIScrollBarDelegateComponent.h"
 #include "UI/Sound/UISoundComponent.h"
 #include "UI/Sound/UISoundValueFilterComponent.h"
+#include "UI/Text/UIStaticTextComponent.h"
 
 namespace DAVA
 {
@@ -302,6 +303,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISoundComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISoundValueFilterComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UITabOrderComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIStaticTextComponent);
 }
 
 void RegisterReflectionForBaseTypes()

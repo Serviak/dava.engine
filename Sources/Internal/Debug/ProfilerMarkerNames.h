@@ -25,6 +25,7 @@ extern const char* UI_DRAW;
 extern const char* UI_UPDATE_SYSTEM;
 extern const char* UI_LAYOUT_SYSTEM;
 extern const char* UI_STYLE_SHEET_SYSTEM;
+extern const char* UI_TEXT_SYSTEM;
 extern const char* UI_RENDER_SYSTEM;
 
 extern const char* UI_TEXTBLOCK_RECALC_PARAMS;
