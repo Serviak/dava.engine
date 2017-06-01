@@ -31,6 +31,10 @@ struct ParticleLayer : public BaseObject
     float32 stripeSpeed = 0.0f;
     float32 stripeStartSize = 0.0f;
     float32 stripeSizeOverLife = 0.0f;
+    float32 stripeTextureTile = 1.0f;
+    float32 stripeUScrollSpeed = 0.0f;
+    float32 stripeVScrollSpeed = 0.0f;
+    float32 stripeAlphaOverLife = 1.0f;
 
     enum eType
     {
