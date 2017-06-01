@@ -21,7 +21,9 @@ class SpineBone;
 class SpineTrackEntry;
 
 /**
-
+    Wrapper for work with Spine skeletons and atlases.
+    Can load skeletons and atlases, play animations, change skins
+    and emit signals during play animations.
 */
 class SpineSkeleton final : public BaseObject
 {
@@ -115,8 +117,6 @@ private:
     void ReleaseAtlas();
     void ReleaseSkeleton();
 
-    BatchDescriptor* batchDescriptor = nullptr;
-
     Vector<String> animationsNames;
     Vector<String> skinsNames;
 
@@ -124,6 +124,7 @@ private:
     spSkeleton* skeleton = nullptr;
     spAnimationState* state = nullptr;
 
+    BatchDescriptor* batchDescriptor = nullptr;
     float32* worldVertices = nullptr;
     Texture* currentTexture = nullptr;
     float32 timeScale = 1.0f;
