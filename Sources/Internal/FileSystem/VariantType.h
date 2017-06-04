@@ -2,6 +2,7 @@
 #define __DAVAENGINE_VARIANTTYPE_H__
 
 #include "Base/BaseTypes.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
