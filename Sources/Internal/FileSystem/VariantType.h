@@ -553,6 +553,8 @@ private:
         }
         else
         {
+            DVASSERT(pointerValue == nullptr, "Invalid pointer");
+
             *(static_cast<T*>(pointerValue)) = value;
         }
 
