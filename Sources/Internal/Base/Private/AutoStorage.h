@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <type_traits>
+#include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
 
 namespace DAVA

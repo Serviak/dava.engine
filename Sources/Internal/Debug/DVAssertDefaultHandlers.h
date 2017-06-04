@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/BaseTypes.h"
 #include "DVAssert.h"
 
 namespace DAVA

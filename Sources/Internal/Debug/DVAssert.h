@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
+#include "Base/Vector.h"
 
 /** \defgroup Asserts
 Asserts are a set of macroses for testing conditions which are always expected to be true.
