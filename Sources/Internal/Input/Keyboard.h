@@ -36,7 +36,7 @@ public:
 
         \pre `elementId` should be a keyboard element.
     */
-    WideString TranslateElementToWideString(eInputElements elementId) const;
+    String TranslateElementToUTF8String(eInputElements elementId) const;
 
     /**
         Convert keyboard input element to native platform scancode.
