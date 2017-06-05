@@ -36,7 +36,7 @@ class EngineSettings;
 
 class DeviceManager;
 
-class InputListener;
+class InputBindingListener;
 
 class AutotestingSystem;
 
@@ -93,7 +93,7 @@ public:
 
     DeviceManager* deviceManager = nullptr;
 
-    InputListener* inputListener = nullptr;
+    InputBindingListener* inputListener = nullptr;
 
     AutotestingSystem* autotestingSystem = nullptr;
 };
