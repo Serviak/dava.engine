@@ -8,7 +8,7 @@
 
 namespace DAVA
 {
-class AsyncSlotExternalLoader final : public SlotSystem::ExternalEntityLoader, public std::enable_shared_from_this<AsyncSlotExternalLoader>
+class AsyncSlotExternalLoader final : public SlotSystem::ExternalEntityLoader
 {
 public:
     void Load(RefPtr<Entity> rootEntity, const FilePath& path, const DAVA::Function<void(String&&)>& finishCallback) override;

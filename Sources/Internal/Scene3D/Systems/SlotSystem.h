@@ -57,7 +57,7 @@ public:
     };
 
     /** \brief Class that SlotSystem delegates loading of item */
-    class ExternalEntityLoader
+    class ExternalEntityLoader : public std::enable_shared_from_this<ExternalEntityLoader>
     {
     public:
         virtual ~ExternalEntityLoader() = default;
@@ -130,7 +130,7 @@ public:
     Matrix4 GetJointTransform(SlotComponent* component) const;
 
     /** Set attachment transform for slot \c component*/
-    void SetAttachmentTransform(SlotComponent* component, Matrix4& transform);
+    void SetAttachmentTransform(SlotComponent* component, const Matrix4& transform);
 
     /** Describe different state of slot */
     enum class eSlotState
