@@ -17,7 +17,12 @@ void EntityForSlotLoader::Load(DAVA::RefPtr<DAVA::Entity> rootEntity, const DAVA
     DVASSERT(scene != nullptr);
     SceneEditor2* editorScene = DAVA::DynamicTypeCheck<SceneEditor2*>(scene);
 
-    rootEntity->AddNode(editorScene->structureSystem->Load(path));
+    DAVA::Entity* loadedEntity = editorScene->structureSystem->Load(path);
+    loadedEntity->SetNotRemovable(true);
+    DAVA::CustomPropertiesComponent* propertiesComponent = DAVA::GetOrCreateCustomProperties(loadedEntity);
+    propertiesComponent->GetArchive()->SetBool(ResourceEditor::EDITOR_IS_LOCKED, true);
+    rootEntity->AddNode(loadedEntity);
+    rootEntity->SetNotRemovable(true);
     callbacks.push_back(finishCallback);
 }
 
