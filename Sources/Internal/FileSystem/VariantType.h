@@ -124,7 +124,7 @@ public:
         TYPE_UINT16,
         TYPES_COUNT // every new type should be always added to the end for compatibility with old archives
     };
-    eVariantType type;
+    eVariantType type = TYPE_NONE;
 
     union {
         bool boolValue;
@@ -151,7 +151,7 @@ public:
         Matrix3* matrix3Value;
         Matrix4* matrix4Value;
 
-        void* pointerValue;
+        void* pointerValue = nullptr;
 
         String* stringValue;
         WideString* wideStringValue;
@@ -551,15 +551,14 @@ private:
             ReleasePointer();
 
             pointerValue = new T(value);
+            type = nextType;
         }
         else
         {
-            DVASSERT(pointerValue == nullptr, "Invalid pointer");
+            DVASSERT(pointerValue != nullptr, "Invalid pointer");
 
             *(static_cast<T*>(pointerValue)) = value;
         }
-
-        type = nextType;
     }
 
     inline void ReleasePointerIfNotCurrentType(eVariantType nextType)
