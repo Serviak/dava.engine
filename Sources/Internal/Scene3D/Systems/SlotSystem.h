@@ -60,6 +60,7 @@ public:
     class ExternalEntityLoader
     {
     public:
+        virtual ~ExternalEntityLoader() = default;
         /**
             Load item with path \c path, attach it into entity \c rootEntity and call \c finishCallback.
             Loading can be processed in worker thread, but finishCallback should be called from 'Process' method.
@@ -127,8 +128,9 @@ public:
     SlotComponent* LookUpSlot(Entity* entity) const;
     /** Helper function to get local transform of joint that \c component attached to. If \c component doesn't attached to joint, return Identity*/
     Matrix4 GetJointTransform(SlotComponent* component) const;
-    /** Helper function to get final local transform loaded item that \c component attached to.*/
-    Matrix4 GetResultTranform(SlotComponent* component) const;
+
+    /** Set attachment transform for slot \c component*/
+    void SetAttachmentTransform(SlotComponent* component, Matrix4& transform);
 
     /** Describe different state of slot */
     enum class eSlotState
@@ -150,14 +152,36 @@ protected:
     void SetScene(Scene* scene) override;
 
 private:
+    Matrix4 GetResultTranform(SlotComponent* component) const;
+
     void AttachEntityToSlotImpl(SlotComponent* component, Entity* entity, FastName itemName, SlotSystem::eSlotState state);
     void UnloadItem(SlotComponent* component);
 
-    size_t GetComponentIndex(const SlotComponent* component) const;
+    uint32 GetComponentIndex(const SlotComponent* component) const;
 
-    Vector<SlotComponent*> components;
-    Vector<Entity*> loadedEntities;
-    Vector<eSlotState> states;
+    struct SlotNode
+    {
+        static const int32 STATE_MASK = 0xFF;
+        static const int32 FLAGS_MASK = 0xFF00;
+
+        enum eFlags : int32
+        {
+            ATTACHMENT_TRANSFORM_CHANGED = 0x100
+        };
+
+        SlotComponent* component = nullptr;
+        Entity* loadedEnity = nullptr;
+        int32 flags = 0;
+    };
+
+    Vector<SlotNode> nodes;
+    uint32 loadedItemsCount = 0;
+
+    void SetState(SlotNode& node, eSlotState state);
+    eSlotState GetState(const SlotNode& node) const;
+    bool TestFlag(SlotNode& node, int32 flag) const;
+    void RaiseFlag(SlotNode& node, int32 flag);
+    void ResetFlag(SlotNode& node, int32 flag);
 
     std::shared_ptr<ExternalEntityLoader> externalEntityLoader;
     std::shared_ptr<ItemsCache> sharedCache;
