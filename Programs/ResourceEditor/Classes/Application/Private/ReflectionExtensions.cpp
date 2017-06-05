@@ -50,7 +50,7 @@ void RegisterFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
     EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("lightmap"), CreateTextureFileMeta());
     EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("customGeometry"), CreateSceneValidator());
     EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("customGeometry"), CreateSceneFileMeta());
-    EmplaceFieldMeta<SlotComponent>(DAVA::FastName("configPath"), GenericFileMeta<REFileMeta>("Yaml (*.yaml);; XML(*.xml);; All supported formats (*.yaml *.xml)", "Open items list"));
+    EmplaceFieldMeta<SlotComponent>(DAVA::FastName("configPath"), GenericFileMeta<REFileMeta>("All supported formats (*.yaml *.xml);;Yaml (*.yaml);;XML(*.xml)", "Open items list"));
 }
 
 void RegisterComponentsExtensions()
