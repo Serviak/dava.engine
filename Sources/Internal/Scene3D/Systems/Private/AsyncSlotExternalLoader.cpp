@@ -111,7 +111,7 @@ void AsyncSlotExternalLoader::ApplyNextJob()
     }
 
     JobManager* jobMng = GetEngineContext()->jobManager;
-    std::shared_ptr<AsyncSlotExternalLoader> loaderRef = shared_from_this();
+    std::shared_ptr<AsyncSlotExternalLoader> loaderRef = std::static_pointer_cast<AsyncSlotExternalLoader>(shared_from_this());
     LoadTask task = loadingQueue.front();
     loadingQueue.pop_front();
     jobMng->CreateWorkerJob([loaderRef, task]() {
