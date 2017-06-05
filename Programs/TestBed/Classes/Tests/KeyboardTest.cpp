@@ -6,6 +6,7 @@
 #include <Input/Gamepad.h>
 #include <Input/Mouse.h>
 #include <UI/Focus/UIFocusComponent.h>
+#include <UI/Render/UIDebugRenderComponent.h>
 #include <Render/2D/Sprite.h>
 
 using namespace DAVA;
@@ -48,12 +49,12 @@ void KeyboardTest::LoadResources()
     previewText->SetTextColor(Color::White);
     previewText->SetMultiline(true);
     previewText->SetText(L"Press (Hold) and Unpress keys\nOn MacOS test gestures magnify/rotate/swipe");
-    previewText->SetDebugDraw(true);
+    previewText->GetOrCreateComponent<UIDebugRenderComponent>();
     previewText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     AddControl(previewText);
 
     descriptionText = new UIStaticText(Rect(20, 230, 200, 400));
-    descriptionText->SetDebugDraw(true);
+    descriptionText->GetOrCreateComponent<UIDebugRenderComponent>();
     descriptionText->SetTextColor(Color::White);
     descriptionText->SetFont(font);
     descriptionText->GetOrCreateComponent<UIFocusComponent>();
@@ -70,7 +71,7 @@ void KeyboardTest::LoadResources()
     rawInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &KeyboardTest::InputEventHandler));
 
     resetButton = new UIButton(Rect(420, 30, 50, 30));
-    resetButton->SetDebugDraw(true);
+    resetButton->GetOrCreateComponent<UIDebugRenderComponent>();
     resetButton->SetStateFont(0xFF, font);
     resetButton->SetStateFontColor(0xFF, Color::White);
     resetButton->SetStateText(0xFF, L"Reset");
@@ -88,7 +89,7 @@ void KeyboardTest::LoadResources()
     for (auto& touch : touches)
     {
         touch.img = new UIButton(Rect(0, 0, 50, 50));
-        touch.img->SetDebugDraw(true);
+        touch.img->GetOrCreateComponent<UIDebugRenderComponent>();
         touch.img->SetInputEnabled(false);
         touch.img->SetPosition(hiddenPos);
         auto back = touch.img->GetBackground();
@@ -106,7 +107,7 @@ void KeyboardTest::LoadResources()
     redBox = new UIButton(Rect(512, 512, 128, 128));
     redBox->SetPivotPoint(Vector2(64.f, 64.f));
     redBox->SetInputEnabled(false);
-    redBox->SetDebugDraw(true);
+    redBox->GetOrCreateComponent<UIDebugRenderComponent>();
     auto boxBack = redBox->GetBackground();
     boxBack->SetDrawColor(Color(1.f, 0.f, 0.f, 1.f));
     boxBack->SetColor(Color(1.f, 0.f, 0.f, 1.f));
