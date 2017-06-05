@@ -27,6 +27,7 @@ const FXDescriptor& LoadFXFromOldTemplate(const FastName& fxName, HashMap<FastNa
 
 void Initialize()
 {
+#if 1
     using namespace FXCacheDetails;
 
     DVASSERT(!initialized);
@@ -44,6 +45,7 @@ void Initialize()
 
     defaultFX.renderPassDescriptors.clear();
     defaultFX.renderPassDescriptors.push_back(defaultPass);
+#endif
 }
 
 void Uninitialize()
