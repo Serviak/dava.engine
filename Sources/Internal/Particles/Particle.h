@@ -7,6 +7,29 @@
 
 namespace DAVA
 {
+struct StripeNode
+{
+    float32 lifeime = 0.0f;
+    Vector3 position = {};
+    Vector3 speed = {};
+
+    StripeNode(float32 lifetime_, Vector3 position_, Vector3 speed_)
+        : lifeime(lifetime_)
+        , position(position_)
+        , speed(speed_)
+    {}
+
+    StripeNode()
+    {}
+};
+
+struct StripeData
+{
+    List<StripeNode> strpeNodes; // List of stripe control points.
+    StripeNode baseNode = {};
+    float32 spawnTimer = 0;
+};
+
 struct Particle
 {
     IMPLEMENT_POOL_ALLOCATOR(Particle, 1000);
@@ -46,6 +69,8 @@ struct Particle
     Color color;
 
     int32 positionTarget; //superemitter particles only
+
+    StripeData stripe;
 };
 }
 
