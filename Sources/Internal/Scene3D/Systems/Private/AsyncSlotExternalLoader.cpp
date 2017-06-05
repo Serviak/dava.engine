@@ -43,9 +43,11 @@ void AsyncSlotExternalLoader::Process(float32 delta)
         LoadingResult result = currentIter->second;
         if (result.scene.Get() != nullptr)
         {
-            while (int32 childCount = result.scene->GetChildrenCount() > 0)
+            int32 childCount = result.scene->GetChildrenCount();
+            while (childCount > 0)
             {
                 rootEntity->AddNode(result.scene->GetChild(childCount - 1));
+                childCount = result.scene->GetChildrenCount();
             }
 
             currentIter = jobsMap.erase(currentIter);

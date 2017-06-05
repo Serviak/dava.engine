@@ -13,7 +13,7 @@ class AsyncSlotExternalLoader final : public SlotSystem::ExternalEntityLoader, p
 public:
     void Load(RefPtr<Entity> rootEntity, const FilePath& path, const DAVA::Function<void(String&&)>& finishCallback) override;
     void Process(float32 delta) override;
-    void Reset();
+    void Reset() override;
 
     void LoadImpl(RefPtr<Entity> rootEntity, const FilePath& path);
 
