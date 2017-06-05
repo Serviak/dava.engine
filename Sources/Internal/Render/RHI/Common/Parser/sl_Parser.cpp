@@ -2218,13 +2218,21 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
         {
             break;
         }
-
+        /* moved out of the loop, because expressions like 'float3 pp = (float3(g,g,g)*p.w - p.xyz));' parsed incorrectly (error reported)
         if (needsEndParen)
         {
             if (!Expect(')'))
                 return false;
             needsEndParen = false;
         }
+*/
+    }
+
+    if (needsEndParen)
+    {
+        if (!Expect(')'))
+            return false;
+        needsEndParen = false;
     }
 
     return !needsEndParen || Expect(')');
@@ -2297,8 +2305,7 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
             // This is actually a type constructor like (float2(...
             if (Accept('('))
             {
-                // expressions like 'float3 f = (float3(x,x,x) ...' parsed incorrectly
-                // needsEndParen = true;
+                needsEndParen = true;
                 return ParsePartialConstructor(expression, type.baseType, type.typeName);
             }
             HLSLCastingExpression* castingExpression = m_tree->AddNode<HLSLCastingExpression>(fileName, line);
