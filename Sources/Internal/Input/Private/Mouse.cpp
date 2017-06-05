@@ -46,6 +46,11 @@ AnalogElementState Mouse::GetPosition() const
     return GetAnalogElementState(eInputElements::MOUSE_POSITION);
 }
 
+AnalogElementState Mouse::GetWheelDelta() const
+{
+    return GetAnalogElementState(eInputElements::MOUSE_WHEEL);
+}
+
 bool Mouse::IsElementSupported(eInputElements elementId) const
 {
     return IsMouseInputElement(elementId);

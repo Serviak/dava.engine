@@ -11,6 +11,8 @@
 #include <Debug/DVAssert.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <DeviceManager/DeviceManager.h>
+#include <Input/Keyboard.h>
 #include <Math/AABBox3.h>
 #include <Scene3D/Components/Waypoint/PathComponent.h>
 #include <Scene3D/Components/Waypoint/WaypointComponent.h>
@@ -282,8 +284,8 @@ bool WayEditSystem::Input(DAVA::UIEvent* event)
 
             ProcessSelection(Selection::GetSelection());
 
-            const auto& keyboard = InputSystem::Instance()->GetKeyboard();
-            bool shiftPressed = keyboard.IsKeyPressed(Key::LSHIFT) || keyboard.IsKeyPressed(Key::RSHIFT);
+            Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
+            bool shiftPressed = (kb != nullptr) && (kb->GetKeyState(eInputElements::KB_LSHIFT).IsPressed() || kb->GetKeyState(eInputElements::KB_RSHIFT).IsPressed());
 
             if (!shiftPressed)
             {
@@ -642,8 +644,9 @@ void WayEditSystem::PerformAdding(DAVA::Entity* sourceEntity, DAVA::Entity* clon
 
 bool WayEditSystem::AllowPerformSelectionHavingCurrent(const SelectableGroup& currentSelection)
 {
-    const auto& keyboard = DAVA::InputSystem::Instance()->GetKeyboard();
-    bool shiftPressed = keyboard.IsKeyPressed(DAVA::Key::LSHIFT) || keyboard.IsKeyPressed(DAVA::Key::RSHIFT);
+    DAVA::Keyboard* kb = DAVA::GetEngineContext()->deviceManager->GetKeyboard();
+    bool shiftPressed = (kb != nullptr) && (kb->GetKeyState(DAVA::eInputElements::KB_LSHIFT).IsPressed() || kb->GetKeyState(DAVA::eInputElements::KB_RSHIFT).IsPressed());
+
     if (isEnabled && shiftPressed)
     {
         return (selectedWaypoints.size() > 0);
@@ -662,8 +665,9 @@ bool WayEditSystem::AllowChangeSelectionReplacingCurrent(const SelectableGroup& 
         return true;
     }
 
-    const DAVA::KeyboardDevice& keyboard = engineContext->inputSystem->GetKeyboard();
-    bool shiftPressed = keyboard.IsKeyPressed(DAVA::Key::LSHIFT) || keyboard.IsKeyPressed(DAVA::Key::RSHIFT);
+    DAVA::Keyboard* kb = DAVA::GetEngineContext()->deviceManager->GetKeyboard();
+    bool shiftPressed = (kb != nullptr) && (kb->GetKeyState(DAVA::eInputElements::KB_LSHIFT).IsPressed() || kb->GetKeyState(DAVA::eInputElements::KB_RSHIFT).IsPressed());
+
     if (isEnabled && shiftPressed)
     {
         // no waypoints selected or no new objects are selected

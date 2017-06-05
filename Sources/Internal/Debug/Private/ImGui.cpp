@@ -460,7 +460,7 @@ bool OnInput(const DAVA::InputEvent& input)
     {
         Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
 
-        DAVA::AnalogElementState mousePos = mouse->GetAnalogElementState(eInputElements::MOUSE_POSITION);
+        DAVA::AnalogElementState mousePos = mouse->GetPosition();
         io.MousePos.x = mousePos.x;
         io.MousePos.y = mousePos.y;
 
@@ -471,7 +471,7 @@ bool OnInput(const DAVA::InputEvent& input)
         }
         else if (input.elementId == eInputElements::MOUSE_WHEEL)
         {
-            DAVA::AnalogElementState mouseWheelDelta = mouse->GetAnalogElementState(eInputElements::MOUSE_WHEEL);
+            DAVA::AnalogElementState mouseWheelDelta = mouse->GetWheelDelta();
             io.MouseWheel = mouseWheelDelta.y;
         }
     }

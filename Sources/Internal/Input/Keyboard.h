@@ -22,6 +22,12 @@ class Keyboard final : public InputDevice
 {
     friend class DeviceManager; // For creation
 
+    // For QT backend implementation
+    // TODO: Left for backward compatibility, but probably should be removed
+    friend class RenderWidgetOGL;
+    friend class DavaQtApplyModifier;
+    friend class DavaQtKeyboard;
+
 public:
     /**
         Return state of a specified `key`.
@@ -60,6 +66,10 @@ private:
 
     void OnEndFrame();
     void OnWindowFocusChanged(DAVA::Window* window, bool focused);
+
+    void ResetState(Window* window);
+    void OnKeyPressed(eInputElements element, Window* window, int64 timestamp);
+    void OnKeyReleased(eInputElements element, Window* window, int64 timestamp);
 
     bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
     void CreateAndSendKeyInputEvent(eInputElements elementId, DigitalElementState state, Window* window, int64 timestamp);

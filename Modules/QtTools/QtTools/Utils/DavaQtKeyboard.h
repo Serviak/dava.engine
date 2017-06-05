@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Input/KeyboardDevice.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -8,7 +8,6 @@ namespace DAVA
 class DavaQtKeyboard
 {
 public:
-    static Key GetDavaKeyForSystemKey(uint32 virtualKey);
     static void ClearAllKeys();
 };
 } // end namespace DAVA
