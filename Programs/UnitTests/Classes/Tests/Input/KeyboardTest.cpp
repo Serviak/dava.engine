@@ -173,6 +173,15 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 {
                     currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
                 }
+#elif defined(__DAVAENGINE_ANDROID__)
+                while (currentElement == eInputElements::KB_NONUSBACKSLASH ||
+                       currentElement == eInputElements::KB_LCMD ||
+                       currentElement == eInputElements::KB_RCMD ||
+                       currentElement == eInputElements::KB_LWIN ||
+                       currentElement == eInputElements::KB_RWIN)
+                {
+                    currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
+                }
 #endif
 
                 if (currentElement > eInputElements::KB_LAST)

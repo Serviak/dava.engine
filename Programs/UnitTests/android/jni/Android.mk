@@ -27,6 +27,8 @@ LOCAL_SRC_FILES := \
 	$(subst $(LOCAL_PATH)/,, \
 	$(wildcard $(DV_PROJECT_ROOT)/Classes/Infrastructure/*.cpp) \
 	$(wildcard $(DV_PROJECT_ROOT)/Classes/Tests/*.cpp) \
+	$(wildcard $(DV_PROJECT_ROOT)/Classes/Tests/*/*.cpp) \
+	$(wildcard $(DV_PROJECT_ROOT)/Classes/Tests/*/*/*.cpp) \
 	$(wildcard $(DAVA_ROOT)/Sources/Tools/TeamcityOutput/*.cpp) \
 	$(wildcard $(DAVA_ROOT)/Sources/Tools/CommandLine/CommandLineParser.cpp) \
 	$(wildcard $(DAVA_ROOT)/Modules/SampleModule/Private/*.cpp) \

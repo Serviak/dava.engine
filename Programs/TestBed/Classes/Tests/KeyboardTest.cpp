@@ -79,7 +79,7 @@ void KeyboardTest::LoadResources()
     AddControl(resetButton);
 
     logEventsButton = new UIButton(Rect(480, 30, 50, 30));
-    logEventsButton->SetDebugDraw(true);
+    logEventsButton->GetOrCreateComponent<UIDebugRenderComponent>();
     logEventsButton->SetStateFont(0xFF, font);
     logEventsButton->SetStateFontColor(0xFF, Color::White);
     logEventsButton->SetStateText(0xFF, L"Log");
