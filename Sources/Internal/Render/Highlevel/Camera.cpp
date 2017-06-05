@@ -388,12 +388,11 @@ void Camera::RebuildCameraFromValues()
 {
     flags &= ~REQUIRE_REBUILD;
     flags |= REQUIRE_REBUILD_MODEL;
-    cameraTransform.BuildLookAtMatrixRH(position, target, up);
 
-    // update left vector after rebuild
-    left.x = cameraTransform._00;
-    left.y = cameraTransform._10;
-    left.z = cameraTransform._20;
+    cameraTransform.BuildLookAtMatrixRH(position, target, up);
+    left.x = -cameraTransform._00;
+    left.y = -cameraTransform._10;
+    left.z = -cameraTransform._20;
 }
 
 void Camera::ExtractCameraToValues()
