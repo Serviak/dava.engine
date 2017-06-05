@@ -1528,98 +1528,102 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
     }
     else if (Accept(HLSLToken_Blending))
     {
-        ParseBlending(0);
+        if (!ParseBlending(0))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending0))
     {
-        ParseBlending(0);
+        if (!ParseBlending(0))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending1))
     {
-        ParseBlending(1);
+        if (!ParseBlending(1))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending2))
     {
-        ParseBlending(2);
+        if (!ParseBlending(2))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending3))
     {
-        ParseBlending(3);
+        if (!ParseBlending(3))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending4))
     {
-        ParseBlending(4);
+        if (!ParseBlending(4))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending5))
     {
-        ParseBlending(5);
+        if (!ParseBlending(5))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending6))
     {
-        ParseBlending(6);
+        if (!ParseBlending(6))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_Blending7))
     {
-        ParseBlending(7);
+        if (!ParseBlending(7))
+            return false;
         doesNotExpectSemicolon = true;
     }
     else if (Accept(HLSLToken_ColorMask))
     {
-        ParseTargetColorMask(0);
-        doesNotExpectSemicolon = true;
-    }
-    else if (Accept(HLSLToken_ColorMask))
-    {
-        ParseTargetColorMask(0);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(0))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask0))
     {
-        ParseTargetColorMask(0);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(0))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask1))
     {
-        ParseTargetColorMask(1);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(1))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask2))
     {
-        ParseTargetColorMask(2);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(2))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask3))
     {
-        ParseTargetColorMask(3);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(3))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask4))
     {
-        ParseTargetColorMask(4);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(4))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask5))
     {
-        ParseTargetColorMask(5);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(5))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask6))
     {
-        ParseTargetColorMask(6);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(6))
+            return false;
     }
     else if (Accept(HLSLToken_ColorMask7))
     {
-        ParseTargetColorMask(7);
-        doesNotExpectSemicolon = true;
+        if (!ParseTargetColorMask(7))
+            return false;
     }
 
     if (statement != NULL)
