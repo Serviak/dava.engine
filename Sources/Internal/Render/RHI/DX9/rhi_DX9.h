@@ -82,7 +82,7 @@ namespace TextureDX9
 void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 void SetToRHI(Handle tex, unsigned unitIndex);
-void SetAsRenderTarget(Handle tex, unsigned target_i = 0, TextureFace face = TEXTURE_FACE_NEGATIVE_X);
+void SetAsRenderTarget(Handle tex, unsigned target_i = 0, TextureFace face = TEXTURE_FACE_NONE);
 void SetAsDepthStencil(Handle tex);
 void ReleaseAll();
 void ReCreateAll();
