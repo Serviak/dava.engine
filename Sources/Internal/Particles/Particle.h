@@ -28,6 +28,7 @@ struct StripeData
     List<StripeNode> strpeNodes; // List of stripe control points.
     StripeNode baseNode = {};
     float32 spawnTimer = 0;
+    Vector3 inheritPositionOffset = {};
 };
 
 struct Particle
