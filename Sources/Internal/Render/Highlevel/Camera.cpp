@@ -302,11 +302,11 @@ void Camera::RebuildProjectionMatrix(bool invertProjection)
 
     if (!ortho)
     {
-        projMatrix.glFrustum(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildPerspective(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, rhi::DeviceCaps().isZeroBaseClipRange);
     }
     else
     {
-        projMatrix.glOrtho(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.BuildOrtho(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, rhi::DeviceCaps().isZeroBaseClipRange);
     }
 }
 
@@ -389,7 +389,7 @@ void Camera::RebuildCameraFromValues()
     flags &= ~REQUIRE_REBUILD;
     flags |= REQUIRE_REBUILD_MODEL;
 
-    cameraTransform.BuildLookAtMatrixRH(position, target, up);
+    cameraTransform.BuildLookAtMatrix(position, target, up);
     left.x = -cameraTransform._00;
     left.y = -cameraTransform._10;
     left.z = -cameraTransform._20;
