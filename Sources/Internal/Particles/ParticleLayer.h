@@ -35,6 +35,7 @@ struct ParticleLayer : public BaseObject
     float32 stripeUScrollSpeed = 0.0f;
     float32 stripeVScrollSpeed = 0.0f;
     float32 stripeAlphaOverLife = 1.0f;
+    bool stripeInheritPositionForBase;
 
     enum eType
     {
