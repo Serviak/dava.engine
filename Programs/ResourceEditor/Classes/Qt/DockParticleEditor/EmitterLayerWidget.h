@@ -237,6 +237,7 @@ private:
     QLabel* stripeUScrollSpeedLabel = nullptr;
     QLabel* stripeVScrollSpeedLabel = nullptr;
     QLabel* stripeAlphaOverLifeLabel = nullptr;
+    QCheckBox* stripeInheritPositionForBaseCheckBox = nullptr;
     //////////////////////////////////////////////////////////////////////////
     QSpinBox* frameOverlifeFPSSpin = nullptr;
 
