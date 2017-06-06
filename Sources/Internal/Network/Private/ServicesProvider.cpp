@@ -13,14 +13,14 @@ namespace Net
 {
 namespace ServicesProviderDetails
 {
-uint16 FIRST_ALLOWED_TCP_PORT = 10000; // number of first TCP port allowed to be occupied.
 // TCP ports are occupied 1) for providing of specified network services 2) for announcing
-uint16 LAST_ALLOWED_TCP_PORT = 10020; // number of last TCP port allowed
+uint16 FIRST_ALLOWED_TCP_PORT = NetCore::DEFAULT_TCP_ANNOUNCE_PORT + 2; // number of first TCP port allowed to be occupied by ServiceProvider.
+uint16 MAX_TCP_PORTS_ALLOWED = 20; // number of TCP ports allowed to be occupied by ServiceProvider
 float32 WAITING_CONTROLLER_START_SEC = 2.f;
 
 struct ServiceContext
 {
-    ServiceContext(std::shared_ptr<NetService>& service)
+    ServiceContext(std::shared_ptr<IChannelListener>& service)
         : netService(service)
     {
     }
@@ -28,7 +28,7 @@ struct ServiceContext
     IChannelListener* ServiceCreatorFn(ServiceID serviceId, void*);
     void ServiceDeleterFn(IChannelListener* obj, void*);
 
-    std::shared_ptr<NetService> netService;
+    std::shared_ptr<IChannelListener> netService;
     bool serviceInUse = false;
 };
 
@@ -53,7 +53,7 @@ class ServicesProvider::ServicesProviderImpl
 public:
     ServicesProviderImpl(Engine& engine, const String& appName);
     ~ServicesProviderImpl();
-    void AddService(ServiceID serviceId, std::shared_ptr<NetService>& service);
+    void AddService(ServiceID serviceId, std::shared_ptr<IChannelListener>& service);
     void Start();
     void Stop();
 
@@ -79,6 +79,9 @@ private:
     void StartAnnounceController();
     void StopServicesController();
     void StopAnnounceController();
+    void SetFirstTcpPort();
+    bool SetNextTcpPort();
+    void ResetTcpEndpoint();
     void TryUseNextPort();
     size_t AnnounceDataSupplier(size_t length, void* buffer);
     void OnUpdate(float32);
@@ -95,7 +98,8 @@ private:
     NetCore::TrackId id_net = Net::NetCore::INVALID_TRACK_ID;
     NetCore::TrackId startingControllerId = Net::NetCore::INVALID_TRACK_ID;
 
-    uint16 servicesPort = 0;
+    uint16 tcpPortOffset = 0;
+    Net::Endpoint tcpEndpoint;
 
     Map<ServiceID, ServicesProviderDetails::ServiceContext> services;
 
@@ -118,7 +122,7 @@ ServicesProvider::ServicesProviderImpl::~ServicesProviderImpl()
     }
 }
 
-void ServicesProvider::ServicesProviderImpl::AddService(ServiceID serviceId, std::shared_ptr<NetService>& service)
+void ServicesProvider::ServicesProviderImpl::AddService(ServiceID serviceId, std::shared_ptr<IChannelListener>& service)
 {
     DVASSERT(currentState == NOT_STARTED);
     DVASSERT(service);
@@ -143,7 +147,7 @@ void ServicesProvider::ServicesProviderImpl::Start()
 {
     DVASSERT(services.empty() == false);
     DVASSERT(currentState == NOT_STARTED);
-    servicesPort = ServicesProviderDetails::FIRST_ALLOWED_TCP_PORT;
+    SetFirstTcpPort();
     ChangeState(State::STARTING_SERVICES_CONTROLLER);
 }
 
@@ -214,16 +218,9 @@ void ServicesProvider::ServicesProviderImpl::ReenterState(ServicesProvider::Serv
 
 void ServicesProvider::ServicesProviderImpl::StartServicesController()
 {
-    eNetworkRole role = SERVER_ROLE;
-    Net::Endpoint endpoint = Net::Endpoint(servicesPort);
+    config.reset(new NetConfig(SERVER_ROLE));
+    config->AddTransport(TRANSPORT_TCP, tcpEndpoint);
 
-#ifdef __DAVAENGINE_WIN_UAP__
-    role = UAPNetworkHelper::GetCurrentNetworkRole();
-    endpoint = UAPNetworkHelper::GetCurrentEndPoint();
-#endif
-
-    config.reset(new NetConfig(role));
-    config->AddTransport(TRANSPORT_TCP, endpoint);
     for (auto& serviceEntry : services)
     {
         config->AddService(serviceEntry.first);
@@ -238,8 +235,7 @@ void ServicesProvider::ServicesProviderImpl::StartAnnounceController()
 {
     peerDescr = PeerDescription(applicationName, *config);
     Net::Endpoint annoUdpEndpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
-    Net::Endpoint annoTcpEndpoint(servicesPort);
-    id_anno = NetCore::Instance()->CreateAnnouncer(annoUdpEndpoint, DEFAULT_ANNOUNCE_TIME_PERIOD_SEC, MakeFunction(this, &ServicesProviderImpl::AnnounceDataSupplier), annoTcpEndpoint);
+    id_anno = NetCore::Instance()->CreateAnnouncer(annoUdpEndpoint, DEFAULT_ANNOUNCE_TIME_PERIOD_SEC, MakeFunction(this, &ServicesProviderImpl::AnnounceDataSupplier), tcpEndpoint);
     startingControllerId = id_anno;
 }
 
@@ -261,6 +257,31 @@ void ServicesProvider::ServicesProviderImpl::StopAnnounceController()
         id_anno = Net::NetCore::INVALID_TRACK_ID;
         startingControllerId = Net::NetCore::INVALID_TRACK_ID;
     }
+}
+
+void ServicesProvider::ServicesProviderImpl::SetFirstTcpPort()
+{
+    tcpPortOffset = 0;
+    ResetTcpEndpoint();
+}
+
+bool ServicesProvider::ServicesProviderImpl::SetNextTcpPort()
+{
+    if (++tcpPortOffset < ServicesProviderDetails::MAX_TCP_PORTS_ALLOWED)
+    {
+        ResetTcpEndpoint();
+        return true;
+    }
+    else
+    {
+        Logger::Error("Can't start net controller: no more allowed ports remaining");
+        return false;
+    }
+}
+
+void ServicesProvider::ServicesProviderImpl::ResetTcpEndpoint()
+{
+    tcpEndpoint = Net::Endpoint(ServicesProviderDetails::FIRST_ALLOWED_TCP_PORT + tcpPortOffset);
 }
 
 void ServicesProvider::ServicesProviderImpl::OnUpdate(float32 elapsedMs)
@@ -295,13 +316,21 @@ void ServicesProvider::ServicesProviderImpl::OnControllerStarted()
     switch (currentState)
     {
     case STARTING_SERVICES_CONTROLLER:
-        DAVA::Logger::FrameworkDebug("Port %u is occupied by '%s' for network services", servicesPort, applicationName.c_str());
-        ++servicesPort;
-        ChangeState(STARTING_ANNOUNCE_CONTROLLER);
+    {
+        DAVA::Logger::FrameworkDebug("Port %u is occupied by '%s' for network services", tcpEndpoint.Port(), applicationName.c_str());
+        bool isOk = SetNextTcpPort();
+        if (isOk)
+        {
+            ChangeState(STARTING_ANNOUNCE_CONTROLLER);
+        }
+        else
+        {
+            Stop();
+        }
         break;
+    }
     case STARTING_ANNOUNCE_CONTROLLER:
-        DAVA::Logger::FrameworkDebug("Port %u is occupied by '%s' for network announcing", servicesPort, applicationName.c_str());
-        ++servicesPort;
+        DAVA::Logger::FrameworkDebug("Port %u is occupied by '%s' for network announcing", tcpEndpoint.Port(), applicationName.c_str());
         ChangeState(STARTED);
         break;
     default:
@@ -313,13 +342,13 @@ void ServicesProvider::ServicesProviderImpl::OnControllerStarted()
 
 void ServicesProvider::ServicesProviderImpl::TryUseNextPort()
 {
-    if (++servicesPort <= ServicesProviderDetails::LAST_ALLOWED_TCP_PORT)
+    bool isOk = SetNextTcpPort();
+    if (isOk)
     {
         ReenterState(currentState);
     }
     else
     {
-        Logger::Error("Can't start net controller: no more allowed ports remaining");
         Stop();
     }
 }
@@ -344,7 +373,7 @@ ServicesProvider::~ServicesProvider()
 {
 }
 
-void ServicesProvider::AddService(ServiceID serviceId, std::shared_ptr<NetService>& service)
+void ServicesProvider::AddService(ServiceID serviceId, std::shared_ptr<IChannelListener>& service)
 {
     impl->AddService(serviceId, service);
 }
@@ -359,9 +388,9 @@ void ServicesProvider::Stop()
     impl->Stop();
 }
 
-std::pair<uint16, uint16> ServicesProvider::GetPortsRange()
+std::pair<uint16, uint16> ServicesProvider::GetTcpPortsRange()
 {
-    return std::pair<uint16, uint16>(ServicesProviderDetails::FIRST_ALLOWED_TCP_PORT, ServicesProviderDetails::LAST_ALLOWED_TCP_PORT);
+    return std::pair<uint16, uint16>(DAVA::Net::NetCore::DEFAULT_TCP_ANNOUNCE_PORT, ServicesProviderDetails::FIRST_ALLOWED_TCP_PORT + ServicesProviderDetails::MAX_TCP_PORTS_ALLOWED);
 }
 
 } // NetCore
