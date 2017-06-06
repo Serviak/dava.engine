@@ -70,8 +70,8 @@ public:
         `service` is a shared pointer to created instance of network service.
         Should be not nullable, otherwise will asserted
         I.e,
-            shared_ptr<NetService> s1(new Service1);
-            shared_ptr<NetService> s2;
+            shared_ptr<IChannelListener> s1(new Service1);
+            shared_ptr<IChannelListener> s2;
             sp.AddService(1, s1); // allowed
             sp.AddService(2, s2); // forbidden, will induce assert
 
@@ -83,7 +83,7 @@ public:
 
         Note that calling AddService after Start is not allowed and will generate assert
     */
-    void AddService(ServiceID serviceId, std::shared_ptr<NetService>& service);
+    void AddService(ServiceID serviceId, std::shared_ptr<IChannelListener>& service);
 
     /** starts passed services on first available TCP port, that starts network announcement about it
         Note that two consecutive Start() calls are not allowed and will generate assert.
@@ -94,7 +94,7 @@ public:
     void Stop();
 
     /** return range of TCP ports that provider can use for its purposes */
-    static std::pair<uint16, uint16> GetPortsRange();
+    static std::pair<uint16, uint16> GetTcpPortsRange();
 
 private:
     class ServicesProviderImpl;

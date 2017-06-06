@@ -166,7 +166,14 @@ public:
 #endif
     void Finish(bool runOutLoop = false);
 
-    bool TryDiscoverDevice(const Endpoint& endpoint);
+    enum DiscoverStartResult
+    {
+        CONTROLLER_NOT_CREATED,
+        CONTROLLER_NOT_STARTED_YET,
+        DISCOVER_STARTED,
+        CLOSING_PREVIOUS_DISCOVER
+    };
+    DiscoverStartResult TryDiscoverDevice(const Endpoint& endpoint);
 
     Vector<IfAddress> InstalledInterfaces() const;
 

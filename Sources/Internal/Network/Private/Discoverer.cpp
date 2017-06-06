@@ -55,12 +55,16 @@ bool Discoverer::TryDiscoverDevice(const Endpoint& endpoint)
     DVASSERT(!isTerminating);
     if (!(tcpSocket.IsOpen() || tcpSocket.IsClosing()))
     {
+        DAVA::Logger::FrameworkDebug("Discovering on %s", endpoint.ToString().c_str());
         tcpEndpoint = endpoint;
         loop->Post(MakeFunction(this, &Discoverer::DiscoverDevice));
         return true;
     }
-    tcpSocket.Close();
-    return false;
+    else
+    {
+        tcpSocket.Close();
+        return false;
+    }
 }
 
 void Discoverer::DoStart()
@@ -135,7 +139,7 @@ void Discoverer::DiscoverDevice()
         }
         else
         {
-            Logger::Debug("[Discoverer] can't discover on device %s: %s", tcpEndpoint.ToString().c_str(), ErrorToString(error));
+            Logger::Debug("Can't discover on %s: %s", tcpEndpoint.ToString().c_str(), ErrorToString(error));
             socket->Close();
             if (isTerminating)
             {

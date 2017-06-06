@@ -72,9 +72,9 @@ private:
 
     DAVA::Vector<BaseScreen*> screens;
 
-    std::shared_ptr<DAVA::Net::NetService> netLogger;
+    std::shared_ptr<DAVA::Net::IChannelListener> netLogger;
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-    std::shared_ptr<DAVA::Net::NetService> memprofServer;
+    std::shared_ptr<DAVA::Net::IChannelListener> memprofServer;
 #endif
 
     std::unique_ptr<DAVA::Net::ServicesProvider> servicesProvider;
