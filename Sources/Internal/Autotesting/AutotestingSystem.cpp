@@ -508,6 +508,13 @@ void AutotestingSystem::ClickSystemBack()
 {
     Window* primaryWindow = GetPrimaryWindow();
     primaryWindow->backNavigation.Emit(primaryWindow);
+
+    UIEvent keyEvent;
+    keyEvent.device = eInputDevices::KEYBOARD;
+    keyEvent.phase = DAVA::UIEvent::Phase::KEY_DOWN;
+    keyEvent.key = DAVA::eInputElements::BACK;
+    keyEvent.timestamp = SystemTimer::GetMs() / 1000.0;
+    UIControlSystem::Instance()->OnInput(&keyEvent);
 }
 
 void AutotestingSystem::PressEscape()
