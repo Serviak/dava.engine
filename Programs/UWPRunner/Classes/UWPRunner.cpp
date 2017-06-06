@@ -458,7 +458,7 @@ void SplitLoggerMessage(const DAVA::String& logString, DAVA::String& logLevel, D
 
 void TeamcityTestOutputFunc(const char* logLevelStr, const char* messageStr)
 {
-    DAVA::Logger* logger = GetEngineContext()->logger;
+    DAVA::Logger* logger = DAVA::GetEngineContext()->logger;
     DAVA::Logger::eLogLevel ll = logger->GetLogLevelFromString(logLevelStr);
 
     if (ll != DAVA::Logger::LEVEL__DISABLE)
