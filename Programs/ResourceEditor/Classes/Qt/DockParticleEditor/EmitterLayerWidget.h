@@ -218,6 +218,7 @@ private:
 
 
     //////////////////////////////////////////////////////////////////////////
+    TimeLineWidget* stripeSizeOverLifeTimeLine = nullptr;
     EventFilterDoubleSpinBox* stripeLifetimeSpin = nullptr;
     EventFilterDoubleSpinBox* stripeRateSpin = nullptr;
     EventFilterDoubleSpinBox* stripeSpeedSpin = nullptr;

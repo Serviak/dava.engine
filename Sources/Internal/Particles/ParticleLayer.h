@@ -31,11 +31,14 @@ struct ParticleLayer : public BaseObject
     float32 stripeSpeed = 0.0f;
     float32 stripeStartSize = 0.0f;
     float32 stripeSizeOverLife = 0.0f;
+    RefPtr<PropertyLine<float32>> stripeSizeOverLifeProp;
     float32 stripeTextureTile = 1.0f;
     float32 stripeUScrollSpeed = 0.0f;
     float32 stripeVScrollSpeed = 0.0f;
     float32 stripeAlphaOverLife = 1.0f;
     bool stripeInheritPositionForBase;
+    float32 maxStripeOverLife = 0.0f;
+    bool isMaxStripeOverLifeDirty = true;
 
     enum eType
     {
@@ -73,6 +76,7 @@ struct ParticleLayer : public BaseObject
     void RemoveForce(ParticleForce* force);
     void RemoveForce(int32 forceIndex);
     void CleanupForces();
+    float32 CalculateMaxStripeSizeOverLife();
 
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
@@ -215,6 +219,22 @@ private:
 public:
     INTROSPECTION_EXTEND(ParticleLayer, BaseObject, nullptr);
 };
+
+inline float32 ParticleLayer::CalculateMaxStripeSizeOverLife()
+{
+    if (!isMaxStripeOverLifeDirty)
+        return maxStripeOverLife;
+    isMaxStripeOverLifeDirty = false;
+    auto& keys = stripeSizeOverLifeProp->GetValues();
+    auto max = std::max_element(keys.begin(), keys.end(), 
+        [](PropertyLine<float32>::PropertyKey& a, PropertyLine<float32>::PropertyKey& b)
+    {
+        return a.value < b.value;
+    }
+    );
+    maxStripeOverLife = (*max).value;
+    return maxStripeOverLife;
+}
 }
 
 #endif // __DAVAENGINE_PARTICLE_LAYER_H__
