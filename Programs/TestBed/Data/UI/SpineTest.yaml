@@ -10,6 +10,7 @@ Controls:
         name: "UIControl"
         position: [129.000000, 306.000000]
         size: [50.000000, 50.000000]
+        pivot: [0.500000, 0.500000]
         debugDraw: true
         components:
             Background:
@@ -24,16 +25,17 @@ Controls:
                 loopedPlayback: true
     -   class: "UIControl"
         name: "UIControl"
-        position: [693.000000, 378.000000]
+        position: [654.000000, 378.000000]
         size: [50.000000, 50.000000]
         scale: [0.500000, 0.500000]
+        pivot: [0.500000, 0.500000]
         debugDraw: true
         components:
             Background:
                 drawType: "DRAW_BATCH"
             UISpineComponent:
-                skeletonPath: "~res:/UI/Spine/spineboy.json"
-                atlasPath: "~res:/UI/Spine/spineboy.atlas"
+                skeletonPath: "~res:/Spine/spineboy.json"
+                atlasPath: "~res:/Gfx/Spine/spineboy.atlas"
                 animationName: "walk"
                 animationState: "Played"
                 skinName: "default"
@@ -43,8 +45,7 @@ Controls:
         name: "UIControl"
         position: [394.000000, 442.000000]
         size: [36.000000, 39.000000]
-        scale: [1.000000, 1.000000]
-        pivot: [0.000000, 0.000000]
+        pivot: [0.500000, 0.500000]
         debugDraw: true
         components:
             Background:
@@ -62,7 +63,7 @@ Controls:
         children:
         -   class: "UIControl"
             name: "Spear"
-            position: [77.124153, -285.829956]
+            position: [147.594116, -248.759613]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
@@ -71,7 +72,7 @@ Controls:
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
         -   class: "UIControl"
             name: "Head"
-            position: [-2.621923, -210.835922]
+            position: [19.520557, -194.359970]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:

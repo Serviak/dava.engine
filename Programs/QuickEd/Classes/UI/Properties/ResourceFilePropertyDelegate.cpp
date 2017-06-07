@@ -16,11 +16,11 @@
 using namespace DAVA;
 
 ResourceFilePropertyDelegate::ResourceFilePropertyDelegate(
-const QString& resourceExtension_,
+const QList<QString>& resourceExtensions_,
 const QString& resourceSubDir_,
 PropertiesTreeItemDelegate* delegate)
     : BasePropertyDelegate(delegate)
-    , resourceExtension(resourceExtension_)
+    , resourceExtensions(resourceExtensions_)
     , resourceSubDir(resourceSubDir_)
 {
 }
@@ -109,7 +109,12 @@ void ResourceFilePropertyDelegate::selectFileClicked()
         dir = projectResourceDir + resourceSubDir;
     }
 
-    QString filePathText = FileDialog::getOpenFileName(editor->parentWidget(), tr("Select resource file"), dir, "*" + resourceExtension);
+    QString filters;
+    for (QString& filter : resourceExtensions)
+    {
+        filters += "*" + filter + " ";
+    }
+    QString filePathText = FileDialog::getOpenFileName(editor->parentWidget(), tr("Select resource file"), dir, filters);
 
     if (project)
     {
@@ -176,9 +181,9 @@ bool ResourceFilePropertyDelegate::IsPathValid(const QString& path, bool allowAn
     if (!filePath.IsEmpty())
     {
         String ext = filePath.GetExtension();
-        String resExt = QStringToString(resourceExtension);
-        if (ext.empty() || !allowAnyExtension)
+        if ((ext.empty() || !allowAnyExtension) && !resourceExtensions.empty())
         {
+            String resExt = QStringToString(resourceExtensions[0]);
             filePath.ReplaceExtension(resExt);
         }
     }

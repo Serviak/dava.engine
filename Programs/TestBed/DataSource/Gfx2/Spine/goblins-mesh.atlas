@@ -1,0 +1,293 @@
+
+goblins-mesh.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+dagger
+  rotate: true
+  xy: 490, 412
+  size: 52, 216
+  orig: 52, 216
+  offset: 0, 0
+  index: -1
+eyes-closed
+  rotate: false
+  xy: 2, 4
+  size: 68, 24
+  orig: 68, 24
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 168
+  size: 206, 132
+  orig: 206, 132
+  offset: 0, 0
+  index: -1
+left-arm
+  rotate: true
+  xy: 644, 336
+  size: 74, 70
+  orig: 74, 70
+  offset: 0, 0
+  index: -1
+left-foot
+  rotate: false
+  xy: 210, 120
+  size: 130, 62
+  orig: 130, 62
+  offset: 0, 0
+  index: -1
+left-hand
+  rotate: false
+  xy: 452, 36
+  size: 72, 82
+  orig: 72, 82
+  offset: 0, 0
+  index: -1
+left-lower-leg
+  rotate: true
+  xy: 348, 252
+  size: 66, 140
+  orig: 66, 140
+  offset: 0, 0
+  index: -1
+left-shoulder
+  rotate: false
+  xy: 964, 334
+  size: 58, 88
+  orig: 58, 88
+  offset: 0, 0
+  index: -1
+left-upper-leg
+  rotate: true
+  xy: 490, 270
+  size: 66, 146
+  orig: 66, 146
+  offset: 0, 0
+  index: -1
+neck
+  rotate: true
+  xy: 478, 128
+  size: 72, 82
+  orig: 72, 82
+  offset: 0, 0
+  index: -1
+pelvis
+  rotate: false
+  xy: 210, 184
+  size: 124, 86
+  orig: 124, 86
+  offset: 0, 0
+  index: -1
+right-arm
+  rotate: true
+  xy: 196, 2
+  size: 46, 100
+  orig: 46, 100
+  offset: 0, 0
+  index: -1
+right-foot
+  rotate: false
+  xy: 716, 370
+  size: 126, 66
+  orig: 126, 66
+  offset: 0, 0
+  index: -1
+right-hand
+  rotate: true
+  xy: 638, 262
+  size: 72, 74
+  orig: 72, 74
+  offset: 0, 0
+  index: -1
+right-lower-leg
+  rotate: true
+  xy: 490, 338
+  size: 72, 152
+  orig: 72, 152
+  offset: 0, 0
+  index: -1
+right-shoulder
+  rotate: false
+  xy: 884, 332
+  size: 78, 90
+  orig: 78, 90
+  offset: 0, 0
+  index: -1
+right-upper-leg
+  rotate: true
+  xy: 196, 50
+  size: 68, 126
+  orig: 68, 126
+  offset: 0, 0
+  index: -1
+torso
+  rotate: false
+  xy: 210, 272
+  size: 136, 192
+  orig: 136, 192
+  offset: 0, 0
+  index: -1
+undie-straps
+  rotate: false
+  xy: 298, 10
+  size: 110, 38
+  orig: 110, 38
+  offset: 0, 0
+  index: -1
+undies
+  rotate: true
+  xy: 964, 260
+  size: 72, 58
+  orig: 72, 58
+  offset: 0, 0
+  index: -1
+eyes-closed
+  rotate: true
+  xy: 562, 126
+  size: 74, 42
+  orig: 74, 42
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 302
+  size: 206, 162
+  orig: 206, 162
+  offset: 0, 0
+  index: -1
+left-arm
+  rotate: false
+  xy: 690, 114
+  size: 74, 70
+  orig: 74, 70
+  offset: 0, 0
+  index: -1
+left-foot
+  rotate: false
+  xy: 342, 120
+  size: 130, 62
+  orig: 130, 62
+  offset: 0, 0
+  index: -1
+left-hand
+  rotate: true
+  xy: 632, 190
+  size: 70, 80
+  orig: 70, 80
+  offset: 0, 0
+  index: -1
+left-lower-leg
+  rotate: true
+  xy: 336, 184
+  size: 66, 140
+  orig: 66, 140
+  offset: 0, 0
+  index: -1
+left-shoulder
+  rotate: true
+  xy: 714, 186
+  size: 56, 92
+  orig: 56, 92
+  offset: 0, 0
+  index: -1
+left-upper-leg
+  rotate: true
+  xy: 490, 202
+  size: 66, 140
+  orig: 66, 140
+  offset: 0, 0
+  index: -1
+neck
+  rotate: true
+  xy: 606, 118
+  size: 70, 82
+  orig: 70, 82
+  offset: 0, 0
+  index: -1
+pelvis
+  rotate: false
+  xy: 894, 424
+  size: 124, 86
+  orig: 124, 86
+  offset: 0, 0
+  index: -1
+right-arm
+  rotate: true
+  xy: 714, 244
+  size: 56, 100
+  orig: 56, 100
+  offset: 0, 0
+  index: -1
+right-foot
+  rotate: false
+  xy: 716, 302
+  size: 126, 66
+  orig: 126, 66
+  offset: 0, 0
+  index: -1
+right-hand
+  rotate: false
+  xy: 766, 110
+  size: 72, 74
+  orig: 72, 74
+  offset: 0, 0
+  index: -1
+right-lower-leg
+  rotate: true
+  xy: 740, 438
+  size: 72, 152
+  orig: 72, 152
+  offset: 0, 0
+  index: -1
+right-shoulder
+  rotate: false
+  xy: 884, 240
+  size: 78, 90
+  orig: 78, 90
+  offset: 0, 0
+  index: -1
+right-upper-leg
+  rotate: true
+  xy: 324, 50
+  size: 68, 126
+  orig: 68, 126
+  offset: 0, 0
+  index: -1
+torso
+  rotate: true
+  xy: 2, 30
+  size: 136, 192
+  orig: 136, 192
+  offset: 0, 0
+  index: -1
+undie-straps
+  rotate: true
+  xy: 844, 326
+  size: 110, 38
+  orig: 110, 38
+  offset: 0, 0
+  index: -1
+undies
+  rotate: true
+  xy: 964, 186
+  size: 72, 58
+  orig: 72, 58
+  offset: 0, 0
+  index: -1
+shield
+  rotate: false
+  xy: 348, 320
+  size: 140, 144
+  orig: 140, 144
+  offset: 0, 0
+  index: -1
+spear
+  rotate: true
+  xy: 2, 466
+  size: 44, 736
+  orig: 44, 736
+  offset: 0, 0
+  index: -1

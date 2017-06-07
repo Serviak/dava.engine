@@ -41,8 +41,14 @@ public:
     /** Update state of Spine skeleton with specified time delta. */
     void Update(const float32 timeElapsed);
 
+    /** Setup offset of skeleton origin. */
+    void SetOriginOffset(const Vector2& offset);
+    /** Return offset of skeleton origin. */
+    Vector2 GetSkeletonOriginOffset() const;
+
     /** Reset all Spine skeleton's states. */
     void ResetSkeleton();
+
     /** Return render batch data for draw current state of Spine skeleton in UIControlBackground. */
     BatchDescriptor* GetRenderBatch() const;
 
