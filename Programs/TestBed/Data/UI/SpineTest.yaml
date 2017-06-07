@@ -34,8 +34,8 @@ Controls:
             Background:
                 drawType: "DRAW_BATCH"
             UISpineComponent:
-                skeletonPath: "~res:/Spine/spineboy.json"
-                atlasPath: "~res:/Gfx/Spine/spineboy.atlas"
+                skeletonPath: "~res:/UI/Spine/spineboy.json"
+                atlasPath: "~res:/UI/Spine/spineboy.atlas"
                 animationName: "walk"
                 animationState: "Played"
                 skinName: "default"
@@ -63,7 +63,7 @@ Controls:
         children:
         -   class: "UIControl"
             name: "Spear"
-            position: [147.594116, -248.759613]
+            position: [128.583344, -258.876831]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
@@ -72,7 +72,7 @@ Controls:
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
         -   class: "UIControl"
             name: "Head"
-            position: [19.520557, -194.359970]
+            position: [15.422297, -193.963470]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
