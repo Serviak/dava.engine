@@ -362,6 +362,8 @@ void VisibilityCheckRenderer::FixFrame(DAVA::RenderSystem* renderSystem, DAVA::C
 
     fixedFrame = DAVA::Texture::CreateFBO(w, h, DAVA::PixelFormat::FORMAT_RGBA8888, false, rhi::TextureType::TEXTURE_TYPE_2D, false);
     fixedFrame->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
+    fixedFrameMatrix = fromCamera->GetViewProjMatrix();
+    fixedFrameCameraPosition = fromCamera->GetPosition();
     frameCompleteness = 1.0f;
 
     DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
@@ -437,9 +439,6 @@ void VisibilityCheckRenderer::RenderWithReprojection(DAVA::RenderSystem* renderS
 {
     DAVA::Vector<DAVA::RenderBatch*> renderBatches;
     CollectRenderBatches(renderSystem, fromCamera, renderBatches);
-
-    fixedFrameMatrix = fromCamera->GetViewProjMatrix(rhi::NeedInvertProjection(reprojectionConfig));
-    fixedFrameCameraPosition = fromCamera->GetPosition();
 
     DAVA::Vector2 vpSize(static_cast<float>(reprojectionTexture->GetWidth()), static_cast<float>(reprojectionTexture->GetHeight()));
     reprojectionMaterial->SetPropertyValue(MaterialParamOrigin, fixedFrameCameraPosition.data);
