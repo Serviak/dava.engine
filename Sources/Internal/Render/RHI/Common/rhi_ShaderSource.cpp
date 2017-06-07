@@ -207,6 +207,33 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
 
         if (parser.Parse(ast))
         {
+            // some sanity checks
+            const char* entryName = (progType == PROG_VERTEX) ? "vp_main" : "fp_main";
+            bool hasReturn = false;
+            sl::HLSLFunction* entryFunction = ast->FindFunction(entryName);
+            if (entryFunction)
+            {
+                for (sl::HLSLStatement* s = entryFunction->statement; s; s = s->nextStatement)
+                {
+                    if (s->nodeType == sl::HLSLNodeType_ReturnStatement)
+                    {
+                        hasReturn = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                DAVA::Logger::Error("missing entry-point function '%s'", entryName);
+                return false;
+            }
+
+            if (!hasReturn)
+            {
+                DAVA::Logger::Error("entry-point function '%s' has no return statement", entryName);
+                return false;
+            }
+
             success = ProcessMetaData(ast);
             type = progType;
 
