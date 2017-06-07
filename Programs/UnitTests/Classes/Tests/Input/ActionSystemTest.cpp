@@ -31,6 +31,8 @@ DAVA_TESTCLASS (ActionSystemTestClass)
     {
         // Check different combinations of digital elements that should trigger an action
 
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
+
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
         {
@@ -212,12 +214,16 @@ DAVA_TESTCLASS (ActionSystemTestClass)
 
         actionSystem->UnbindAllSets();
         actionSystem->ActionTriggered.Disconnect(this);
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     DAVA_TEST (ActionSystemActionTriggeredDeviceTest)
     {
         // Check that triggeredDevice in triggered action is correct
         // and points to a device whose event has triggered the action
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
 
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
@@ -284,12 +290,16 @@ DAVA_TESTCLASS (ActionSystemTestClass)
 
         actionSystem->UnbindAllSets();
         actionSystem->ActionTriggered.Disconnect(this);
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     DAVA_TEST (ActionSystemActionTriggerAnalogTest)
     {
         // Check different combinations of digital and analog elements that should trigger an action with analog data
         // Use mouse device for that
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
 
         ActionSystem* actionSystem = GetEngineContext()->actionSystem;
 
@@ -359,11 +369,15 @@ DAVA_TESTCLASS (ActionSystemTestClass)
         {
             Logger::Info("Skipping ActionSystemActionTriggerAnalogTest's mouse part since there is no mouse device");
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     DAVA_TEST (ActionSystemActionTriggerDigitalAnalogStateTest)
     {
         // Check that digital binding correctly outputs overrided analog state
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
 
         Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         if (kb == nullptr)
@@ -412,6 +426,8 @@ DAVA_TESTCLASS (ActionSystemTestClass)
 
         actionSystem->UnbindAllSets();
         actionSystem->ActionTriggered.Disconnect(this);
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
     }
 
     void SendKeyboardKeyDown(Keyboard * kb, eInputElements key)

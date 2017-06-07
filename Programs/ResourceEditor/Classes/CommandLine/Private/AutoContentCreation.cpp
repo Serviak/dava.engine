@@ -3,6 +3,7 @@
 #include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
 
+#include <TArc/Utils/ModuleCollection.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>

@@ -76,6 +76,8 @@ DAVA_TESTCLASS (KeyboardTestClass)
             eventHandlingTestState = EventHandlingTestState::FINISHED;
             return;
         }
+
+        GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ALWAYS);
     }
 
     // Check that all elements are in released state, except specified `requiredElement` that should be in `requiredState`
@@ -187,6 +189,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 if (currentElement > eInputElements::KB_LAST)
                 {
                     eventHandlingTestState = EventHandlingTestState::FINISHED;
+                    GetPrimaryWindow()->SetInputHandlingMode(eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED);
                 }
                 else
                 {
