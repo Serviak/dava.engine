@@ -122,14 +122,14 @@ void VisibilityCheckRenderer::RenderToCubemapFromPoint(DAVA::RenderSystem* rende
     cubemapCamera->SetPosition(point);
     for (DAVA::uint32 i = 0; i < 6; ++i)
     {
-        SetupCameraToRenderFromPointToFaceIndex(point, i);
+        SetupCameraToRenderFromPointToFaceIndex(point, i, static_cast<float>(cubemapTarget->width));
         RenderWithCurrentSettings(renderSystem);
     }
 }
 
-void VisibilityCheckRenderer::SetupCameraToRenderFromPointToFaceIndex(const DAVA::Vector3& point, DAVA::uint32 faceIndex)
+void VisibilityCheckRenderer::SetupCameraToRenderFromPointToFaceIndex(const DAVA::Vector3& point, DAVA::uint32 faceIndex, DAVA::float32 cubemapSize)
 {
-    const DAVA::Vector3 directions[6] =
+    static const DAVA::Vector3 directions[6] =
     {
       DAVA::Vector3(1.0f, 0.0f, 0.0f),
       DAVA::Vector3(-1.0f, 0.0f, 0.0f),
@@ -138,7 +138,7 @@ void VisibilityCheckRenderer::SetupCameraToRenderFromPointToFaceIndex(const DAVA
       DAVA::Vector3(0.0f, 0.0f, 1.0f),
       DAVA::Vector3(0.0f, 0.0f, -1.0f),
     };
-    const DAVA::Vector3 upVectors[6] =
+    static const DAVA::Vector3 upVectors[6] =
     {
       DAVA::Vector3(0.0f, -1.0f, 0.0f),
       DAVA::Vector3(0.0f, -1.0f, 0.0f),
@@ -147,7 +147,7 @@ void VisibilityCheckRenderer::SetupCameraToRenderFromPointToFaceIndex(const DAVA
       DAVA::Vector3(0.0f, -1.0f, 0.0f),
       DAVA::Vector3(0.0f, -1.0f, 0.0f),
     };
-    const rhi::TextureFace targetFaces[6] =
+    static const rhi::TextureFace targetFaces[6] =
     {
       rhi::TEXTURE_FACE_POSITIVE_X,
       rhi::TEXTURE_FACE_NEGATIVE_X,
@@ -158,9 +158,24 @@ void VisibilityCheckRenderer::SetupCameraToRenderFromPointToFaceIndex(const DAVA
     };
 
     renderTargetConfig.colorBuffer[0].textureFace = targetFaces[faceIndex];
-
     cubemapCamera->SetTarget(point + directions[faceIndex]);
     cubemapCamera->SetUp(upVectors[faceIndex]);
+
+    if (rhi::DeviceCaps().isCenterPixelMapping)
+    {
+        // See explanation why 1.0 / cubemapSize but not 0.5 / cubemapSize here
+        // https://gamedev.stackexchange.com/questions/83191/offset-a-camera-render-without-changing-perspective
+        const DAVA::Vector2 projectionOffets[6] =
+        {
+          DAVA::Vector2(-1.0f / cubemapSize, -1.0f / cubemapSize),
+          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
+          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
+          DAVA::Vector2(+1.0f / cubemapSize, +1.0f / cubemapSize),
+          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
+          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
+        };
+        cubemapCamera->SetProjectionMatrixOffset(projectionOffets[faceIndex].x, projectionOffets[faceIndex].y);
+    }
 }
 
 bool VisibilityCheckRenderer::ShouldRenderObject(DAVA::RenderObject* object)
