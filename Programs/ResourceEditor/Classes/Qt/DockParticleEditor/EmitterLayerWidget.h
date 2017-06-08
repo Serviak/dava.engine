@@ -43,6 +43,7 @@ public:
     // Notify the widget layer value is changed.
     void OnLayerValueChanged();
 
+    void SetStripeParticleMode(bool isStripeParticle);
 signals:
     void ValueChanged();
 
@@ -239,6 +240,7 @@ private:
     QLabel* stripeVScrollSpeedLabel = nullptr;
     QLabel* stripeAlphaOverLifeLabel = nullptr;
     QCheckBox* stripeInheritPositionForBaseCheckBox = nullptr;
+    GradientPickerWidget* stripeColorOverLifeGradient = nullptr;
     //////////////////////////////////////////////////////////////////////////
     QSpinBox* frameOverlifeFPSSpin = nullptr;
 

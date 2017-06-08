@@ -36,6 +36,7 @@ struct ParticleLayer : public BaseObject
     float32 stripeUScrollSpeed = 0.0f;
     float32 stripeVScrollSpeed = 0.0f;
     float32 stripeAlphaOverLife = 1.0f;
+    RefPtr<PropertyLine<Color>> stripeColorOverLife;
     bool stripeInheritPositionForBase;
     float32 maxStripeOverLife = 0.0f;
     bool isMaxStripeOverLifeDirty = true;
