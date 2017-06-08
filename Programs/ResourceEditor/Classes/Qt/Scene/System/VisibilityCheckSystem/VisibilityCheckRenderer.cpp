@@ -165,16 +165,17 @@ void VisibilityCheckRenderer::SetupCameraToRenderFromPointToFaceIndex(const DAVA
     {
         // See explanation why 1.0 / cubemapSize but not 0.5 / cubemapSize here
         // https://gamedev.stackexchange.com/questions/83191/offset-a-camera-render-without-changing-perspective
+        const float offset = 1.0f / cubemapSize;
         const DAVA::Vector2 projectionOffets[6] =
         {
-          DAVA::Vector2(-1.0f / cubemapSize, -1.0f / cubemapSize),
-          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
-          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
-          DAVA::Vector2(+1.0f / cubemapSize, +1.0f / cubemapSize),
-          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
-          DAVA::Vector2(+1.0f / cubemapSize, -1.0f / cubemapSize),
+          DAVA::Vector2(-offset, -offset),
+          DAVA::Vector2(+offset, -offset),
+          DAVA::Vector2(+offset, -offset),
+          DAVA::Vector2(+offset, +offset),
+          DAVA::Vector2(+offset, -offset),
+          DAVA::Vector2(+offset, -offset),
         };
-        cubemapCamera->SetProjectionMatrixOffset(projectionOffets[faceIndex].x, projectionOffets[faceIndex].y);
+        cubemapCamera->SetProjectionMatrixOffset(projectionOffets[faceIndex]);
     }
 }
 
