@@ -303,10 +303,14 @@ void Camera::RebuildProjectionMatrix(bool invertProjection)
     if (!ortho)
     {
         projMatrix.BuildPerspective(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.data[8] += projectionMatrixOffset.x;
+        projMatrix.data[9] += projectionMatrixOffset.y;
     }
     else
     {
         projMatrix.BuildOrtho(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, rhi::DeviceCaps().isZeroBaseClipRange);
+        projMatrix.data[12] += projectionMatrixOffset.x;
+        projMatrix.data[13] += projectionMatrixOffset.y;
     }
 }
 
@@ -515,7 +519,7 @@ BaseObject* Camera::Clone(BaseObject* dstNode)
         DVASSERT(IsPointerToExactClass<Camera>(this), "Can clone only Camera");
         dstNode = new Camera();
     }
-    // SceneNode::Clone(dstNode);
+
     Camera* cnd = static_cast<Camera*>(dstNode);
     cnd->znear = znear;
     cnd->zfar = zfar;
@@ -528,7 +532,6 @@ BaseObject* Camera::Clone(BaseObject* dstNode)
     cnd->target = target;
     cnd->up = up;
     cnd->left = left;
-    //cnd->rotation = rotation;
     cnd->cameraTransform = cameraTransform;
     cnd->flags = flags;
     cnd->zoomFactor = zoomFactor;
@@ -588,28 +591,6 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect& 
     return result;
 }
 
-/*
-     float32 xmin, xmax, ymin, ymax, znear, zfar, aspect, fovx;
-     bool ortho;
-     
-     
-     Vector3 position;		//
-     Vector3 target;		//	
-     Vector3 up;
-     Vector3 left;
-     
-     Vector3 direction;  // right now this variable updated only when you call GetDirection.
-     
-     //Quaternion rotation;	// 
-     Matrix4 cameraTransform;
-     
-     Matrix4 modelMatrix;
-     Matrix4 projMatrix;
-     Matrix4 uniformProjModelMatrix;
-     
-     uint32 flags;
-*/
-
 void Camera::SaveObject(KeyedArchive* archive)
 {
     BaseObject::SaveObject(archive);
@@ -632,6 +613,7 @@ void Camera::SaveObject(KeyedArchive* archive)
 
     archive->SetByteArrayAsType("cam.modelMatrix", viewMatrix);
     archive->SetByteArrayAsType("cam.projMatrix", projMatrix);
+    archive->SetVector2("cam.projMatrixOffset", projectionMatrixOffset);
 }
 
 void Camera::LoadObject(KeyedArchive* archive)
@@ -656,36 +638,10 @@ void Camera::LoadObject(KeyedArchive* archive)
     cameraTransform = archive->GetByteArrayAsType("cam.cameraTransform", cameraTransform);
     viewMatrix = archive->GetByteArrayAsType("cam.modelMatrix", viewMatrix);
     projMatrix = archive->GetByteArrayAsType("cam.projMatrix", projMatrix);
+    projectionMatrixOffset = archive->GetVector2("cam.projMatrixOffset", projectionMatrixOffset);
 
     Recalc();
 }
-
-//SceneNode* Camera::Clone()
-//{
-//    return CopyDataTo(new Camera(scene));
-//}
-//
-//SceneNode* Camera::CopyDataTo(SceneNode *dstNode)
-//{
-//    SceneNode::CopyDataTo(dstNode);
-//    dstNode->xmin = xmin;
-//    dstNode->xmax = xmax;
-//    dstNode->ymin = ymin;
-//    dstNode->ymax = ymax;
-//    dstNode->znear = znear;
-//    dstNode->zfar = zfar;
-//    dstNode->aspect = aspect;
-//    dstNode->fovx = fovx;
-//	dstNode->ortho = ortho;
-//
-//	dstNode->position = position;
-//	dstNode->target = target;
-//	dstNode->up = up;
-//	dstNode->left = left;
-//	dstNode->rotation = rotation;
-//	dstNode->cameraTransform = cameraTransform;
-//    return dstNode;
-//}
 
 void Camera::CopyMathOnly(const Camera& c)
 {
@@ -714,6 +670,12 @@ void Camera::CopyMathOnly(const Camera& c)
     projMatrix = c.projMatrix;
     viewProjMatrix = c.viewProjMatrix;
     flags = c.flags;
+}
+
+void Camera::SetProjectionMatrixOffset(const Vector2& offset)
+{
+    projectionMatrixOffset = offset;
+    Recalc();
 }
 
 } // ns
