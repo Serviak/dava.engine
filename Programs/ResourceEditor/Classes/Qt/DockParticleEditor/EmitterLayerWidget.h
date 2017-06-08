@@ -217,7 +217,6 @@ private:
     EventFilterDoubleSpinBox* fresnelBiasSpinBox = nullptr;
     EventFilterDoubleSpinBox* fresnelPowerSpinBox = nullptr;
 
-
     //////////////////////////////////////////////////////////////////////////
     TimeLineWidget* stripeSizeOverLifeTimeLine = nullptr;
     EventFilterDoubleSpinBox* stripeLifetimeSpin = nullptr;
@@ -256,4 +255,3 @@ public:
 
     bool event(QEvent* e) override;
 };
-

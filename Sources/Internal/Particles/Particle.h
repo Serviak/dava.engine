@@ -17,10 +17,12 @@ struct StripeNode
         : lifeime(lifetime_)
         , position(position_)
         , speed(speed_)
-    {}
+    {
+    }
 
     StripeNode()
-    {}
+    {
+    }
 };
 
 struct StripeData
