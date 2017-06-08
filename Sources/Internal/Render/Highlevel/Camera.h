@@ -108,11 +108,6 @@ public:
      */
     void SetupDynamicParameters(bool invertProjection, Vector4* externalClipPlane = NULL);
 
-    /**     
-        \brief Restore camera transform to original camera transform that was set using 
-     */
-    void RestoreOriginalSceneTransform();
-
     /**
          \brief return current xmin of this camera
          \returns xmin for this camera
@@ -326,7 +321,8 @@ public:
     /*
      * Projection matrix offset could be used for half-pixel offset in certain APIs
      */
-    void SetProjectionMatrixOffset(float offX, float offY);
+    const Vector2& GetProjectionMatrixOffset() const;
+    void SetProjectionMatrixOffset(const Vector2& offset);
 
     enum eFlags
     {
@@ -366,8 +362,6 @@ protected:
     // TODO: not necessary to be a pointer here.
     Frustum* currentFrustum;
 
-    void ExtractValuesFromMatrix();
-    void ConstructMatrixFromValues();
     void Recalc();
     void ValidateProperties();
 
@@ -387,6 +381,7 @@ public:
                          PROPERTY("fovx", "fovx", GetFOV, SetFOV, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("ortho", "Is Ortho", GetIsOrtho, SetIsOrtho, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("orthoWidth", "orthoWidth", GetOrthoWidth, SetOrthoWidth, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("projectionMatrixOffset", "projectionMatrixOffset", GetProjectionMatrixOffset, SetProjectionMatrixOffset, I_SAVE | I_VIEW | I_EDIT)
 
                          //PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          PROPERTY("position", "Position", GetPosition, SetPosition, I_SAVE | I_VIEW | I_EDIT)
@@ -403,4 +398,9 @@ public:
 
     DAVA_VIRTUAL_REFLECTION(Camera, BaseObject);
 };
+
+inline const Vector2& Camera::GetProjectionMatrixOffset() const
+{
+    return projectionMatrixOffset;
+}
 }
