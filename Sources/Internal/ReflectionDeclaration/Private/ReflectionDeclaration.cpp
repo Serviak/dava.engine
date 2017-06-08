@@ -86,6 +86,8 @@
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UILayoutIsolationComponent.h"
 #include "UI/Render/UISceneComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
+#include "UI/Render/UIClipContentComponent.h"
 #include "UI/Scroll/UIScrollBarDelegateComponent.h"
 #include "UI/Sound/UISoundComponent.h"
 #include "UI/Sound/UISoundValueFilterComponent.h"
@@ -302,15 +304,15 @@ void RegisterPermanentNames()
 DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(type, string); \
 GetEngineContext()->componentManager->RegisterComponent<type>();
 
-    DELC_UI_COMPONENT(UISoundComponent, "Sound");
-    DELC_UI_COMPONENT(UISoundValueFilterComponent, "SoundValueFilter");
-    DELC_UI_COMPONENT(UIControlBackground, "Background");
     DELC_UI_COMPONENT(UILinearLayoutComponent, "LinearLayout");
     DELC_UI_COMPONENT(UIFlowLayoutComponent, "FlowLayout");
     DELC_UI_COMPONENT(UIFlowLayoutHintComponent, "FlowLayoutHint");
     DELC_UI_COMPONENT(UIIgnoreLayoutComponent, "IgnoreLayout");
     DELC_UI_COMPONENT(UISizePolicyComponent, "SizePolicy");
     DELC_UI_COMPONENT(UIAnchorComponent, "Anchor");
+    DELC_UI_COMPONENT(UILayoutSourceRectComponent, "UILayoutSourceRectComponent");
+    DELC_UI_COMPONENT(UILayoutIsolationComponent, "UILayoutIsolationComponent");
+    DELC_UI_COMPONENT(UIControlBackground, "Background");
     DELC_UI_COMPONENT(UIModalInputComponent, "ModalInput");
     DELC_UI_COMPONENT(UIFocusComponent, "Focus");
     DELC_UI_COMPONENT(UIFocusGroupComponent, "FocusGroup");
@@ -319,14 +321,16 @@ GetEngineContext()->componentManager->RegisterComponent<type>();
     DELC_UI_COMPONENT(UIActionComponent, "Action");
     DELC_UI_COMPONENT(UIActionBindingComponent, "ActionBinding");
     DELC_UI_COMPONENT(UIScrollBarDelegateComponent, "ScrollBarDelegate");
-    DELC_UI_COMPONENT(UIUpdateComponent, "UIUpdateComponent");
+    DELC_UI_COMPONENT(UIScrollComponent, "ScrollComponent");
+    DELC_UI_COMPONENT(UISoundComponent, "Sound");
+    DELC_UI_COMPONENT(UISoundValueFilterComponent, "SoundValueFilter");
+    DELC_UI_COMPONENT(UIUpdateComponent, "Update");
     DELC_UI_COMPONENT(UICustomUpdateDeltaComponent, "CustomDeltaUpdate");
     DELC_UI_COMPONENT(UIRichContentComponent, "RichContent");
     DELC_UI_COMPONENT(UIRichContentObjectComponent, "RichContentObject");
-    DELC_UI_COMPONENT(UILayoutSourceRectComponent, "UILayoutSourceRectComponent");
-    DELC_UI_COMPONENT(UILayoutIsolationComponent, "UILayoutIsolationComponent");
-    DELC_UI_COMPONENT(UIScrollComponent, "ScrollComponent");
     DELC_UI_COMPONENT(UISceneComponent, "SceneComponent");
+    DELC_UI_COMPONENT(UIDebugRenderComponent, "DebugRender");
+    DELC_UI_COMPONENT(UIClipContentComponent, "ClipContent");
     
 #undef DELC_UI_COMPONENT
 }
