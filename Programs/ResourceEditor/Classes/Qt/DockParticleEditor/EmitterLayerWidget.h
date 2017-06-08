@@ -222,23 +222,17 @@ private:
     TimeLineWidget* stripeSizeOverLifeTimeLine = nullptr;
     EventFilterDoubleSpinBox* stripeLifetimeSpin = nullptr;
     EventFilterDoubleSpinBox* stripeRateSpin = nullptr;
-    EventFilterDoubleSpinBox* stripeSpeedSpin = nullptr;
     EventFilterDoubleSpinBox* stripeStartSizeSpin = nullptr;
-    EventFilterDoubleSpinBox* stripeSizeOverLifeSpin = nullptr;
     EventFilterDoubleSpinBox* stripeTextureTileSpin = nullptr;
     EventFilterDoubleSpinBox* stripeUScrollSpeedSpin = nullptr;
     EventFilterDoubleSpinBox* stripeVScrollSpeedSpin = nullptr;
-    EventFilterDoubleSpinBox* stripeAlphaOverLifeSpin = nullptr;
     QLabel* stripeLabel = nullptr;
     QLabel* stripeLifetimeLabel = nullptr;
     QLabel* stripeRateLabel = nullptr;
-    QLabel* stripeSpeedLabel = nullptr;
     QLabel* stripeStartSizeLabel = nullptr;
-    QLabel* stripeSizeOverLifeLabel = nullptr;
     QLabel* stripeTexTileLabel = nullptr;
     QLabel* stripeUScrollSpeedLabel = nullptr;
     QLabel* stripeVScrollSpeedLabel = nullptr;
-    QLabel* stripeAlphaOverLifeLabel = nullptr;
     QCheckBox* stripeInheritPositionForBaseCheckBox = nullptr;
     GradientPickerWidget* stripeColorOverLifeGradient = nullptr;
     //////////////////////////////////////////////////////////////////////////
