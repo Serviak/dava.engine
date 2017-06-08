@@ -323,6 +323,11 @@ public:
     /// for camera math and use composition to merge math and rendering scene node.
     void CopyMathOnly(const Camera& c);
 
+    /*
+     * Projection matrix offset could be used for half-pixel offset in certain APIs
+     */
+    void SetProjectionMatrixOffset(float offX, float offY);
+
     enum eFlags
     {
         REQUIRE_REBUILD = 1,
@@ -342,7 +347,7 @@ protected:
     Vector3 target; //
     Vector3 up;
     Vector3 left;
-
+    Vector2 projectionMatrixOffset;
     Vector3 direction; // right now this variable updated only when you call GetDirection.
 
     //Quaternion rotation;	//

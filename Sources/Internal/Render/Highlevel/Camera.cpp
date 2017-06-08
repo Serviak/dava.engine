@@ -308,6 +308,9 @@ void Camera::RebuildProjectionMatrix(bool invertProjection)
     {
         projMatrix.BuildOrtho(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, rhi::DeviceCaps().isZeroBaseClipRange);
     }
+
+    projMatrix.data[8] += projectionMatrixOffset.x;
+    projMatrix.data[9] += projectionMatrixOffset.y;
 }
 
 void Camera::RebuildViewMatrix()
@@ -714,6 +717,12 @@ void Camera::CopyMathOnly(const Camera& c)
     projMatrix = c.projMatrix;
     viewProjMatrix = c.viewProjMatrix;
     flags = c.flags;
+}
+
+void Camera::SetProjectionMatrixOffset(float offX, float offY)
+{
+    projectionMatrixOffset = Vector2(offX, offY);
+    Recalc();
 }
 
 } // ns
