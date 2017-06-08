@@ -1,58 +1,24 @@
 CPP Codestyle
 ========
 
-## Code formatting
-#### Example
-The following example shows properly formatted code sample
-
-```cpp
-#pragma once
-
-#include "Base/BaseObject.h"
-
-namespace DAVA
-{
-
-class MyClass : public BaseObject
-{
-public:
-    MyClass();
-
-    void Foo(int32 i);
-};
-
-inline void MyClass::Foo(int32 i)
-{
-    std::cout << i << std::endl;
-}
-
-}
-```
-
 ## General
 
-#### Intendation
-Tabs are newer used, we use 4 spaces instead.
+#### Spaces vs. Tabs
+Use oly spaces, 4 spaces for indent.
+Do not use tabs in your code. 
 
-#### Namespaces
-Ontendation is not used inside namespaces
-
-##### namespace DAVA
-All dava.framework code is written inside `namespace DAVA`.
-
-```cpp
-namespace DAVA
-{
-class Foo
-{
-    void Bar();
-};
-}
-```
+#### Line Length
+There is no limitation for line of text in your code. 
+Try to meet your code 120 characters per line. This will help to easy look at your code in side-by-side mode. 
 
 
-##### Local namespaces
-Local(private) namespaces should use `Detail` suffix, i.e. `MyUtilsDetail`.
+
+
+
+
+
+
+## Header Files
 
 #### Header guard
 Header files are guarder by `#pragma once`
@@ -80,6 +46,50 @@ All of a project's header files should be listed as descendants of the project's
 ```
 
 Within each section the includes should be ordered alphabetically. Note that older code might not conform to this rule and should be fixed when convenient.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Scoping
+
+
+#### Namespaces
+Ontendation is not used inside namespaces
+
+##### namespace DAVA
+All dava.framework code is written inside `namespace DAVA`.
+
+```cpp
+namespace DAVA
+{
+class Foo
+{
+    void Bar();
+};
+}
+```
+
+
+##### Local namespaces
+Local(private) namespaces should use `Detail` suffix, i.e. `MyUtilsDetail`.
 
 #### Commented code
 Remove commented code, we have revision control system for history. 
