@@ -26,15 +26,16 @@ class ParticleEmitter;
  */
 struct ParticleLayer : public BaseObject
 {
-    float32 stripeLifetime = 0.0f;
-    float32 stripeRate = 0.0f;
-    float32 stripeStartSize = 0.0f;
+    float32 stripeLifetime = 20.0f;
+    float32 stripeRate = 0.5f;
+    float32 stripeStartSize = 1.0f;
     RefPtr<PropertyLine<float32>> stripeSizeOverLifeProp;
-    float32 stripeTextureTile = 1.0f;
+    float32 stripeTextureTile = 0.1f;
     float32 stripeUScrollSpeed = 0.0f;
-    float32 stripeVScrollSpeed = 0.0f;
+    float32 stripeVScrollSpeed = -0.01f;
     RefPtr<PropertyLine<Color>> stripeColorOverLife;
-    bool stripeInheritPositionForBase;
+    bool stripeInheritPositionForBase = false;
+
     float32 maxStripeOverLife = 0.0f;
     bool isMaxStripeOverLifeDirty = true;
 
@@ -222,6 +223,9 @@ inline float32 ParticleLayer::CalculateMaxStripeSizeOverLife()
 {
     if (!isMaxStripeOverLifeDirty)
         return maxStripeOverLife;
+    if (stripeSizeOverLifeProp.Get() == nullptr)
+        return 1.0f;
+
     isMaxStripeOverLifeDirty = false;
     auto& keys = stripeSizeOverLifeProp->GetValues();
     auto max = std::max_element(keys.begin(), keys.end(),
