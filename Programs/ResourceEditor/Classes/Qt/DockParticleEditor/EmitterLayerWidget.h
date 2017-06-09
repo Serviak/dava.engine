@@ -38,12 +38,11 @@ public:
     void RestoreVisualState(DAVA::KeyedArchive* visualStateProps) override;
 
     // Switch from/to SuperEmitter mode.
-    void SetSuperemitterMode(bool isSuperemitter);
+    void SetLayerMode(bool isSuperemitter, bool isStripe);
 
     // Notify the widget layer value is changed.
     void OnLayerValueChanged();
 
-    void SetStripeParticleMode(bool isStripeParticle);
 signals:
     void ValueChanged();
 
@@ -82,7 +81,7 @@ private:
     void UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack);
     void CreateFlowmapLayoutWidget();
     void CreateNoiseLayoutWidget();
-    QLayout* CreateStripeLayout();
+    void CreateStripeLayoutWidget();
     QLayout* CreateFresnelToAlphaLayout();
     void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
     void OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc);
@@ -241,6 +240,7 @@ private:
     GradientPickerWidget* colorOverLifeGradient = nullptr;
 
     QWidget* flowLayoutWidget = nullptr;
+    QWidget* stripeLayoutWidget = nullptr;
     QWidget* flowSettingsLayoutWidget = nullptr;
     QWidget* noiseLayoutWidget = nullptr;
     QWidget* noiseScrollWidget = nullptr;
