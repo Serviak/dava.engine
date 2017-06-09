@@ -24,6 +24,7 @@ public:
         OBJECT_TEXTURE,
         OBJECT_HEIGHTMAP,
         OBJECT_EMITTER_CONFIG,
+        OBJECT_SLOT_CONFIG,
 
         OBJECT_COUNT
     };
