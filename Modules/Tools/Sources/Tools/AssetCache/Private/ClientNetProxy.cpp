@@ -88,7 +88,7 @@ bool ClientNetProxy::RequestServerStatus()
 {
     if (openedChannel)
     {
-        Logger::FrameworkDebug("Requesting cache server status");
+        //Logger::FrameworkDebug("Requesting cache server status");
         StatusRequestPacket packet;
         return packet.SendTo(openedChannel);
     }
@@ -100,7 +100,7 @@ bool ClientNetProxy::RequestAddData(const CacheItemKey& key, uint64 dataSize, ui
 {
     if (openedChannel)
     {
-        Logger::FrameworkDebug("Requesting to add data");
+        //Logger::FrameworkDebug("Requesting to add data/info");
         AddRequestPacket packet(key, dataSize, numOfChunks);
         return packet.SendTo(openedChannel);
     }
@@ -112,7 +112,7 @@ bool ClientNetProxy::RequestAddNextChunk(const CacheItemKey& key, uint32 chunkNu
 {
     if (openedChannel)
     {
-        Logger::FrameworkDebug("Requesting to add next chunk");
+        //Logger::FrameworkDebug("Requesting to add next chunk");
         AddChunkRequestPacket packet(key, chunkNumber, chunkData);
         return packet.SendTo(openedChannel);
     }
@@ -122,7 +122,7 @@ bool ClientNetProxy::RequestAddNextChunk(const CacheItemKey& key, uint32 chunkNu
 
 bool ClientNetProxy::RequestData(const CacheItemKey& key)
 {
-    Logger::FrameworkDebug("Requesting data");
+    //Logger::FrameworkDebug("Requesting data");
     if (openedChannel)
     {
         GetRequestPacket packet(key);
@@ -134,7 +134,7 @@ bool ClientNetProxy::RequestData(const CacheItemKey& key)
 
 bool ClientNetProxy::RequestGetNextChunk(const CacheItemKey& key, uint32 chunkNumber)
 {
-    Logger::FrameworkDebug("Requesting chunk #%u", chunkNumber);
+    //Logger::FrameworkDebug("Requesting chunk #%u", chunkNumber);
     if (openedChannel)
     {
         GetChunkRequestPacket packet(key, chunkNumber);
@@ -146,7 +146,7 @@ bool ClientNetProxy::RequestGetNextChunk(const CacheItemKey& key, uint32 chunkNu
 
 bool ClientNetProxy::RequestWarmingUp(const CacheItemKey& key)
 {
-    Logger::FrameworkDebug("Requesting warmup");
+    //Logger::FrameworkDebug("Requesting warmup");
     if (openedChannel)
     {
         WarmupRequestPacket packet(key);
@@ -158,7 +158,7 @@ bool ClientNetProxy::RequestWarmingUp(const CacheItemKey& key)
 
 bool ClientNetProxy::RequestRemoveData(const CacheItemKey& key)
 {
-    Logger::FrameworkDebug("Requesting to remove data entry");
+    //Logger::FrameworkDebug("Requesting to remove data entry");
     if (openedChannel)
     {
         RemoveRequestPacket packet(key);
@@ -170,7 +170,7 @@ bool ClientNetProxy::RequestRemoveData(const CacheItemKey& key)
 
 bool ClientNetProxy::RequestClearCache()
 {
-    Logger::FrameworkDebug("Requesting to clear cache");
+    //Logger::FrameworkDebug("Requesting to clear cache");
     if (openedChannel)
     {
         ClearRequestPacket packet;
@@ -228,7 +228,7 @@ void ClientNetProxy::OnPacketReceived(DAVA::Net::IChannel* channel, const void* 
             case PACKET_ADD_RESPONSE:
             {
                 AddResponsePacket* p = static_cast<AddResponsePacket*>(packet.get());
-                Logger::FrameworkDebug("Response is received: data %s added to cache", p->added ? "is" : "is not");
+                //Logger::FrameworkDebug("Response is received: data %s added to cache", p->added ? "is" : "is not");
                 for (ClientNetProxyListener* listener : listeners)
                     listener->OnAddedToCache(p->key, p->added);
                 return;
@@ -251,7 +251,7 @@ void ClientNetProxy::OnPacketReceived(DAVA::Net::IChannel* channel, const void* 
             }
             case PACKET_STATUS_RESPONSE:
             {
-                Logger::FrameworkDebug("Response is received: server status is OK");
+                //Logger::FrameworkDebug("Response is received: server status is OK");
                 for (ClientNetProxyListener* listener : listeners)
                     listener->OnServerStatusReceived();
                 return;
@@ -259,7 +259,7 @@ void ClientNetProxy::OnPacketReceived(DAVA::Net::IChannel* channel, const void* 
             case PACKET_REMOVE_RESPONSE:
             {
                 RemoveResponsePacket* p = static_cast<RemoveResponsePacket*>(packet.get());
-                Logger::FrameworkDebug("Response is received: data %s removed from cache", p->removed ? "is" : "is not");
+                //Logger::FrameworkDebug("Response is received: data %s removed from cache", p->removed ? "is" : "is not");
                 for (ClientNetProxyListener* listener : listeners)
                     listener->OnRemovedFromCache(p->key, p->removed);
                 return;
@@ -267,14 +267,14 @@ void ClientNetProxy::OnPacketReceived(DAVA::Net::IChannel* channel, const void* 
             case PACKET_CLEAR_RESPONSE:
             {
                 ClearResponsePacket* p = static_cast<ClearResponsePacket*>(packet.get());
-                Logger::FrameworkDebug("Response is received: cache %s cleared", p->cleared ? "is" : "is not");
+                //Logger::FrameworkDebug("Response is received: cache %s cleared", p->cleared ? "is" : "is not");
                 for (ClientNetProxyListener* listener : listeners)
                     listener->OnCacheCleared(p->cleared);
                 return;
             }
             default:
             {
-                Logger::Error("[AssetCache::ClientNetProxy::%s] Unexpected packet type: %d", __FUNCTION__, packet->type);
+                Logger::Error("%s: Unexpected packet type: %d", __FUNCTION__, packet->type);
                 incorrectType = IncorrectPacketType::UNEXPECTED_PACKET;
                 break;
             }
@@ -287,7 +287,7 @@ void ClientNetProxy::OnPacketReceived(DAVA::Net::IChannel* channel, const void* 
     }
     else
     {
-        Logger::Error("[AssetCache::Client::%s] Empty packet is received", __FUNCTION__);
+        Logger::Error("%s: Empty packet is received", __FUNCTION__);
         incorrectType = IncorrectPacketType::UNDEFINED_DATA;
     }
 
