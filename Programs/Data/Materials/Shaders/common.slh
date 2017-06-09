@@ -73,6 +73,8 @@
 
 #ensuredefined SPEED_TREE_LEAF 0
 #ensuredefined CUT_LEAF 0
+#ensuredefined SPEED_TREE_OBJECT 0
+
 #ensuredefined WIND_ANIMATION 0
 #ensuredefined WAVE_ANIMATION 0
 
