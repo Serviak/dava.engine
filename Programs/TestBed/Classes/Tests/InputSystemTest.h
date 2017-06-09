@@ -19,7 +19,7 @@ protected:
     void UnloadResources() override;
 
 private:
-    void CreateKeyboardUI(DAVA::WideString header, DAVA::float32 x, DAVA::float32 y);
+    void CreateKeyboardUI(DAVA::String header, DAVA::float32 x, DAVA::float32 y);
     void CreateMouseUI();
     void CreateTouchUI();
     void CreateActionsUI();
