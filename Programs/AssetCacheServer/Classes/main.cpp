@@ -33,9 +33,9 @@ int Process(DAVA::Engine& e)
     DAVA::FileSystem* fs = context->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
-    DAVA::FilePath documentsFolder = "c:/Dava Engine/Asset Cache Server/";
+    FilePath documentsFolder = fs->GetApplicationSupportPath() + "AssetServer/";
 #else
-    DAVA::FilePath documentsFolder = fs->GetCurrentDocumentsDirectory() + "AssetServer/";
+    DAVA::FilePath documentsFolder = fs->GetEngineDocumentsPath() + "AssetServer/";
 #endif
 
     DAVA::FileSystem::eCreateDirectoryResult createResult = fs->CreateDirectory(documentsFolder, true);

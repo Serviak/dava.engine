@@ -15,9 +15,9 @@ int Process(Engine& e)
     const EngineContext* context = e.GetContext();
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "AssetCacheClient/";
+    FilePath documentsDirectory = context->fileSystem->GetApplicationSupportPath() + "AssetCacheClient/";
 #else
-    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "AssetCacheClient/";
+    FilePath documentsDirectory = context->fileSystem->GetEngineDocumentsPath() + "AssetCacheClient/";
 #endif
     context->fileSystem->CreateDirectory(documentsDirectory, true);
     context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);

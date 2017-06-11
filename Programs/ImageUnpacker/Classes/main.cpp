@@ -207,9 +207,9 @@ void Process(Engine& e)
     const EngineContext* context = e.GetContext();
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "ImageUnpacker/";
+    FilePath documentsDirectory = context->fileSystem->GetApplicationSupportPath() + "ImageUnpacker/";
 #else
-    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "ImageUnpacker/";
+    FilePath documentsDirectory = context->fileSystem->GetEngineDocumentsPath() + "ImageUnpacker/";
 #endif
     context->fileSystem->CreateDirectory(documentsDirectory, true);
     context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);

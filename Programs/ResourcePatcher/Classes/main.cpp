@@ -95,9 +95,9 @@ int Process(Engine& e)
     FileSystem* fileSystem = e.GetContext()->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "ResourcePatcher/";
+    FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "ResourcePatcher/";
 #else
-    FilePath documentsDirectory = fileSystem->GetCurrentDocumentsDirectory() + "ResourcePatcher/";
+    FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "ResourcePatcher/";
 #endif
     fileSystem->CreateDirectory(documentsDirectory, true);
     fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
