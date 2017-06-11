@@ -166,9 +166,9 @@ void Process(Engine& e)
 
     const EngineContext* context = e.GetContext();
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "ResourcePacker/";
+    FilePath documentsDirectory = context->fileSystem->GetApplicationSupportPath() + "ResourcePacker/";
 #else
-    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "ResourcePacker/";
+    FilePath documentsDirectory = context->fileSystem->GetEngineDocumentsPath() + "ResourcePacker/";
 #endif
     context->fileSystem->CreateDirectory(documentsDirectory, true);
     context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);

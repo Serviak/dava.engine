@@ -32,9 +32,9 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     const EngineContext* context = e.GetContext();
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = "ResourceArchiver/";
+    FilePath documentsDirectory = context->fileSystem->GetApplicationSupportPath() + "ResourceArchiver/";
 #else
-    FilePath documentsDirectory = context->fileSystem->GetCurrentDocumentsDirectory() + "ResourceArchiver/";
+    FilePath documentsDirectory = context->fileSystem->GetEngineDocumentsPath() + "ResourceArchiver/";
 #endif
     context->fileSystem->CreateDirectory(documentsDirectory, true);
     context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
