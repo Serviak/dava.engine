@@ -54,12 +54,14 @@ protected slots:
     void OnFlowPropertiesChanged();
     void OnStripePropertiesChanged();
     void OnNoisePropertiesChanged();
+    void OnAlphaRemapPropertiesChanged();
     void OnSpriteBtn();
     void OnSpriteFolderBtn();
     void OnSpritePathChanged(const QString& text);
     void OnSpritePathEdited(const QString& text);
     void OnFlowSpritePathEdited(const QString& text);
     void OnNoiseSpritePathEdited(const QString& text);
+    void OnAlphaRemapSpritePathEdited(const QString& text);
 
     void OnFlowSpriteBtn();
     void OnFlowFolderBtn();
@@ -68,6 +70,10 @@ protected slots:
     void OnNoiseSpriteBtn();
     void OnNoiseFolderBtn();
     void OnNoiseTexturePathChanged(const QString& text);
+
+    void OnAlphaRemapBtn();
+    void OnAlphaRemapFolderBtn();
+    void OnAlphaRemapTexturePathChanged(const QString& text);
 
     void OnPivotPointReset();
     void OnSpriteUpdateTimerExpired();
@@ -78,10 +84,12 @@ private:
     void UpdateLayerSprite();
     void UpdateFlowmapSprite();
     void UpdateNoiseSprite();
+    void UpdateAlphaRemapSprite();
     void UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack);
     void CreateFlowmapLayoutWidget();
     void CreateNoiseLayoutWidget();
     void CreateStripeLayoutWidget();
+    void CreateAlphaRemapLayoutWidget();
     QLayout* CreateFresnelToAlphaLayout();
     void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
     void OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc);
@@ -112,6 +120,7 @@ private:
     DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> spriteUpdateTexturesStack;
     DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> flowSpriteUpdateTexturesStack;
     DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> noiseSpriteUpdateTexturesStack;
+    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> alphaRemapSpriteUpdateTexturesStack;
 
     QVBoxLayout* mainBox = nullptr;
     QVBoxLayout* pivotPointLayout = nullptr;
@@ -121,9 +130,12 @@ private:
     QLabel* fresnelBiasLabel = nullptr;
     QLabel* fresnelPowerLabel = nullptr;
     QLabel* layerTypeLabel = nullptr;
+
     QLabel* spriteLabel = nullptr;
     QLabel* flowSpriteLabel = nullptr;
     QLabel* noiseSpriteLabel = nullptr;
+    QLabel* alphaRemapSpriteLabel = nullptr;
+
     QLabel* innerEmitterLabel = nullptr;
     QLabel* pivotPointLabel = nullptr;
     QLabel* pivotPointXSpinBoxLabel = nullptr;
@@ -141,6 +153,7 @@ private:
     QCheckBox* enableFlowCheckBox = nullptr;
     QCheckBox* enableFlowAnimationCheckBox = nullptr;
     QCheckBox* enableNoiseCheckBox = nullptr;
+    QCheckBox* enableAlphaRemapCheckBox = nullptr;
     QCheckBox* enableNoiseScrollCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
     QCheckBox* fresnelToAlphaCheckbox = nullptr;
@@ -167,6 +180,7 @@ private:
     QLineEdit* spritePathLabel = nullptr;
     QLineEdit* flowSpritePathLabel = nullptr;
     QLineEdit* noiseSpritePathLabel = nullptr;
+    QLineEdit* alphaRemapSpritePathLabel = nullptr;
     QLineEdit* innerEmitterPathLabel = nullptr;
 
     QPushButton* spriteBtn = nullptr;
@@ -175,6 +189,9 @@ private:
     QPushButton* flowTextureFolderBtn = nullptr;
     QPushButton* noiseTextureBtn = nullptr;
     QPushButton* noiseTextureFolderBtn = nullptr;
+    QPushButton* alphaRemapTextureBtn = nullptr;
+    QPushButton* alphaRemapTextureFolderBtn = nullptr;
+
     QPushButton* pivotPointResetButton = nullptr;
 
     TimeLineWidget* flowSpeedTimeLine = nullptr;
@@ -189,6 +206,8 @@ private:
     TimeLineWidget* noiseUVScrollSpeedTimeLine = nullptr;
     TimeLineWidget* noiseUVScrollSpeedVariationTimeLine = nullptr;
     TimeLineWidget* noiseUVScrollSpeedOverLifeTimeLine = nullptr;
+
+    TimeLineWidget* alphaRemapOverLifeTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
     TimeLineWidget* numberTimeLine = nullptr;
@@ -244,6 +263,7 @@ private:
     QWidget* flowSettingsLayoutWidget = nullptr;
     QWidget* noiseLayoutWidget = nullptr;
     QWidget* noiseScrollWidget = nullptr;
+    QWidget* alphaRemapLayoutWidget = nullptr;
 
     bool blockSignals = false;
 };
