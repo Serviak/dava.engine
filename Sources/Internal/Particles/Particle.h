@@ -66,7 +66,8 @@ struct Particle
     float32 fresnelToAlphaPower;
     float32 fresnelToAlphaBias;
 
-    float currRadius; //for bbox computation
+    float32 currRadius; //for bbox computation
+    float32 alphaRemap;
     Vector2 baseSize, currSize;
 
     Color color;
