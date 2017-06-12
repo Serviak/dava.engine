@@ -882,6 +882,7 @@ ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
 
                 if (decl->type.baseType == sl::HLSLBaseType_Sampler2D
                     || decl->type.baseType == sl::HLSLBaseType_SamplerCube
+                    || decl->type.baseType == sl::HLSLBaseType_Sampler2DShadow
                     )
                 {
                     sampler.resize(sampler.size() + 1);
@@ -892,6 +893,7 @@ ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                     switch (decl->type.baseType)
                     {
                     case sl::HLSLBaseType_Sampler2D:
+                    case sl::HLSLBaseType_Sampler2DShadow:
                         s.type = rhi::TEXTURE_TYPE_2D;
                         break;
                     case sl::HLSLBaseType_SamplerCube:
