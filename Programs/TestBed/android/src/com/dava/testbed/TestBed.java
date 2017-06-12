@@ -58,7 +58,25 @@ public class TestBed implements DavaActivity.ActivityListener
         Log.d(DavaActivity.LOG_TAG, "TestBed.onDestroy");
         DavaActivity.instance().unregisterActivityListener(this);
     }
-    
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus)
+    {
+        Log.d(DavaActivity.LOG_TAG, "TestBed.onWindowFocusChanged");
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        Log.d(DavaActivity.LOG_TAG, "TestBed.onConfigurationChanged");
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        Log.d(DavaActivity.LOG_TAG, "TestBed.onBackPressed");
+    }
+
 	@Override
 	public void onSaveInstanceState(Bundle outState)
 	{
