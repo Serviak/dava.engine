@@ -24,11 +24,11 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     engine.beginFrame.Connect(this, &SceneViewerApp::BeginFrame);
     engine.endFrame.Connect(this, &SceneViewerApp::EndFrame);
 
-    FileSystem* fileSystem = engine.GetContext()->fileSystem;
+    DAVA::FileSystem* fileSystem = engine.GetContext()->fileSystem;
 #ifdef __DAVAENGINE_MACOS__
     FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "SceneViewer/";
 #else
-    FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "SceneViewer/";
+    DAVA::FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "SceneViewer/";
 #endif
     DAVA::FileSystem::eCreateDirectoryResult createResult = fileSystem->CreateDirectory(documentsDirectory, true);
 
