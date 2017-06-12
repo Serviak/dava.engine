@@ -10,9 +10,9 @@ namespace DAVA
 class UIControl;
 class UITextSystemLink;
 
-class UIStaticTextComponent : public UIBaseComponent<UIComponent::TEXT_COMPONENT>
+class UITextComponent : public UIBaseComponent<UIComponent::TEXT_COMPONENT>
 {
-    DAVA_VIRTUAL_REFLECTION(UIStaticTextComponent, UIBaseComponent<UIComponent::TEXT_COMPONENT>);
+    DAVA_VIRTUAL_REFLECTION(UITextComponent, UIBaseComponent<UIComponent::TEXT_COMPONENT>);
 
 public:
     enum eTextMultiline
@@ -31,13 +31,13 @@ public:
     };
 
 protected:
-    ~UIStaticTextComponent() override = default;
+    ~UITextComponent() override = default;
 
 public:
-    UIStaticTextComponent() = default;
-    UIStaticTextComponent(const UIStaticTextComponent& src);
-    UIStaticTextComponent* Clone() const override;
-    UIStaticTextComponent& operator=(const UIStaticTextComponent&) = delete;
+    UITextComponent() = default;
+    UITextComponent(const UITextComponent& src);
+    UITextComponent* Clone() const override;
+    UITextComponent& operator=(const UITextComponent&) = delete;
 
     //  Persistent properties:
 
