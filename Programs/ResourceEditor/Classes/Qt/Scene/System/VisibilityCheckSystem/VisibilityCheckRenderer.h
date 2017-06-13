@@ -101,6 +101,8 @@ private:
     float frameCompleteness = 0.0f;
     bool frameFixed = false;
     bool shouldFixFrame = false;
+
+    friend class VisibilityCheckSystem;
 };
 
 inline bool VisibilityCheckRenderer::FrameFixed() const
