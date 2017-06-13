@@ -31,6 +31,7 @@ struct StripeData
     StripeNode baseNode = {};
     float32 spawnTimer = 0;
     Vector3 inheritPositionOffset = {};
+    bool isActive = true;
 };
 
 struct Particle
