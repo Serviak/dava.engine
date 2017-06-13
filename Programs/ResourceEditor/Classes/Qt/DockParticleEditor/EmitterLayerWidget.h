@@ -237,17 +237,16 @@ private:
 
     //////////////////////////////////////////////////////////////////////////
     TimeLineWidget* stripeSizeOverLifeTimeLine = nullptr;
+    TimeLineWidget* stripeTextureTileTimeLine = nullptr;
     EventFilterDoubleSpinBox* stripeLifetimeSpin = nullptr;
     EventFilterDoubleSpinBox* stripeRateSpin = nullptr;
     EventFilterDoubleSpinBox* stripeStartSizeSpin = nullptr;
-    EventFilterDoubleSpinBox* stripeTextureTileSpin = nullptr;
     EventFilterDoubleSpinBox* stripeUScrollSpeedSpin = nullptr;
     EventFilterDoubleSpinBox* stripeVScrollSpeedSpin = nullptr;
     QLabel* stripeLabel = nullptr;
     QLabel* stripeLifetimeLabel = nullptr;
     QLabel* stripeRateLabel = nullptr;
     QLabel* stripeStartSizeLabel = nullptr;
-    QLabel* stripeTexTileLabel = nullptr;
     QLabel* stripeUScrollSpeedLabel = nullptr;
     QLabel* stripeVScrollSpeedLabel = nullptr;
     QCheckBox* stripeInheritPositionForBaseCheckBox = nullptr;
