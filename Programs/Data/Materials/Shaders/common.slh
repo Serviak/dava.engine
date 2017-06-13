@@ -23,6 +23,7 @@
 
 
 #ensuredefined ALPHA_MASK 0
+#ensuredefined ALPHASTEPVALUE 0
 
 #ensuredefined MATERIAL_TEXTURE 0
 
