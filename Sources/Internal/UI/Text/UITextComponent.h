@@ -10,88 +10,155 @@ namespace DAVA
 class UIControl;
 class UITextSystemLink;
 
+/**
+    Text widget component.
+    Display plain text with specified font style and basic layout settings.
+*/
 class UITextComponent : public UIBaseComponent<UIComponent::TEXT_COMPONENT>
 {
     DAVA_VIRTUAL_REFLECTION(UITextComponent, UIBaseComponent<UIComponent::TEXT_COMPONENT>);
 
 public:
+    /** Text multiline mode */
     enum eTextMultiline
     {
+        /** Single line mode*/
         MULTILINE_DISABLED = 0,
+        /** Multiline is enabled. Word wrap. */
         MULTILINE_ENABLED,
+        /** Multiline is enabled. By symbol wrap. */
         MULTILINE_ENABLED_BY_SYMBOL
     };
+
+    /** Text fitting style */
     enum eTextFitting
     {
+        /** Default style. Display text as-is. */
         FITTING_NONE = 0,
+        /** Enlarge content scale when text is small or display as-is in another case. */
         FITTING_ENLARGE,
+        /** Reduce content scale when text is too small or display as-is in another case. */
         FITTING_REDUCE,
-        FITTING_FILL, // ENLARGE | REDUCE
+        /**
+            Maximal space filling. Works like combination  ENLARGE | REDUCE.
+            Enlarge content scale when text is small and reduce scale when it is too large.         
+        */
+        FITTING_FILL,
+        /** Display only visible text whith points ("...") on end of string if text is too large. */
         FITTING_POINTS
     };
 
 protected:
+    /** Prevents unmanagement object destruction. See SafeRelease function and BaseObject class. */
     ~UITextComponent() override = default;
 
 public:
+    /** Default constructor. */
     UITextComponent() = default;
+    /** Copy constructor. */
     UITextComponent(const UITextComponent& src);
+
     UITextComponent* Clone() const override;
+
+    /** Removed operator overloading. */
     UITextComponent& operator=(const UITextComponent&) = delete;
 
-    //  Persistent properties:
-
+    /** Set text align style bit mask. \sa eAlign */
     void SetAlign(int32 _align);
+    /** Return text align style bit mask. \sa eAlign */
     int32 GetAlign() const;
 
+    /** Set widget text. */
     void SetText(const String& text_);
+    /** Return widget text. */
     String GetText() const;
 
+    /** Set content fitting style. */
     void SetFitting(eTextFitting fitting_);
+    /** Return content fitting style.*/
     eTextFitting GetFitting() const;
 
+    /** Set font by preset name from FontManager registery. \sa FontManager */
     void SetFontName(const String& fontName_);
+    /** Return font preset name. \sa FontManager */
     String GetFontName() const;
 
+    /** Set text color. */
     void SetColor(const Color& color);
+    /** Return text color. */
     const Color& GetColor() const;
 
+    /** Set multiline style. */
     void SetMultiline(eTextMultiline multilineType);
+    /** Return multiline style. */
     eTextMultiline GetMultiline() const;
 
+    /** Set color inheritance mode. */
     void SetColorInheritType(UIControlBackground::eColorInheritType type);
+    /** Return color inheritance mode. */
     UIControlBackground::eColorInheritType GetColorInheritType() const;
 
+    /** Set text shadow offset. */
     void SetShadowOffset(const Vector2& offset);
+    /** Return text shadow offset. */
     const Vector2& GetShadowOffset() const;
 
+    /** Set text shadow color. */
     void SetShadowColor(const Color& color);
+    /** Return text shadow color. */
     const Color& GetShadowColor() const;
 
+    /** Set PerPixelAccuracy rendering mode.  */
     void SetPerPixelAccuracyType(UIControlBackground::ePerPixelAccuracyType type);
+    /** Return PerPixelAccuracy rendering mode. */
     UIControlBackground::ePerPixelAccuracyType GetPerPixelAccuracyType() const;
 
+    /** Set RTL align mode. */
     void SetUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign);
+    /** Return RTL align mode. */
     TextBlock::eUseRtlAlign GetUseRtlAlign() const;
 
-    bool IsForceBiDiSupportEnabled() const;
+    /** Set force BiDi support mode. */
     void SetForceBiDiSupportEnabled(bool value);
+    /** Return force BiDi support mode. */
+    bool IsForceBiDiSupportEnabled() const;
 
-    // Helper properties:
+    /** Set requestedTextRectSize parameter for internal TextBlock::SetText function usage. 
+        Can be used for backward compatibility whith UIStaticText.
+        \param value
+            - if value.[x|y] size is 0 - text creates in the rect with size of the drawRect on draw phase
+            - if value.[x|y] size is >0 - text creates in the rect with the requested size
+            - if value.[x|y] size in <0 - rect creates for the all text size
 
+        \sa {TextBlock, UIStaticText}
+    */
     void SetRequestedTextRectSize(const Vector2& value);
+    /** Set requestedTextRectSize parameter. */
     Vector2 GetRequestedTextRectSize() const;
 
-    void SetModified(bool value);
+    /** Check modification marker.*/
     bool IsModified() const;
 
-    // Backward compatibility methods
-
+    /** 
+        Calculate ContentPreferredSize for widget. 
+        Backward compatibility method. 
+        \sa SizeMeasuringAlgorithm 
+    */
     Vector2 GetContentPreferredSize(const Vector2& constraints) const;
+    /** 
+        Is widget height depends on width? 
+        Backward compatibility method. 
+        \sa SizeMeasuringAlgorithm  
+    */
     bool IsHeightDependsOnWidth() const;
 
 private:
+    /** Set modification marker. */
+    void SetModified(bool value);
+
+    /** Set internal system helper object. */
     void SetLink(UITextSystemLink* link);
+    /** Return internal system helper object. */
     UITextSystemLink* GetLink() const;
 
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
@@ -116,5 +183,6 @@ private:
     // Friends
     friend class UITextSystem;
     friend class UIRenderSystem;
+    friend class UITextSystemLink;
 };
 }
