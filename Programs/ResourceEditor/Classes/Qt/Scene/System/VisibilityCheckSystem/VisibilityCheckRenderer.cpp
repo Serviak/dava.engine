@@ -16,6 +16,7 @@ const DAVA::FastName MaterialParamFixedFrameDistancesTexture("fixedFrameDistance
 const DAVA::FastName MaterialParamCurrentFrameTexture("currentFrame");
 const DAVA::FastName MaterialParamViewportSize("viewportSize");
 const DAVA::FastName MaterialParamCurrentFrameCompleteness("currentFrameCompleteness");
+const DAVA::FastName MaterialParamPixelOffset("pixelOffset");
 
 struct RenderPassScope
 {
@@ -90,6 +91,11 @@ VisibilityCheckRenderer::VisibilityCheckRenderer()
     reprojectionMaterial->AddProperty(MaterialParamOrigin, DAVA::Vector3().data, rhi::ShaderProp::Type::TYPE_FLOAT3);
     reprojectionMaterial->AddProperty(MaterialParamViewportSize, DAVA::Vector2().data, rhi::ShaderProp::Type::TYPE_FLOAT2);
     reprojectionMaterial->AddProperty(MaterialParamCurrentFrameCompleteness, &frameCompleteness, rhi::ShaderProp::Type::TYPE_FLOAT1);
+
+    Vector2 pixelOffset;
+    if (rhi::DeviceCaps().isCenterPixelMapping)
+        pixelOffset = Vector2(0.5f, 0.5f);
+    reprojectionMaterial->AddProperty(MaterialParamPixelOffset, pixelOffset.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
 
     prerenderMaterial->SetFXName(DAVA::FastName("~res:/ResourceEditor/LandscapeEditor/Materials/Distance.Prerender.material"));
 
@@ -301,7 +307,7 @@ void VisibilityCheckRenderer::RenderVisibilityToTexture(DAVA::RenderSystem* rend
     visibilityConfig.depthStencilBuffer.texture = renderTarget->handleDepthStencil;
 
     DAVA::ShaderDescriptorCache::ClearDynamicBindigs();
-    fromCamera->SetupDynamicParameters(rhi::NeedInvertProjection(visibilityConfig), nullptr);
+    fromCamera->SetupDynamicParameters(rhi::NeedInvertProjection(visibilityConfig));
 
     RenderPassScope pass(visibilityConfig);
     for (auto batch : renderBatches)
@@ -378,6 +384,7 @@ void VisibilityCheckRenderer::FixFrame(DAVA::RenderSystem* renderSystem, DAVA::C
 
     fixedFrame = DAVA::Texture::CreateFBO(w, h, DAVA::PixelFormat::FORMAT_RGBA8888, false, rhi::TextureType::TEXTURE_TYPE_2D, false);
     fixedFrame->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
+    fromCamera->PrepareDynamicParameters(rhi::NeedInvertProjection(visibilityConfig));
     fixedFrameMatrix = fromCamera->GetViewProjMatrix();
     fixedFrameCameraPosition = fromCamera->GetPosition();
     frameCompleteness = 1.0f;
@@ -413,6 +420,7 @@ void VisibilityCheckRenderer::RenderToDistanceMapFromCamera(DAVA::RenderSystem* 
 
     distanceMaterial->PreBuildMaterial(DAVA::PASS_FORWARD);
 
+    fromCamera->SetupDynamicParameters(rhi::NeedInvertProjection(distanceMapConfig));
     RenderPassScope pass(distanceMapConfig);
     for (auto batch : renderBatches)
     {
@@ -466,6 +474,7 @@ void VisibilityCheckRenderer::RenderWithReprojection(DAVA::RenderSystem* renderS
     VCRLocal::PutTexture(reprojectionMaterial, MaterialParamCurrentFrameTexture, renderTarget);
     reprojectionMaterial->PreBuildMaterial(DAVA::PASS_FORWARD);
 
+    fromCamera->SetupDynamicParameters(rhi::NeedInvertProjection(reprojectionConfig));
     RenderPassScope pass(reprojectionConfig);
     for (auto batch : renderBatches)
     {
