@@ -141,6 +141,9 @@ public:
     /** Check modification marker.*/
     bool IsModified() const;
 
+    /** Return internal system helper object. */
+    UITextSystemLink* GetLink() const;
+
     /** 
         Calculate ContentPreferredSize for widget. 
         Backward compatibility method. 
@@ -160,8 +163,6 @@ private:
 
     /** Set internal system helper object. */
     void SetLink(UITextSystemLink* link);
-    /** Return internal system helper object. */
-    UITextSystemLink* GetLink() const;
 
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
@@ -184,8 +185,6 @@ private:
 
     // Friends
     friend class UITextSystem;
-    friend class UIRenderSystem;
     friend class UITextSystemLink;
-    friend struct UITextSystemTest;
 };
 }
