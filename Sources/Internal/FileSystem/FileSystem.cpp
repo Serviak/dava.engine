@@ -728,12 +728,7 @@ void FileSystem::SetCurrentDocumentsDirectory(const FilePath& newDocDirectory)
 
 void FileSystem::SetDefaultDocumentsDirectory()
 {
-    SetCurrentDocumentsDirectory(GetEngineDocumentsPath());
-}
-
-const FilePath FileSystem::GetEngineDocumentsPath()
-{
-    return GetUserDocumentsPath() + "DAVAProject/";
+    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
 }
 
 #if defined(__DAVAENGINE_WINDOWS__)

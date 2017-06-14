@@ -1,12 +1,14 @@
-#include "Concurrency/Thread.h"
-#include "FileSystem/FileSystem.h"
-#include "FileSystem/LocalizationSystem.h"
-#include "Job/JobManager.h"
-#include "Logger/Logger.h"
-#include "Network/NetCore.h"
-#include "Engine/Engine.h"
-
 #include "ClientApplication.h"
+
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <Concurrency/Thread.h>
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/LocalizationSystem.h>
+#include <Job/JobManager.h>
+#include <Logger/Logger.h>
+#include <Network/NetCore.h>
+#include <Engine/Engine.h>
 
 using namespace DAVA;
 
@@ -14,13 +16,7 @@ int Process(Engine& e)
 {
     const EngineContext* context = e.GetContext();
 
-#ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = context->fileSystem->GetApplicationSupportPath() + "AssetCacheClient/";
-#else
-    FilePath documentsDirectory = context->fileSystem->GetEngineDocumentsPath() + "AssetCacheClient/";
-#endif
-    context->fileSystem->CreateDirectory(documentsDirectory, true);
-    context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+    DocumentsDirectorySetup::SetApplicationDocDirectory(context->fileSystem, "AssetCacheClient");
 
     context->logger->SetLogLevel(DAVA::Logger::LEVEL_INFO);
     context->logger->EnableConsoleMode();

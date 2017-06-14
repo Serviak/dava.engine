@@ -1,6 +1,8 @@
 #include <Tools/TexturePacker/ResourcePacker2D.h>
 #include <Tools/TextureCompression/PVRConverter.h>
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
 #include <CommandLine/CommandLineParser.h>
@@ -165,13 +167,8 @@ void Process(Engine& e)
     DVASSERT(e.IsConsoleMode() == true);
 
     const EngineContext* context = e.GetContext();
-#ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = context->fileSystem->GetApplicationSupportPath() + "ResourcePacker/";
-#else
-    FilePath documentsDirectory = context->fileSystem->GetEngineDocumentsPath() + "ResourcePacker/";
-#endif
-    context->fileSystem->CreateDirectory(documentsDirectory, true);
-    context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+
+    DocumentsDirectorySetup::SetApplicationDocDirectory(context->fileSystem, "ResourcePacker");
 
     Logger* logger = context->logger;
     logger->SetLogLevel(Logger::LEVEL_INFO);
