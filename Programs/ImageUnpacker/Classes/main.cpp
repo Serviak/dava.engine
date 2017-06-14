@@ -1,16 +1,19 @@
 #include "ResaveUtility.h"
-#include "Engine/Engine.h"
-#include "CommandLine/CommandLineParser.h"
-#include "Render/Image/Image.h"
-#include "Render/RenderBase.h"
-#include "Render/Image/ImageSystem.h"
-#include "Render/Image/ImageConvert.h"
-#include "Render/PixelFormatDescriptor.h"
-#include "Render/Texture.h"
 
-#include "Debug/DVAssertDefaultHandlers.h"
-#include "FileSystem/FileList.h"
-#include "Base/BaseTypes.h"
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <Engine/Engine.h>
+#include <CommandLine/CommandLineParser.h>
+#include <Render/Image/Image.h>
+#include <Render/RenderBase.h>
+#include <Render/Image/ImageSystem.h>
+#include <Render/Image/ImageConvert.h>
+#include <Render/PixelFormatDescriptor.h>
+#include <Render/Texture.h>
+
+#include <Debug/DVAssertDefaultHandlers.h>
+#include <FileSystem/FileList.h>
+#include <Base/BaseTypes.h>
 
 using namespace DAVA;
 
@@ -206,13 +209,7 @@ void Process(Engine& e)
 {
     const EngineContext* context = e.GetContext();
 
-#ifdef __DAVAENGINE_MACOS__
-    FilePath documentsDirectory = context->fileSystem->GetApplicationSupportPath() + "ImageUnpacker/";
-#else
-    FilePath documentsDirectory = context->fileSystem->GetEngineDocumentsPath() + "ImageUnpacker/";
-#endif
-    context->fileSystem->CreateDirectory(documentsDirectory, true);
-    context->fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+    DocumentsDirectorySetup::SetApplicationDocDirectory(context->fileSystem, "AssetCacheClient");
 
     context->logger->SetLogLevel(Logger::LEVEL_INFO);
     DVASSERT(e.IsConsoleMode() == true);

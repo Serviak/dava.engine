@@ -3,6 +3,8 @@
 #include "UIScreens/PerformanceResultsScreen.h"
 #include "Quality/QualityPreferences.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
 
@@ -25,22 +27,17 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     engine.endFrame.Connect(this, &SceneViewerApp::EndFrame);
 
     DAVA::FileSystem* fileSystem = engine.GetContext()->fileSystem;
-#ifdef __DAVAENGINE_MACOS__
-    DAVA::FilePath documentsDirectory = fileSystem->GetApplicationSupportPath() + "SceneViewer/";
-#else
-    DAVA::FilePath documentsDirectory = fileSystem->GetEngineDocumentsPath() + "SceneViewer/";
-#endif
-    DAVA::FileSystem::eCreateDirectoryResult createResult = fileSystem->CreateDirectory(documentsDirectory, true);
+    DAVA::FileSystem::eCreateDirectoryResult createResult = DAVA::DocumentsDirectorySetup::CreateApplicationDocDirectory(fileSystem, "SceneViewer");
 
     if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS) // todo: remove this if-case some versions after
     {
         data.settings.Load(); // load from old doc directory
-        fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+        DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "SceneViewer");
         data.settings.Save();
     }
     else
     {
-        fileSystem->SetCurrentDocumentsDirectory(documentsDirectory);
+        DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "SceneViewer");
         data.settings.Load();
     }
 

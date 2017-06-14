@@ -4,6 +4,8 @@
 #include <QtHelpers/RunGuard.h>
 #include <QtHelpers/LauncherListener.h>
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Logger/Logger.h>
@@ -33,15 +35,9 @@ int Process(DAVA::Engine& e)
     DAVA::FileSystem* fs = context->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
-    FilePath documentsFolder = fs->GetApplicationSupportPath() + "AssetServer/";
-#else
-    DAVA::FilePath documentsFolder = fs->GetEngineDocumentsPath() + "AssetServer/";
-#endif
-
-    DAVA::FileSystem::eCreateDirectoryResult createResult = fs->CreateDirectory(documentsFolder, true);
-#ifndef __DAVAENGINE_MACOS__
     auto copyDocumentsFromOldFolder = [&]
     {
+        FileSystem::eCreateDirectoryResult createResult = DocumentsDirectorySetup::CreateApplicationDocDirectory(fs, "AssetServer");
         if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
         {
             ApplicationSettings settings;
@@ -50,9 +46,9 @@ int Process(DAVA::Engine& e)
             cacheContentsPath.MakeDirectoryPathname();
 
             FilePath documentsFolderOld = fs->GetCurrentDocumentsDirectory();
+            DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "AssetServer");
             if (cacheContentsPath.StartsWith(documentsFolderOld))
             {
-                fs->SetCurrentDocumentsDirectory(documentsFolder);
                 FilePath cacheContentsDefaultPath = settings.GetDefaultFolder();
                 cacheContentsDefaultPath.MakeDirectoryPathname();
                 if (fs->CreateDirectory(cacheContentsDefaultPath, true) == FileSystem::DIRECTORY_CREATED)
@@ -62,13 +58,12 @@ int Process(DAVA::Engine& e)
                 }
             }
 
-            fs->SetCurrentDocumentsDirectory(documentsFolder);
             settings.Save(); // settings are saved in new place
         }
     };
     copyDocumentsFromOldFolder(); // todo: remove some versions after
 #endif
-    fs->SetCurrentDocumentsDirectory(documentsFolder);
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "AssetServer");
 
     context->logger->SetLogFilename("AssetCacheServer.txt");
     context->logger->SetLogLevel(DAVA::Logger::LEVEL_FRAMEWORK);
