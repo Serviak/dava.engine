@@ -168,7 +168,7 @@ private:
     eTextFitting fitting = eTextFitting::FITTING_NONE;
     Color color = Color::White;
     UIControlBackground::eColorInheritType colorInheritType = UIControlBackground::COLOR_IGNORE_PARENT;
-    Vector2 shadowOffset = Vector2(0.f, 0.f);
+    Vector2 shadowOffset;
     Color shadowColor = Color::Black;
     UIControlBackground::ePerPixelAccuracyType perPixelAccuracyType = UIControlBackground::PER_PIXEL_ACCURACY_ENABLED;
     TextBlock::eUseRtlAlign useRtlAlign = TextBlock::eUseRtlAlign::RTL_DONT_USE;
@@ -178,7 +178,7 @@ private:
 
     bool modified = true;
 
-    UITextSystemLink* link;
+    UITextSystemLink* link = nullptr;
 
     // Friends
     friend class UITextSystem;
