@@ -5,6 +5,8 @@
 #include "UI/Components/UIComponent.h"
 #include "UI/UIControlBackground.h"
 
+struct UITextSystemTest;
+
 namespace DAVA
 {
 class UIControl;
@@ -184,5 +186,6 @@ private:
     friend class UITextSystem;
     friend class UIRenderSystem;
     friend class UITextSystemLink;
+    friend struct UITextSystemTest;
 };
 }
