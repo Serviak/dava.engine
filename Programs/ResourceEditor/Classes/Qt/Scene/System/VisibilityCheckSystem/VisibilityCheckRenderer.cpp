@@ -92,9 +92,9 @@ VisibilityCheckRenderer::VisibilityCheckRenderer()
     reprojectionMaterial->AddProperty(MaterialParamViewportSize, DAVA::Vector2().data, rhi::ShaderProp::Type::TYPE_FLOAT2);
     reprojectionMaterial->AddProperty(MaterialParamCurrentFrameCompleteness, &frameCompleteness, rhi::ShaderProp::Type::TYPE_FLOAT1);
 
-    Vector2 pixelOffset;
+    DAVA::Vector2 pixelOffset;
     if (rhi::DeviceCaps().isCenterPixelMapping)
-        pixelOffset = Vector2(0.5f, 0.5f);
+        pixelOffset = DAVA::Vector2(0.5f, 0.5f);
     reprojectionMaterial->AddProperty(MaterialParamPixelOffset, pixelOffset.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
 
     prerenderMaterial->SetFXName(DAVA::FastName("~res:/ResourceEditor/LandscapeEditor/Materials/Distance.Prerender.material"));
@@ -395,7 +395,7 @@ void VisibilityCheckRenderer::FixFrame(DAVA::RenderSystem* renderSystem, DAVA::C
     desc.depthAttachment = fixedFrame->handleDepthStencil;
     desc.transformVirtualToPhysical = false;
     rs2d->BeginRenderTargetPass(desc);
-    rs2d->DrawTexture(renderTarget, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL, Color::White);
+    rs2d->DrawTexture(renderTarget, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL, DAVA::Color::White);
     rs2d->EndRenderTargetPass();
 
     reprojectionTexture = DAVA::Texture::CreateFBO(w, h, DAVA::PixelFormat::FORMAT_RGBA8888, true, rhi::TextureType::TEXTURE_TYPE_2D, false);
@@ -438,11 +438,11 @@ void VisibilityCheckRenderer::RenderCurrentOverlayTexture(DAVA::RenderSystem* re
     if (frameFixed)
     {
         RenderWithReprojection(renderSystem, camera);
-        rs2d->DrawTexture(reprojectionTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL, Color::White);
+        rs2d->DrawTexture(reprojectionTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL, DAVA::Color::White);
     }
     else
     {
-        rs2d->DrawTexture(renderTarget, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL, Color::White);
+        rs2d->DrawTexture(renderTarget, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL, DAVA::Color::White);
     }
 
     if (shouldFixFrame)
