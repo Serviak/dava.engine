@@ -250,6 +250,7 @@ private:
     QLabel* stripeUScrollSpeedLabel = nullptr;
     QLabel* stripeVScrollSpeedLabel = nullptr;
     QCheckBox* stripeInheritPositionForBaseCheckBox = nullptr;
+    QCheckBox* stripeUsePerspectiveMappingCheckBox = nullptr;
     GradientPickerWidget* stripeColorOverLifeGradient = nullptr;
     //////////////////////////////////////////////////////////////////////////
     QSpinBox* frameOverlifeFPSSpin = nullptr;
