@@ -239,6 +239,10 @@
     #define PARTICLES_APHA_REMAP 0
 #endif
 
+#if !defined PARTICLES_PERSPECTIVE_MAPPING
+    #define PARTICLES_PERSPECTIVE_MAPPING 0
+#endif
+
 #if FLOWMAP_SKY
     #define FLOWMAP 1
 #endif
