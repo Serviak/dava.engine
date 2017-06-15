@@ -235,6 +235,9 @@ private:
     EventFilterDoubleSpinBox* fresnelBiasSpinBox = nullptr;
     EventFilterDoubleSpinBox* fresnelPowerSpinBox = nullptr;
 
+    EventFilterDoubleSpinBox* alphaRemapLoopCountSpin = nullptr;
+    QLabel* alphaRemapLoopLabel = nullptr;
+
     //////////////////////////////////////////////////////////////////////////
     TimeLineWidget* stripeSizeOverLifeTimeLine = nullptr;
     TimeLineWidget* stripeTextureTileTimeLine = nullptr;
