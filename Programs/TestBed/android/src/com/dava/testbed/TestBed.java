@@ -8,7 +8,7 @@ import android.content.Intent;
 import com.dava.engine.DavaActivity;
 
 // Class for testing com.dava.engine.BootClasses meta-tag specified in AndroidManifest.xml
-public class TestBed implements DavaActivity.ActivityListener
+public class TestBed extends DavaActivity.ActivityListenerImpl
 {
     public TestBed()
     {
