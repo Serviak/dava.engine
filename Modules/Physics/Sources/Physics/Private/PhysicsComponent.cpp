@@ -1,31 +1,12 @@
 #include "Physics/PhysicsComponent.h"
 #include "Physics/PhysicsModule.h"
-#include "Physics/PhysicsActor.h"
 
-#include <Engine/Engine.h>
-#include <Engine/EngineContext.h>
-
-#include <ModuleManager/ModuleManager.h>
 #include <Reflection/ReflectionRegistrator.h>
+
+#include <physx/PxActor.h>
 
 namespace DAVA
 {
-uint32 PhysicsComponent::GetType() const
-{
-    return Component::PHYSICS_COMPONENT;
-}
-
-DAVA::Component* PhysicsComponent::Clone(Entity* toEntity)
-{
-    PhysicsComponent* result = new PhysicsComponent();
-    result->SetEntity(toEntity);
-
-    Physics* physics = GetEngineContext()->moduleManager->GetModule<Physics>();
-    result->actor = physics->CloneActor(actor, result);
-
-    return result;
-}
-
 void PhysicsComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
@@ -36,10 +17,31 @@ void PhysicsComponent::Deserialize(KeyedArchive* archive, SerializationContext* 
     Component::Deserialize(archive, serializationContext);
 }
 
+physx::PxActor* PhysicsComponent::GetPxActor() const
+{
+    return actor;
+}
+
+void PhysicsComponent::SetPxActor(physx::PxActor* actor_)
+{
+    DVASSERT(actor_ != nullptr);
+    actor = actor_;
+    actor->userData = this;
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    CheckActorType();
+#endif
+}
+
+void PhysicsComponent::ReleasePxActor()
+{
+    DVASSERT(actor != nullptr);
+    actor->release();
+    actor = nullptr;
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsComponent)
 {
     ReflectionRegistrator<PhysicsComponent>::Begin()
-    .ConstructorByPointer()
     .End();
 }
 
