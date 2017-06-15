@@ -53,15 +53,17 @@ public:
 
     enum eType
     {
-        CHECKERED,
-        UNIFORM
+        SELECTION,
+        HIGHLIGHT
     };
-    explicit FrameControl(eType type = CHECKERED);
+    explicit FrameControl(eType type = SELECTION);
 
 protected:
     ~FrameControl() = default;
     void InitFromGD(const DAVA::UIGeometricData& geometricData) override;
-    eType type = CHECKERED;
+    DAVA::Rect GetSubControlRect(const DAVA::Rect& rect, eBorder border) const;
+
+    eType type = SELECTION;
 };
 
 class FrameRectControl : public ControlContainer
@@ -72,7 +74,7 @@ public:
 private:
     ~FrameRectControl() = default;
     void InitFromGD(const DAVA::UIGeometricData& geometricData) override;
-    DAVA::Vector2 GetPos(const DAVA::UIGeometricData& geometricData) const;
+    DAVA::Vector2 GetPos(const DAVA::Rect& rect) const;
 };
 
 class PivotPointControl : public ControlContainer
