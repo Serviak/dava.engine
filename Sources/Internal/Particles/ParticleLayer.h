@@ -109,6 +109,7 @@ struct ParticleLayer : public BaseObject
     void SetNoise(const FilePath& noisePath);
 
     //////////////////////////////////////////////////////////////////////////
+    float32 alphaRemapLoopCount = 1.0f;
     FilePath alphaRemapPath;
     ScopedPtr<Sprite> alphaRemapSprite;
     bool enableAlphaRemap = false;
