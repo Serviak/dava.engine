@@ -68,6 +68,7 @@
 
 #ensuredefined SPHERICAL_HARMONICS_9 0
 #ensuredefined SPHERICAL_HARMONICS_4 0
+#ensuredefined SPEED_TREE_OBJECT 0
 
 #ensuredefined SKINNING 0
 
