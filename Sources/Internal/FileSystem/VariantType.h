@@ -561,13 +561,6 @@ private:
         }
     }
 
-    inline void ReleasePointerIfNotCurrentType(eVariantType nextType)
-    {
-        if (nextType != type)
-        {
-            ReleasePointer();
-        }
-    }
 };
 
 VariantType::eVariantType VariantType::GetType() const
