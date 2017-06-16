@@ -64,6 +64,7 @@ protected:
     DAVA::Rect GetSubControlRect(const DAVA::Rect& rect, eBorder border) const;
 
     eType type = SELECTION;
+    DAVA::float32 lineThickness = 1.0f;
 };
 
 class FrameRectControl : public ControlContainer
@@ -75,6 +76,8 @@ private:
     ~FrameRectControl() = default;
     void InitFromGD(const DAVA::UIGeometricData& geometricData) override;
     DAVA::Vector2 GetPos(const DAVA::Rect& rect) const;
+
+    DAVA::Vector2 rectSize;
 };
 
 class PivotPointControl : public ControlContainer
