@@ -544,7 +544,7 @@ private:
     void ReleasePointer();
 
     template <class T>
-    void SetAllocatedMemoryValue(VariantType::eVariantType nextType, const T& value)
+    void SetValueWithAllocation(VariantType::eVariantType nextType, const T& value)
     {
         if (nextType != type)
         {
