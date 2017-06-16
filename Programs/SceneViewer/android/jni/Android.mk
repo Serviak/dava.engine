@@ -19,6 +19,7 @@ LOCAL_C_INCLUDES += $(DV_PROJECT_ROOT)/Classes
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/ScenePerformanceTests/Sources
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/NetworkServices/LoggerService/Sources
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/NetworkServices/MemoryProfilerService/Sources
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/NetworkHelpers/Sources
 
 # set exported includes
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -33,7 +34,8 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(DAVA_ROOT)/Sources/Tools/TeamcityOutput/*.cpp) \
 	$(wildcard $(DAVA_ROOT)/Modules/ScenePerformanceTests/Sources/Private/*.cpp) \
 	$(wildcard $(DAVA_ROOT)/Modules/NetworkServices/LoggerService/Sources/LoggerService/Private/*.cpp) \
-    $(wildcard $(DAVA_ROOT)/Modules/NetworkServices/MemoryProfilerService/Sources/MemoryProfilerService/Private/*.cpp))
+    $(wildcard $(DAVA_ROOT)/Modules/NetworkServices/MemoryProfilerService/Sources/MemoryProfilerService/Private/*.cpp) \
+    $(wildcard $(DAVA_ROOT)/Modules/NetworkHelpers/Sources/NetworkHelpers/Private/*.cpp))
 
 LOCAL_CPPFLAGS += -std=c++14
 

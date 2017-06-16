@@ -3,7 +3,7 @@
 #include <Network/ServiceRegistrar.h>
 #include <Network/IChannel.h>
 #include <Network/NetCore.h>
-#include "Tools/NetworkHelpers/Private/ServicesDeleterExecutor.h"
+#include "NetworkHelpers/Private/ServicesDeleterExecutor.h"
 
 namespace DAVA
 {

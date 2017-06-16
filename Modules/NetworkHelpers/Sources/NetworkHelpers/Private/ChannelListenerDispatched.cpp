@@ -1,5 +1,5 @@
-#include "Tools/NetworkHelpers/ChannelListenerDispatched.h"
-#include "Tools/NetworkHelpers/SafeMemberFnCaller.h"
+#include "NetworkHelpers/ChannelListenerDispatched.h"
+#include "NetworkHelpers/SafeMemberFnCaller.h"
 #include <Functional/Function.h>
 
 namespace DAVA
