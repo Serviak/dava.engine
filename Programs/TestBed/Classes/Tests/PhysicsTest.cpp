@@ -32,26 +32,23 @@ void PhysicsTest::LoadResources()
     DAVA::Physics* physicsModule = ctx->moduleManager->GetModule<DAVA::Physics>();
 
     scene = physicsModule->CreateScene(DAVA::PhysicsSceneConfig());
+    physx::PxActor* actor = physicsModule->CreateStaticActor();
+    physx::PxRigidStatic* staticActor = actor->is<physx::PxRigidStatic>();
+    physx::PxShape* shape = physicsModule->CreateBoxShape(true);
 
-    physx::PxPhysics* lowLevelPhysics = physicsModule->GetPhysics();
-    physx::PxRigidBody* actor = lowLevelPhysics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY()));
-
-    physx::PxMaterial* material = lowLevelPhysics->createMaterial(0.5f, 0.5f, 1.f);
-    physx::PxCapsuleGeometry geometry(5.0f, 30.0f);
-    physx::PxShape* shape = lowLevelPhysics->createShape(geometry, *material, true);
-    actor->attachShape(*shape);
-    actor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
-
+    staticActor->attachShape(*shape);
     shape->release();
-    material->release();
 
     scene->addActor(*actor);
-    simulationBlock = malloc(simulationBlockSize);
+    simulationBlock = physicsModule->Allocate(simulationBlockSize, "SimulationBlock", __FILE__, __LINE__);
 }
 
 void PhysicsTest::UnloadResources()
 {
-    free(simulationBlock);
+    const DAVA::EngineContext* ctx = app.GetEngine().GetContext();
+    DAVA::Physics* physicsModule = ctx->moduleManager->GetModule<DAVA::Physics>();
+
+    physicsModule->Deallocate(simulationBlock);
     scene->release();
     scene = nullptr;
     BaseScreen::UnloadResources();
@@ -65,6 +62,6 @@ void PhysicsTest::Update(DAVA::float32 timeElapsed)
     physx::PxPvdSceneClient* client = scene->getScenePvdClient();
     if (client != nullptr)
     {
-        client->updateCamera("PhysicsTestCamera", physx::PxVec3(10.0f, 10.0f, 10.0f), physx::PxVec3(0.0f, 0.0f, 1.0f), physx::PxVec3(0.0f, 0.0f, 0.0f));
+        client->updateCamera(nullptr, physx::PxVec3(10.0f, 10.0f, 10.0f), physx::PxVec3(0.0f, 0.0f, 1.0f), physx::PxVec3(0.0f, 0.0f, 0.0f));
     }
 }
