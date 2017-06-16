@@ -560,7 +560,6 @@ private:
             *(static_cast<T*>(pointerValue)) = value;
         }
     }
-
 };
 
 VariantType::eVariantType VariantType::GetType() const
