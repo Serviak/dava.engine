@@ -114,14 +114,14 @@ public:
     const Color& GetShadowColor() const;
     const Vector2& GetShadowOffset() const;
 
-    inline UIControlBackground* GetTextBackground() const
-    {
-        return textBg;
-    };
-    inline UIControlBackground* GetShadowBackground() const
-    {
-        return shadowBg;
-    };
+    // inline UIControlBackground* GetTextBackground() const
+    // {
+    //     return textBg;
+    // };
+    // inline UIControlBackground* GetShadowBackground() const
+    // {
+    //     return shadowBg;
+    // };
 
     // Animation methods for Text Color and Shadow Color.
     virtual Animation* TextColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
