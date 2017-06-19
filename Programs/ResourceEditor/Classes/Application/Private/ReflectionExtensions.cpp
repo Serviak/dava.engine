@@ -77,7 +77,7 @@ void RegisterComponentExtensions(const TypeInheritance::Info& type)
     ReflectedType* refType = const_cast<ReflectedType*>(ReflectedTypeDB::GetByType(type.type));
     if (refType == nullptr)
     {
-        DVASSERT(false, "We has component that derived from DAVA::Component, but without created ReflectedType");
+        DVASSERT(false, "We have a component that derived from DAVA::Component, but without created ReflectedType");
     }
 
     const ReflectedStructure* structure = refType->GetStructure();
