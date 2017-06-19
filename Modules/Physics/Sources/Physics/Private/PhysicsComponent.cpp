@@ -28,7 +28,7 @@ void PhysicsComponent::SetPxActor(physx::PxActor* actor_)
     DVASSERT(actor == nullptr);
     actor = actor_;
     actor->userData = this;
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#if defined(__DAVAENGINE_DEBUG__)
     CheckActorType();
 #endif
 }
