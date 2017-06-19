@@ -2026,9 +2026,6 @@ std::vector<ShaderSourceCache::entry_t> ShaderSourceCache::Entry;
 
 const ShaderSource* ShaderSourceCache::Get(FastName uid, uint32 srcHash)
 {
-#if 1
-    return nullptr;
-#endif
     LockGuard<Mutex> guard(shaderSourceEntryMutex);
 
     //    Logger::Info("get-shader-src (host-api = %i)",HostApi());
