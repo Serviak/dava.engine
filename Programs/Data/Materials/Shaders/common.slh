@@ -23,6 +23,7 @@
 
 
 #ensuredefined ALPHA_MASK 0
+#ensuredefined ALPHASTEPVALUE 0
 
 #ensuredefined MATERIAL_TEXTURE 0
 
@@ -68,12 +69,13 @@
 
 #ensuredefined SPHERICAL_HARMONICS_9 0
 #ensuredefined SPHERICAL_HARMONICS_4 0
-#ensuredefined SPEED_TREE_OBJECT 0
 
 #ensuredefined SKINNING 0
 
 #ensuredefined SPEED_TREE_LEAF 0
 #ensuredefined CUT_LEAF 0
+#ensuredefined SPEED_TREE_OBJECT 0
+
 #ensuredefined WIND_ANIMATION 0
 #ensuredefined WAVE_ANIMATION 0
 
@@ -125,6 +127,9 @@
 
 #ensuredefined HEIGHTMAP_FLOAT_TEXTURE 0
 #ensuredefined LANDSCAPE_SPECULAR 0
+#ensuredefined LANDSCAPE_MORPHING_COLOR 0
+#ensuredefined LANDSCAPE_USE_INSTANCING 0
+#ensuredefined LANDSCAPE_LOD_MORPHING 0
 #ensuredefined LANDSCAPE_MORPHING_COLOR 0
 
 #ensuredefined CURSOR 0
