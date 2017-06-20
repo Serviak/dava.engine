@@ -13,7 +13,6 @@
 #include "Utils/Utils.h"
 #include "Logger/Logger.h"
 #include "FileSystem/ResourceArchive.h"
-#include "Core/Core.h"
 #include "Concurrency/LockGuard.h"
 
 #include "Engine/Private/EngineBackend.h"

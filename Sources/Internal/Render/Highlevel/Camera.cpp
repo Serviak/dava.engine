@@ -1,6 +1,5 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/RenderBase.h"
-#include "Core/Core.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Renderer.h"

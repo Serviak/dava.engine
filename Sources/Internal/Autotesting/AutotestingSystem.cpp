@@ -2,7 +2,6 @@
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-#include "Core/Core.h"
 #include "Engine/Engine.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Platform/DeviceInfo.h"
