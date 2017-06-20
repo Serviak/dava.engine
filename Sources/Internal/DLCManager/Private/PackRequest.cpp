@@ -177,7 +177,8 @@ void PackRequest::InitializeFileRequests()
 {
     if (fileIndexes.size() != requests.size())
     {
-        requests.clear();
+        // cancel all correctly if start/stop request happened
+        CancelCurrentDownloadRequests();
         requests.resize(fileIndexes.size());
 
         for (size_t requestIndex = 0; requestIndex < requests.size(); ++requestIndex)
@@ -261,11 +262,12 @@ void PackRequest::DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest
     fileRequest.status = LoadingPackFile;
 }
 
-void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal) const
+void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const
 {
-    packManagerImpl->GetLog() << "device IO Error:(" << errVal << ")"
+    packManagerImpl->GetLog() << "device IO Error:(" << errVal << ") "
                               << std::strerror(errVal) << " file: "
                               << fileRequest.localFile.GetAbsolutePathname()
+                              << " extended_message: " << extMsg
                               << " disable DLCManager requesting" << std::endl;
     packManagerImpl->SetRequestingEnabled(false);
     packManagerImpl->fileErrorOccured.Emit(fileRequest.localFile.GetAbsolutePathname().c_str(), errVal);
@@ -340,7 +342,7 @@ bool PackRequest::CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCD
             if (status.error.fileErrno != 0)
             {
                 out << " I/O error: " << status.error.errStr << std::endl;
-                DisableRequestingAndFireSignalIOError(fileRequest, status.error.fileErrno);
+                DisableRequestingAndFireSignalIOError(fileRequest, status.error.fileErrno, "task_finished_see_dlc_manager_log");
                 return false;
             }
 
@@ -365,16 +367,20 @@ bool PackRequest::LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest)
             FileSystem::eCreateDirectoryResult dirCreate = fs->CreateDirectory(dirPath, true);
             if (dirCreate == FileSystem::DIRECTORY_CANT_CREATE)
             {
-                DisableRequestingAndFireSignalIOError(fileRequest, errno);
+                DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_create_directory: " + dirPath.GetAbsolutePathname());
                 return false;
             }
             ScopedPtr<File> f(File::Create(fileRequest.localFile, File::CREATE | File::WRITE));
             if (!f)
             {
-                DisableRequestingAndFireSignalIOError(fileRequest, errno);
+                DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_create_local_file");
                 return false;
             }
-            f->Truncate(0);
+            if (!f->Truncate(0))
+            {
+                DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_truncate_local_file");
+                return false;
+            }
             fileRequest.task = nullptr;
             fileRequest.status = CheckHash;
             return true;
@@ -411,7 +417,7 @@ bool PackRequest::CheckHaskState(FileRequest& fileRequest)
             if (!f)
             {
                 // not enough space
-                DisableRequestingAndFireSignalIOError(fileRequest, errno);
+                DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_open_local_file_for_append");
                 return false;
             }
 
@@ -419,7 +425,7 @@ bool PackRequest::CheckHaskState(FileRequest& fileRequest)
             if (written != sizeof(footer))
             {
                 // not enough space
-                DisableRequestingAndFireSignalIOError(fileRequest, errno);
+                DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_write_footer_to_local_file");
                 return false;
             }
         }
