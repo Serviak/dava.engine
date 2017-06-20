@@ -4,7 +4,6 @@
 #include "Render/2D/Private/FTManager.h"
 #include "Logger/Logger.h"
 #include "Render/2D/Sprite.h"
-#include "Core/Core.h"
 #include "Utils/StringFormat.h"
 
 #include "Engine/Engine.h"
