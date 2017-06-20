@@ -40,7 +40,7 @@ TextFieldStbImpl::TextFieldStbImpl(UITextField* control)
     UIControlBackground* bg = staticText->GetOrCreateComponent<UIControlBackground>();
     bg->SetAlign(ALIGN_LEFT | ALIGN_BOTTOM);
     staticText->SetName("TextFieldStaticText");
-    staticText->GetTextBlock()->SetMeasureEnable(true);
+    staticText->SetMeasureEnable(true);
     staticText->SetForceBiDiSupportEnabled(true);
 }
 
@@ -529,7 +529,7 @@ uint32 TextFieldStbImpl::DeleteText(uint32 position, uint32 length)
 
 const TextBox* TextFieldStbImpl::GetTextBox() const
 {
-    return staticText->GetTextBlock()->GetTextBox();
+    return staticText->GetTextBox();
 }
 
 uint32 TextFieldStbImpl::GetTextLength() const
@@ -587,7 +587,7 @@ void TextFieldStbImpl::UpdateSelection(uint32 start, uint32 end)
     selectionRects.clear();
     uint32 selStart = std::min(start, end);
     uint32 selEnd = std::max(start, end);
-    const TextBox* tb = staticText->GetTextBlock()->GetTextBox();
+    const TextBox* tb = GetTextBox();
     if (selStart < selEnd && selEnd <= tb->GetCharactersCount())
     {
         for (uint32 i = selStart; i < selEnd; ++i)
@@ -616,7 +616,7 @@ void TextFieldStbImpl::UpdateSelection(uint32 start, uint32 end)
 
 void TextFieldStbImpl::UpdateCursor(uint32 cursorPos, bool insertMode)
 {
-    const TextBox* tb = staticText->GetTextBlock()->GetTextBox();
+    const TextBox* tb = GetTextBox();
 
     Rect r;
     r.dx = DEFAULT_CURSOR_WIDTH;

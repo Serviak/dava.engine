@@ -106,10 +106,6 @@ public:
 
     virtual UIStaticText* Clone() override;
     virtual void CopyDataFrom(UIControl* srcControl) override;
-    TextBlock* GetTextBlock()
-    {
-        return textBlock;
-    }
     const Color& GetTextColor() const;
     const Color& GetShadowColor() const;
     const Vector2& GetShadowOffset() const;
@@ -122,6 +118,15 @@ public:
     // {
     //     return shadowBg;
     // };
+    // TextBlock* GetTextBlock()
+    // {
+    //     return textBlock;
+    // }
+
+    TextBox* GetTextBox()
+    {
+        return textBlock->GetTextBox();
+    }
 
     // Animation methods for Text Color and Shadow Color.
     virtual Animation* TextColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
@@ -134,6 +139,7 @@ public:
         return textBlock->IsForceBiDiSupportEnabled();
     }
     void SetForceBiDiSupportEnabled(bool value);
+    void SetMeasureEnable(bool value);
 
 protected:
     Rect CalculateTextBlockRect(const UIGeometricData& geometricData) const;
