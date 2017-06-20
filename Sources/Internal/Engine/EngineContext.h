@@ -2,8 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 namespace DAVA
 {
 class Logger;
@@ -93,5 +91,3 @@ public:
 };
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

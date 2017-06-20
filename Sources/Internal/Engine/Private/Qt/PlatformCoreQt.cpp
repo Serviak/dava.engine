@@ -1,6 +1,3 @@
-
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/Qt/PlatformCoreQt.h"
 
 #if defined(__DAVAENGINE_QT__)
@@ -106,4 +103,3 @@ RenderWidget* PlatformCore::GetRenderWidget()
 } // namespace DAVA
 
 #endif // __DAVAENGINE_QT__
-#endif // __DAVAENGINE_COREV2__
