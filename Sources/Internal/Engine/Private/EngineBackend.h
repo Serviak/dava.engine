@@ -1,18 +1,12 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Base/RefPtr.h"
-#include "Functional/Functional.h"
-
 #include "Engine/EngineTypes.h"
 #include "Engine/Private/EnginePrivateFwd.h"
-
-#include "UI/UIEvent.h"
-
+#include "Functional/Functional.h"
 #include "Render/RHI/rhi_Type.h"
+#include "UI/UIEvent.h"
 
 namespace DAVA
 {
@@ -241,5 +235,3 @@ inline bool EngineBackend::IsScreenTimeoutEnabled() const
 
 } // namespace Private
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

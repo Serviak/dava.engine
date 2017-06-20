@@ -2,7 +2,6 @@
 
 #include "Base/Platform.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 // Types from Windows SDK headers
@@ -38,4 +37,3 @@ struct DllImport
 } // namespace DAVA
 
 #endif // __DAVAENGINE_WIN_UAP__
-#endif // __DAVAENGINE_COREV2__
