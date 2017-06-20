@@ -52,11 +52,11 @@ public:
 
 protected:
     /** Prevents unmanagement object destruction. See SafeRelease function and BaseObject class. */
-    ~UITextComponent() override = default;
+    ~UITextComponent() override;
 
 public:
     /** Default constructor. */
-    UITextComponent() = default;
+    UITextComponent();
     /** Copy constructor. */
     UITextComponent(const UITextComponent& src);
 
@@ -161,8 +161,6 @@ private:
     /** Set modification marker. */
     void SetModified(bool value);
 
-    /** Set internal system helper object. */
-    void SetLink(UITextSystemLink* link);
 
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
@@ -181,7 +179,7 @@ private:
 
     bool modified = true;
 
-    UITextSystemLink* link = nullptr;
+    mutable RefPtr<UITextSystemLink> link;
 
     // Friends
     friend class UITextSystem;
