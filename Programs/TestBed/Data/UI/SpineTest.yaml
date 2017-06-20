@@ -1,5 +1,5 @@
 Header:
-    version: "15"
+    version: "16"
 Controls:
 -   class: "UIControl"
     name: "UIControl"
@@ -11,10 +11,11 @@ Controls:
         position: [129.000000, 306.000000]
         size: [50.000000, 50.000000]
         pivot: [0.500000, 0.500000]
-        debugDraw: true
         components:
             Background:
                 drawType: "DRAW_BATCH"
+            DebugRender:
+                pivotPointDrawMode: "DRAW_ALWAYS"
             UISpineComponent:
                 skeletonPath: "~res:/UI/Spine/powerup.json"
                 atlasPath: "~res:/UI/Spine/powerup.atlas"
@@ -29,10 +30,11 @@ Controls:
         size: [50.000000, 50.000000]
         scale: [0.500000, 0.500000]
         pivot: [0.500000, 0.500000]
-        debugDraw: true
         components:
             Background:
                 drawType: "DRAW_BATCH"
+            DebugRender:
+                pivotPointDrawMode: "DRAW_ALWAYS"
             UISpineComponent:
                 skeletonPath: "~res:/UI/Spine/spineboy.json"
                 atlasPath: "~res:/UI/Spine/spineboy.atlas"
@@ -46,10 +48,11 @@ Controls:
         position: [394.000000, 442.000000]
         size: [36.000000, 39.000000]
         pivot: [0.500000, 0.500000]
-        debugDraw: true
         components:
             Background:
                 drawType: "DRAW_BATCH"
+            DebugRender:
+                pivotPointDrawMode: "DRAW_ALWAYS"
             UISpineComponent:
                 skeletonPath: "~res:/UI/Spine/goblins-mesh.json"
                 atlasPath: "~res:/UI/Spine/goblins-mesh.atlas"
@@ -63,7 +66,7 @@ Controls:
         children:
         -   class: "UIControl"
             name: "Spear"
-            position: [128.583344, -258.876831]
+            position: [145.886703, -242.517456]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
@@ -72,7 +75,7 @@ Controls:
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
         -   class: "UIControl"
             name: "Head"
-            position: [15.422297, -193.963470]
+            position: [17.575655, -186.509079]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
