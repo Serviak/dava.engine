@@ -36,7 +36,7 @@ public:
     SpineSkeleton& operator=(const SpineSkeleton&) = delete;
 
     /** Load Spine skeleton from binary/json data file and atlas. */
-    void Load(const FilePath& dataPath, const FilePath& atlasPath);
+    bool Load(const FilePath& dataPath, const FilePath& atlasPath);
 
     /** Update state of Spine skeleton with specified time delta. */
     void Update(const float32 timeElapsed);
@@ -49,8 +49,8 @@ public:
     /** Reset all Spine skeleton's states. */
     void ResetSkeleton();
 
-    /** Return render batch data for draw current state of Spine skeleton in UIControlBackground. */
-    BatchDescriptor* GetRenderBatch() const;
+    /** Return render batches data for draw current state of Spine skeleton in UIControlBackground. */
+    const Vector<BatchDescriptor>& GetRenderBatches() const;
 
     /** Return list of names of available animations. */
     const Vector<String>& GetAvailableAnimationsNames() const;
@@ -122,6 +122,9 @@ protected:
 private:
     void ReleaseAtlas();
     void ReleaseSkeleton();
+    void PushBatch();
+    void ClearData();
+    void SwitchTexture(Texture* texture);
 
     Vector<String> animationsNames;
     Vector<String> skinsNames;
@@ -130,13 +133,15 @@ private:
     spSkeleton* skeleton = nullptr;
     spAnimationState* state = nullptr;
 
-    BatchDescriptor* batchDescriptor = nullptr;
     float32* worldVertices = nullptr;
     Texture* currentTexture = nullptr;
     float32 timeScale = 1.0f;
+    uint32 currentVerticesStart = 0;
+    uint32 currentIndicesStart = 0;
+    Vector<BatchDescriptor> batchDescriptors;
+    Vector<Vector2> verticesCoords;
     Vector<Vector2> verticesUVs;
-    Vector<uint16> clippedIndecex;
     Vector<uint32> verticesColors;
-    Polygon2 verticesPolygon;
+    Vector<uint16> verticesIndices;
 };
 }

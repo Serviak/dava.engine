@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Base/BaseTypes.h>
+#include <Base/HashMap.h>
 #include <Base/RefPtr.h>
 #include <UI/UISystem.h>
 #include <Functional/Signal.h>
@@ -61,6 +62,6 @@ private:
 
     void BuildBoneLinks(SpineNode& node);
 
-    Map<UIControl*, SpineNode> nodes;
+    HashMap<UIControl*, SpineNode> nodes;
 };
 }
