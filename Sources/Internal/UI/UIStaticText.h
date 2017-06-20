@@ -1,12 +1,14 @@
-#ifndef __DAVAENGINE_UI_STATIC_TEXT_H__
-#define __DAVAENGINE_UI_STATIC_TEXT_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
+#include "Base/RefPtr.h"
 #include "UI/UIControl.h"
 #include "Render/2D/TextBlock.h"
 
 namespace DAVA
 {
+class UITextComponent;
+
 class UIStaticText : public UIControl
 {
     DAVA_VIRTUAL_REFLECTION(UIStaticText, UIControl);
@@ -35,28 +37,14 @@ public:
         MULTILINE_ENABLED_BY_SYMBOL
     };
 
-#if defined(LOCALIZATION_DEBUG)
-    static const Color HIGHLIGHT_COLORS[];
-    enum DebugHighliteColor
-    {
-        RED = 0,
-        BLUE,
-        YELLOW,
-        WHITE,
-        MAGENTA,
-        GREEN,
-        NONE
-    };
-    static const float32 LOCALIZATION_RESERVED_PORTION;
-#endif
 protected:
     virtual ~UIStaticText();
+
+    void LoadFromYamlNodeCompleted() override;
 
 public:
     UIStaticText(const Rect& rect = Rect());
 
-    virtual void Draw(const UIGeometricData& geometricData) override;
-    virtual void SetParentColor(const Color& parentColor) override;
     //if requested size is 0 - text creates in the rect with size of the drawRect on draw phase
     //if requested size is >0 - text creates int the rect with the requested size
     //if requested size in <0 - rect creates for the all text size
@@ -93,11 +81,6 @@ public:
     virtual const WideString& GetVisualText() const;
     const Vector2& GetTextSize();
 
-    Vector2 GetContentPreferredSize(const Vector2& constraints) const override;
-    bool IsHeightDependsOnWidth() const override;
-
-    void PrepareSprite();
-
     DAVA_DEPRECATED(const WideString& GetText() const);
     const Vector<WideString>& GetMultilineStrings() const;
 
@@ -110,23 +93,7 @@ public:
     const Color& GetShadowColor() const;
     const Vector2& GetShadowOffset() const;
 
-    // inline UIControlBackground* GetTextBackground() const
-    // {
-    //     return textBg;
-    // };
-    // inline UIControlBackground* GetShadowBackground() const
-    // {
-    //     return shadowBg;
-    // };
-    // TextBlock* GetTextBlock()
-    // {
-    //     return textBlock;
-    // }
-
-    TextBox* GetTextBox()
-    {
-        return textBlock->GetTextBox();
-    }
+    TextBox* GetTextBox();
 
     // Animation methods for Text Color and Shadow Color.
     virtual Animation* TextColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
@@ -134,31 +101,10 @@ public:
 
     const Vector<float32>& GetStringSizes() const;
 
-    inline bool IsForceBiDiSupportEnabled() const
-    {
-        return textBlock->IsForceBiDiSupportEnabled();
-    }
+    inline bool IsForceBiDiSupportEnabled() const;
     void SetForceBiDiSupportEnabled(bool value);
     void SetMeasureEnable(bool value);
 
-protected:
-    Rect CalculateTextBlockRect(const UIGeometricData& geometricData) const;
-#if defined(LOCALIZATION_DEBUG)
-    void DrawLocalizationDebug(const UIGeometricData& textGeomData) const;
-    void DrawLocalizationErrors(const UIGeometricData& textGeomData, const UIGeometricData& elementGeomData) const;
-    void RecalculateDebugColoring();
-#endif
-protected:
-    TextBlock* textBlock;
-    Vector2 shadowOffset;
-    UIControlBackground* shadowBg;
-    UIControlBackground* textBg;
-#if defined(LOCALIZATION_DEBUG)
-    DebugHighliteColor warningColor;
-    DebugHighliteColor lineBreakError;
-#endif
-
-public:
     String GetFontPresetName() const;
     void SetFontByPresetName(const String& presetName);
 
@@ -170,7 +116,9 @@ public:
 
     int32 GetMultilineType() const;
     void SetMultilineType(int32 multilineType);
-};
-};
 
-#endif //__DAVAENGINE_UI_STATIC_TEXT_H__
+private:
+    RefPtr<UITextComponent> text;
+    TextBlock* GetTextBlock() const;
+};
+};

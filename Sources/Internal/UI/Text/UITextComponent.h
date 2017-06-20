@@ -138,6 +138,9 @@ public:
     /** Set requestedTextRectSize parameter. */
     Vector2 GetRequestedTextRectSize() const;
 
+    void SetFont(Font* font);
+    Font* GetFont();
+
     /** Check modification marker.*/
     bool IsModified() const;
 
@@ -156,6 +159,8 @@ public:
         \sa SizeMeasuringAlgorithm  
     */
     bool IsHeightDependsOnWidth() const;
+
+    void ApplyDataImmediately() const;
 
 private:
     /** Set modification marker. */
@@ -176,6 +181,7 @@ private:
     bool forceBiDiSupport = false;
 
     Vector2 requestedTextRectSize = Vector2::Zero;
+    RefPtr<Font> font;
 
     bool modified = true;
 
