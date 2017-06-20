@@ -92,15 +92,10 @@ CEFControllerImpl::CEFControllerImpl()
     {
         auto onShutdown = [] { cefControllerGlobal = nullptr; };
         auto onUpdate = [this](float32) { Update(); };
-#if defined(__DAVAENGINE_COREV2__)
+
         Engine* e = Engine::Instance();
         e->update.Connect(this, onUpdate);
         e->gameLoopStopped.Connect(this, onShutdown);
-#else
-        Core* core = Core::Instance();
-        core->systemAppFinished.Connect(this, onShutdown);
-        core->updated.Connect(this, onUpdate);
-#endif
     }
     else
     {
@@ -115,15 +110,9 @@ CEFControllerImpl::~CEFControllerImpl()
     {
         if (schemeRegistered)
         {
-#if defined(__DAVAENGINE_COREV2__)
             Engine* e = Engine::Instance();
             e->update.Disconnect(this);
             e->gameLoopStopped.Disconnect(this);
-#else
-            Core* core = Core::Instance();
-            core->systemAppFinished.Disconnect(this);
-            core->updated.Disconnect(this);
-#endif
         }
 
         do
