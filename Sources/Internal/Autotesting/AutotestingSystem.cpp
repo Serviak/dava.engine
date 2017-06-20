@@ -157,10 +157,8 @@ void AutotestingSystem::OnAppStarted()
     AutotestingDB::Instance()->WriteLogHeader();
     AutotestingSystemLua::Instance()->InitFromFile(testFileStrPath);
  
-#if defined(__DAVAENGINE_COREV2__)
     Token wndSizeChangedToken = GetPrimaryWindow()->sizeChanged.Connect(this, &AutotestingSystem::OnWindowSizeChanged);
     GetPrimaryWindow()->sizeChanged.Track(wndSizeChangedToken, &localTrackedObject);
-#endif
 
     Size2i size = UIControlSystem::Instance()->vcs->GetPhysicalScreenSize();
     ResetScreenshotTexture(size);
@@ -338,11 +336,7 @@ void AutotestingSystem::Update(float32 timeElapsed)
         {
             needExitApp = false;
             JobManager::Instance()->WaitWorkerJobs();
-#if defined(__DAVAENGINE_COREV2__)
             Engine::Instance()->QuitAsync(0);
-#else
-            Core::Instance()->Quit();
-#endif
         }
         return;
     }
@@ -437,11 +431,7 @@ void AutotestingSystem::OnError(const String& errorMessage)
 void AutotestingSystem::ForceQuit(const String& errorMessage)
 {
     DVASSERT(false, errorMessage.c_str());
-#if defined(__DAVAENGINE_COREV2__)
     Engine::Instance()->QuitAsync(0);
-#else
-    Core::Instance()->Quit();
-#endif
 }
 
 void AutotestingSystem::MakeScreenShot()
