@@ -39,6 +39,9 @@ private:
     float32 CalculateLastChild() const;
     float32 CalculateContent() const;
 
+    Vector2 GetContentPreferredSize(const Vector2& constraints) const; // -1.0f means no constraint for axis
+    bool IsHeightDependsOnWidth() const;
+
     void ApplySize(float32 value);
     float32 GetSize(const ControlLayoutData& data) const;
     float32 GetLayoutPadding() const;
