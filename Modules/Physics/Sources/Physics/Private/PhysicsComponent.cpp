@@ -29,7 +29,7 @@ void PhysicsComponent::SetPxActor(physx::PxActor* actor_)
     actor = actor_;
     actor->userData = this;
 #if defined(__DAVAENGINE_DEBUG__)
-    CheckActorType();
+    ValidateActorType();
 #endif
 }
 
