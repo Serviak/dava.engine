@@ -9,7 +9,7 @@
 #elif defined(__DAVAENGINE_MACOS__)
 #include "Engine/Private/Mac/PlatformCoreMac.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "Engine/Private/iOS/PlatformCoreiOS.h"
+#include "Engine/Private/Ios/PlatformCoreIos.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "Engine/Private/Android/PlatformCoreAndroid.h"
 #elif defined(__DAVAENGINE_LINUX__)

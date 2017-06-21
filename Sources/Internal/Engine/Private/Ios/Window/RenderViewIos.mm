@@ -1,9 +1,9 @@
 
-#include "Engine/Private/iOS/Window/RenderViewiOS.h"
+#include "Engine/Private/Ios/Window/RenderViewIos.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include "Engine/Private/iOS/Window/WindowNativeBridgeiOS.h"
+#include "Engine/Private/Ios/Window/WindowNativeBridgeIos.h"
 
 #import <UIKit/UIScreen.h>
 #import <QuartzCore/CAEAGLLayer.h>
