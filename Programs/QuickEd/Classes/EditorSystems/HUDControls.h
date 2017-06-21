@@ -8,6 +8,8 @@
 #include <Math/Color.h>
 #include <FileSystem/FilePath.h>
 
+#include <memory>
+
 class VisibleValueProperty;
 
 class HUDControlsPreferences : public DAVA::InspBase
@@ -50,26 +52,50 @@ public:
                   )
 };
 
-class ControlContainer : public DAVA::UIControl
+class ControlContainer
 {
 public:
     explicit ControlContainer(const HUDAreaInfo::eArea area);
+    virtual ~ControlContainer();
+
+    ControlContainer(const ControlContainer&) = delete;
+    ControlContainer(ControlContainer&&) = delete;
+
+    ControlContainer& operator=(const ControlContainer&) = delete;
+    ControlContainer& operator==(ControlContainer&&) = delete;
+
     HUDAreaInfo::eArea GetArea() const;
     virtual void InitFromGD(const DAVA::UIGeometricData& gd_) = 0;
+
+    //this methods are used to temporally show/hide some HUD controls, like pivot or rotate
+    //we can not use control visibility flag, because visibility state will be overwritten by show/hide whole HUD
     void SetSystemVisible(bool visible);
     bool GetSystemVisible() const;
 
+    void AddChild(std::unique_ptr<ControlContainer>&& child);
+
+    void AddToParent(DAVA::UIControl* parent);
+    void RemoveFromParent(DAVA::UIControl* parent);
+
+    void SetVisible(bool visible);
+    void SetName(const DAVA::String& name);
+
+    bool IsPointInside(const DAVA::Vector2& point) const;
+    bool IsHiddenForDebug() const;
+    bool GetVisibilityFlag() const;
+
 protected:
-    ~ControlContainer() override = default;
     const HUDAreaInfo::eArea area = HUDAreaInfo::NO_AREA;
     bool systemVisible = true;
+
+    DAVA::RefPtr<DAVA::UIControl> drawable;
+    DAVA::Vector<std::unique_ptr<ControlContainer>> children;
 };
 
 class HUDContainer : public ControlContainer, public DAVA::TrackedObject
 {
 public:
     explicit HUDContainer(const ControlNode* node);
-    void AddChild(ControlContainer* container);
     void InitFromGD(const DAVA::UIGeometricData& geometricData) override;
 
 private:
@@ -101,11 +127,11 @@ public:
         SELECTION_RECT
     };
     explicit FrameControl(eType type);
+    void SetRect(const DAVA::Rect& rect);
+    DAVA::Rect GetAbsoluteRect() const;
 
 protected:
-    ~FrameControl() = default;
     void InitFromGD(const DAVA::UIGeometricData& geometricData) override;
-    void SetRect(const DAVA::Rect& rect) override;
     DAVA::Rect GetSubControlRect(const DAVA::Rect& rect, eBorder border) const;
 
     eType type = SELECTION;
@@ -148,4 +174,4 @@ private:
 void SetupHUDMagnetLineControl(DAVA::UIControl* control);
 void SetupHUDMagnetRectControl(DAVA::UIControl* control);
 
-DAVA::RefPtr<DAVA::UIControl> CreateHighlightRect(const ControlNode* node);
+std::unique_ptr<ControlContainer> CreateHighlightRect(const ControlNode* node);
