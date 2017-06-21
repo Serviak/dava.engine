@@ -156,7 +156,7 @@ void AutotestingSystem::OnAppStarted()
 
     AutotestingDB::Instance()->WriteLogHeader();
     AutotestingSystemLua::Instance()->InitFromFile(testFileStrPath);
- 
+
     Token wndSizeChangedToken = GetPrimaryWindow()->sizeChanged.Connect(this, &AutotestingSystem::OnWindowSizeChanged);
     GetPrimaryWindow()->sizeChanged.Track(wndSizeChangedToken, &localTrackedObject);
 
