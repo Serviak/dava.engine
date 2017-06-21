@@ -347,7 +347,7 @@ void Initialize()
         ImGuiImplDetails::pipelineStatePTC = rhi::AcquireRenderPipelineState(ps_desc);
         rhi::CreateVertexConstBuffers(ImGuiImplDetails::pipelineStatePTC, 1, &ImGuiImplDetails::constBufferPTC);
     }
-    
+
     ImGuiImplDetails::trackedObject = new DAVA::TrackedObject();
     DAVA::Engine::Instance()->beginFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameBegin);
     DAVA::Engine::Instance()->endFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameEnd);

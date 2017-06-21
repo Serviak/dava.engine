@@ -6,7 +6,6 @@
 
 namespace DAVA
 {
-
 class VirtualCoordinatesSystem final
 {
     struct ResourceSpaceSize
