@@ -163,7 +163,18 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
 
 #if defined(__DAVAENGINE_WINDOWS__)
-                while (currentElement == eInputElements::KB_LCMD || currentElement == eInputElements::KB_RCMD)
+                while (currentElement == eInputElements::KB_LCMD ||
+                       currentElement == eInputElements::KB_RCMD ||
+                       // TODO: these are just not implemented yet for this platform
+                       currentElement == eInputElements::KB_MEDIA_PREVIOUS ||
+                       currentElement == eInputElements::KB_MEDIA_NEXT ||
+                       currentElement == eInputElements::KB_MEDIA_PLAY_PAUSE ||
+                       currentElement == eInputElements::KB_MEDIA_EJECT ||
+                       currentElement == eInputElements::KB_CAMERA_FOCUS ||
+                       currentElement == eInputElements::KB_VOLUME_UP ||
+                       currentElement == eInputElements::KB_VOLUME_DOWN ||
+                       currentElement == eInputElements::KB_VOLUME_MUTE ||
+                       currentElement == eInputElements::KB_FUNCTION)
                 {
                     currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
                 }
@@ -171,7 +182,17 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 while (currentElement == eInputElements::KB_LWIN ||
                        currentElement == eInputElements::KB_RWIN ||
                        currentElement == eInputElements::KB_SCROLLLOCK ||
-                       currentElement == eInputElements::KB_PAUSE)
+                       currentElement == eInputElements::KB_PAUSE
+                       // TODO: these are just not implemented yet for this platform
+                       currentElement == eInputElements::KB_MEDIA_PREVIOUS ||
+                       currentElement == eInputElements::KB_MEDIA_NEXT ||
+                       currentElement == eInputElements::KB_MEDIA_PLAY_PAUSE ||
+                       currentElement == eInputElements::KB_MEDIA_EJECT ||
+                       currentElement == eInputElements::KB_CAMERA_FOCUS ||
+                       currentElement == eInputElements::KB_VOLUME_UP ||
+                       currentElement == eInputElements::KB_VOLUME_DOWN ||
+                       currentElement == eInputElements::KB_VOLUME_MUTE ||
+                       currentElement == eInputElements::KB_FUNCTION)
                 {
                     currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
                 }
