@@ -5,7 +5,7 @@
 #elif defined(__DAVAENGINE_WIN32__)
 #include "Engine/Private/Win32/PlatformCoreWin32.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "Engine/Private/UWP/PlatformCoreUWP.h"
+#include "Engine/Private/Win10/PlatformCoreWin10.h"
 #elif defined(__DAVAENGINE_MACOS__)
 #include "Engine/Private/OsX/PlatformCoreOsX.h"
 #elif defined(__DAVAENGINE_IPHONE__)
