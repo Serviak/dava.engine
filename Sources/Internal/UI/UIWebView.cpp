@@ -11,7 +11,7 @@
 #elif defined(ENABLE_CEF_WEBVIEW)
 #include "UI/Private/CEF/WebViewControl.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "UI/Private/OSX/WebViewControlMacOS.h"
+#include "UI/Private/Mac/WebViewControlMac.h"
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "UI/Private/iOS/WebViewControliOS.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
