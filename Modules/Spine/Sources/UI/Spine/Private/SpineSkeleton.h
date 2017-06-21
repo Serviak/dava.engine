@@ -14,7 +14,7 @@ struct spAnimationState;
 namespace DAVA
 {
 // Dava types forward declaration
-struct BatchDescriptor;
+struct BatchDescriptor2D;
 class UIControl;
 class Texture;
 class SpineBone;
@@ -50,7 +50,7 @@ public:
     void ResetSkeleton();
 
     /** Return render batches data for draw current state of Spine skeleton in UIControlBackground. */
-    const Vector<BatchDescriptor>& GetRenderBatches() const;
+    const Vector<BatchDescriptor2D>& GetRenderBatches() const;
 
     /** Return list of names of available animations. */
     const Vector<String>& GetAvailableAnimationsNames() const;
@@ -138,7 +138,7 @@ private:
     float32 timeScale = 1.0f;
     uint32 currentVerticesStart = 0;
     uint32 currentIndicesStart = 0;
-    Vector<BatchDescriptor> batchDescriptors;
+    Vector<BatchDescriptor2D> batchDescriptors;
     Vector<Vector2> verticesCoords;
     Vector<Vector2> verticesUVs;
     Vector<uint32> verticesColors;
