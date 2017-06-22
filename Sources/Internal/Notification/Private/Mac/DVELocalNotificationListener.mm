@@ -3,13 +3,14 @@
 #elif defined(__DAVAENGINE_MACOS__)
 
 #include "Engine/Engine.h"
-#include "Engine/PlatformApi.h"
 #include "Engine/Window.h"
 #include "Utils/NSStringUtils.h"
 
-#import <Foundation/Foundation.h>
+#import "Engine/PlatformApiMac.h"
 #import "Notification/Private/Mac/DVELocalNotificationListener.h"
 #import "Notification/LocalNotificationController.h"
+
+#import <Foundation/Foundation.h>
 
 @implementation DVELocalNotificationListener
 {

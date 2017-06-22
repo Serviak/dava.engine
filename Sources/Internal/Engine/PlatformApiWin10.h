@@ -1,39 +1,6 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-
-/**
-    \ingroup engine
-    Suite of functions to access some platform specific facilities.
-*/
-
-#if defined(__DAVAENGINE_QT__)
-
-class QApplication;
-
-namespace DAVA
-{
-class RenderWidget;
-class Window;
-namespace PlatformApi
-{
-namespace Qt
-{
-void AcquireWindowContext(Window* targetWindow);
-void ReleaseWindowContext(Window* targetWindow);
-
-QApplication* GetApplication();
-RenderWidget* GetRenderWidget();
-
-} // namespace Qt
-} // namespace PlatformApi
-} // namespace DAVA
-
-#elif defined(__DAVAENGINE_WIN32__)
-
-// moved to Engine/Win32/PlatformApi.h
-
-#elif defined(__DAVAENGINE_WIN_UAP__)
+#if defined(__DAVAENGINE_WIN_UAP__)
 
 /**
     \defgroup engine_win10 Engine facilities specific to Windows Universal Platform (Win10)
@@ -99,29 +66,4 @@ void UnregisterXamlApplicationListener(XamlApplicationListener* listener);
 } // namespace PlatformApi
 } // namespace DAVA
 
-#elif defined(__DAVAENGINE_MACOS__)
-
-// Mac/PlatformApi.h
-
-#elif defined(__DAVAENGINE_IPHONE__)
-
-// Ios/PlatformApi.h
-
-#elif defined(__DAVAENGINE_ANDROID__)
-
-#include "Engine/Android/JNIBridge.h"
-
-namespace DAVA
-{
-class Window;
-namespace PlatformApi
-{
-namespace Android
-{
-jobject CreateNativeControl(Window* targetWindow, const char8* controlClassName, void* backendPointer);
-
-} // namespace Android
-} // namespace PlatformApi
-} // namespace DAVA
-
-#endif
+#endif // __DAVAENGINE_WIN_UAP__
