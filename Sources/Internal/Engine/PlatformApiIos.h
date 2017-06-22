@@ -1,8 +1,14 @@
 #pragma once
 
+/**
+    \defgroup engine_ios Engine facilities specific to iOS platform
+*/
+
 #ifndef __OBJC__
 #error This file can only be included from .mm file
 #endif
+
+#if defined(__DAVAENGINE_IPHONE__)
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIApplication.h>
@@ -100,3 +106,5 @@ void UnregisterDVEApplicationListener(id<DVEApplicationListener> listener);
 } // namespace Ios
 } // namespace PlatformApi
 } // namespace DAVA
+
+#endif // __DAVAENGINE_IPHONE__
