@@ -54,7 +54,7 @@ struct AndroidBridge final
                           String cmdline);
     void ShutdownEngine();
 
-    WindowBackend* ActivityOnCreate(JNIEnv* env, jobject activityInstance);
+    WindowImpl* ActivityOnCreate(JNIEnv* env, jobject activityInstance);
     void ActivityOnResume();
     void ActivityOnPause();
     void ActivityOnDestroy(JNIEnv* env);

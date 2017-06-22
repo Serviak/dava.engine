@@ -21,14 +21,14 @@ namespace DAVA
 {
 namespace Private
 {
-class WindowBackend final : public TrackedObject, private IWindowDelegate
+class WindowImpl final : public TrackedObject, private IWindowDelegate
 {
 public:
-    WindowBackend(EngineBackend* engineBackend, Window* window);
-    ~WindowBackend();
+    WindowImpl(EngineBackend* engineBackend, Window* window);
+    ~WindowImpl();
 
-    WindowBackend(const WindowBackend&) = delete;
-    WindowBackend& operator=(const WindowBackend&) = delete;
+    WindowImpl(const WindowImpl&) = delete;
+    WindowImpl& operator=(const WindowImpl&) = delete;
 
     void AcquireContext();
     void ReleaseContext();
@@ -97,7 +97,7 @@ private:
     MainDispatcher* mainDispatcher = nullptr; // Dispatcher that dispatches events to DAVA main thread
     UIDispatcher uiDispatcher; // Dispatcher that dispatches events to window UI thread
 
-    // Use QPointer as renderWidget can be deleted outside WindowBackend in embedded mode
+    // Use QPointer as renderWidget can be deleted outside WindowImpl in embedded mode
     QPointer<RenderWidget> renderWidget;
 
     bool closeRequestByApp = false;
@@ -107,7 +107,7 @@ private:
     QtEventListener* qtEventListener = nullptr;
 };
 
-inline void* WindowBackend::GetHandle() const
+inline void* WindowImpl::GetHandle() const
 {
     return nullptr;
 }

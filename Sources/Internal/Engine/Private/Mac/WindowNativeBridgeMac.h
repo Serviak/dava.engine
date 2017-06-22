@@ -19,7 +19,7 @@ namespace DAVA
 {
 namespace Private
 {
-// Bridge between C++ and Objective-C for macos WindowBackend class
+// Bridge between C++ and Objective-C for macos WindowImpl class
 // Responsibilities:
 //  - holds neccesary Objective-C objects
 //  - creates NSWindow
@@ -27,10 +27,10 @@ namespace Private
 //    interface NSWindowDelegate
 //  - posts events to dispatcher
 //
-// WindowNativeBridge is friend of macos WindowBackend
+// WindowNativeBridge is friend of macos WindowImpl
 struct WindowNativeBridge final
 {
-    WindowNativeBridge(WindowBackend* windowBackend);
+    WindowNativeBridge(WindowImpl* windowImpl);
     ~WindowNativeBridge();
 
     enum class SizeChangingReason
@@ -82,7 +82,7 @@ struct WindowNativeBridge final
     void SetSurfaceScale(const float32 scale);
     //////////////////////////////////////////////////////////////////////////
 
-    WindowBackend* windowBackend = nullptr;
+    WindowImpl* windowImpl = nullptr;
     Window* window = nullptr;
     MainDispatcher* mainDispatcher = nullptr;
 

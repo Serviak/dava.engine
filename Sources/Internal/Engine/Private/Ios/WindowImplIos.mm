@@ -1,39 +1,39 @@
-#include "Engine/Private/Ios/Window/WindowBackendIos.h"
+#include "Engine/Private/Ios/WindowImplIos.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Ios/PlatformCoreIos.h"
-#include "Engine/Private/Ios/Window/WindowNativeBridgeIos.h"
+#include "Engine/Private/Ios/WindowNativeBridgeIos.h"
 #include "Time/SystemTimer.h"
 
 namespace DAVA
 {
 namespace Private
 {
-WindowBackend::WindowBackend(EngineBackend* engineBackend, Window* window)
+WindowImpl::WindowImpl(EngineBackend* engineBackend, Window* window)
     : engineBackend(engineBackend)
     , window(window)
     , mainDispatcher(engineBackend->GetDispatcher())
-    , uiDispatcher(MakeFunction(this, &WindowBackend::UIEventHandler), MakeFunction(this, &WindowBackend::TriggerPlatformEvents))
+    , uiDispatcher(MakeFunction(this, &WindowImpl::UIEventHandler), MakeFunction(this, &WindowImpl::TriggerPlatformEvents))
     , bridge(new WindowNativeBridge(this, engineBackend->GetOptions()))
 {
 }
 
-WindowBackend::~WindowBackend()
+WindowImpl::~WindowImpl()
 {
     PlatformCore* core = engineBackend->GetPlatformCore();
     core->didBecomeResignActive.Disconnect(appBecomeOrResignActiveToken);
     core->didEnterForegroundBackground.Disconnect(appDidEnterForegroundOrBackgroundToken);
 }
 
-void* WindowBackend::GetHandle() const
+void* WindowImpl::GetHandle() const
 {
     return bridge->GetHandle();
 }
 
-bool WindowBackend::Create()
+bool WindowImpl::Create()
 {
     // iOS windows are always created with size same as screen size
     if (bridge->CreateWindow())
@@ -46,12 +46,12 @@ bool WindowBackend::Create()
     return false;
 }
 
-void WindowBackend::Resize(float32 /*width*/, float32 /*height*/)
+void WindowImpl::Resize(float32 /*width*/, float32 /*height*/)
 {
     // iOS windows are always stretched to screen size
 }
 
-void WindowBackend::Close(bool appIsTerminating)
+void WindowImpl::Close(bool appIsTerminating)
 {
     // iOS windows cannot be closed
     // TODO: later add ability to close secondary windows
@@ -64,37 +64,37 @@ void WindowBackend::Close(bool appIsTerminating)
     }
 }
 
-void WindowBackend::SetTitle(const String& title)
+void WindowImpl::SetTitle(const String& title)
 {
     // iOS window does not have title
 }
 
-void WindowBackend::SetMinimumSize(Size2f /*size*/)
+void WindowImpl::SetMinimumSize(Size2f /*size*/)
 {
     // Minimum size does not apply to iOS window
 }
 
-void WindowBackend::SetFullscreen(eFullscreen /*newMode*/)
+void WindowImpl::SetFullscreen(eFullscreen /*newMode*/)
 {
     // Fullscreen mode cannot be changed on iOS
 }
 
-void WindowBackend::RunAsyncOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAsyncOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-void WindowBackend::RunAndWaitOnUIThread(const Function<void()>& task)
+void WindowImpl::RunAndWaitOnUIThread(const Function<void()>& task)
 {
     uiDispatcher.SendEvent(UIDispatcherEvent::CreateFunctorEvent(task));
 }
 
-bool WindowBackend::IsWindowReadyForRender() const
+bool WindowImpl::IsWindowReadyForRender() const
 {
     return GetHandle() != nullptr;
 }
 
-void WindowBackend::TriggerPlatformEvents()
+void WindowImpl::TriggerPlatformEvents()
 {
     if (uiDispatcher.HasEvents())
     {
@@ -102,29 +102,29 @@ void WindowBackend::TriggerPlatformEvents()
     }
 }
 
-void WindowBackend::ProcessPlatformEvents()
+void WindowImpl::ProcessPlatformEvents()
 {
     uiDispatcher.ProcessEvents();
 }
 
-void WindowBackend::SetSurfaceScaleAsync(const float32 scale)
+void WindowImpl::SetSurfaceScaleAsync(const float32 scale)
 {
     DVASSERT(scale > 0.0f && scale <= 1.0f);
 
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateSetSurfaceScaleEvent(scale));
 }
 
-void WindowBackend::SetCursorCapture(eCursorCapture mode)
+void WindowImpl::SetCursorCapture(eCursorCapture mode)
 {
     // not supported
 }
 
-void WindowBackend::SetCursorVisibility(bool visible)
+void WindowImpl::SetCursorVisibility(bool visible)
 {
     // not supported
 }
 
-void WindowBackend::UIEventHandler(const UIDispatcherEvent& e)
+void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
 {
     switch (e.type)
     {

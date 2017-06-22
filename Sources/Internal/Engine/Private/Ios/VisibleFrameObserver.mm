@@ -4,7 +4,7 @@
 
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Ios/Window/RenderViewIos.h"
-#include "Engine/Private/Ios/Window/WindowNativeBridgeIos.h"
+#include "Engine/Private/Ios/WindowNativeBridgeIos.h"
 
 #import <UIKit/UIKit.h>
 

@@ -19,7 +19,7 @@ public:
     static EngineBackend* Instance();
     static bool showingModalMessageBox;
 
-    static WindowBackend* GetWindowBackend(Window* w);
+    static WindowImpl* GetWindowImpl(Window* w);
 
     EngineBackend(const Vector<String>& cmdargs);
     ~EngineBackend();
