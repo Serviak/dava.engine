@@ -2,8 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
+#include "Concurrency/Dispatcher.h"
 #include "Functional/Function.h"
-#include "Engine/Dispatcher.h"
 
 #include "Network/Base/IOLoop.h"
 #include "Network/Base/IfAddress.h"
