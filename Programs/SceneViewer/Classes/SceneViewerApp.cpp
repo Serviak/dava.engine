@@ -103,7 +103,7 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     performanceResultsScreen = new PerformanceResultsScreen(data);
 #endif
 
-    data.scenePath = "~doc:/05_amigosville_am/05_amigosville_am.sc2";
+    //data.scenePath = "~doc:/05_amigosville_am/05_amigosville_am.sc2";
     //data.scenePath = "~doc:/06_rudniki_rd/06_rudniki_rd.sc2";
     //data.scenePath = "~doc:/09_savanna_sv/09_savanna_sv.sc2";
     //data.scenePath = "~doc:/10_asia_as/10_asia_as.sc2";
@@ -254,7 +254,7 @@ DAVA::KeyedArchive* CreateOptions()
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
 #endif
 
-    //appOptions->SetInt("fullscreen.width",	1280);
+    //appOptions->SetInt("fullscreen.width",    1280);
     //appOptions->SetInt("fullscreen.height", 800);
 
     appOptions->SetInt32("bpp", 32);
