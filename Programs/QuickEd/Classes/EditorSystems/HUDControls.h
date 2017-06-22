@@ -6,7 +6,6 @@
 #include <Functional/TrackedObject.h>
 #include <Base/Introspection.h>
 #include <Math/Color.h>
-#include <FileSystem/FilePath.h>
 
 #include <memory>
 
@@ -29,26 +28,26 @@ public:
     DECLARE_PREFERENCE(DAVA::Color, selectionRectColor);
     DECLARE_PREFERENCE(DAVA::Color, highlightColor);
     DECLARE_PREFERENCE(DAVA::Color, hudRectColor);
-    DECLARE_PREFERENCE(DAVA::FilePath, cornerRectPath);
-    DECLARE_PREFERENCE(DAVA::FilePath, borderRectPath);
-    DECLARE_PREFERENCE(DAVA::FilePath, pivotPointPath);
-    DECLARE_PREFERENCE(DAVA::FilePath, rotatePath);
-    DECLARE_PREFERENCE(DAVA::FilePath, magnetLinePath);
-    DECLARE_PREFERENCE(DAVA::FilePath, magnetRectPath);
+    DECLARE_PREFERENCE(DAVA::String, cornerRectPath2);
+    DECLARE_PREFERENCE(DAVA::String, borderRectPath2);
+    DECLARE_PREFERENCE(DAVA::String, pivotPointPath2);
+    DECLARE_PREFERENCE(DAVA::String, rotatePath2);
+    DECLARE_PREFERENCE(DAVA::String, magnetLinePath2);
+    DECLARE_PREFERENCE(DAVA::String, magnetRectPath2);
 
 #undef DECLARE_PREFERENCE
-    //old introspection dont compile on DAVA::Color and DAVA::FilePath as member
+    //old introspection dont compile on DAVA::Color as member
 public:
     INTROSPECTION(HUDControlsPreferences,
                   PROPERTY("selectionRectColor", "User graphic/Selection rect color", GetselectionRectColor, SetselectionRectColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
                   PROPERTY("highlightColor", "User graphic/Highlight color", GethighlightColor, SethighlightColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
                   PROPERTY("hudRectColor", "User graphic/Frame rect color", GethudRectColor, SethudRectColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("cornerRectPath", "User graphic/Corner rect path", GetcornerRectPath, SetcornerRectPath, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("borderRectPath", "User graphic/Border rect path", GetborderRectPath, SetborderRectPath, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("pivotPointPath", "User graphic/Pivot point control path", GetpivotPointPath, SetpivotPointPath, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("rotatePath", "User graphic/Rotate control path", GetrotatePath, SetrotatePath, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("magnetLinePath", "User graphic/Magnet line path", GetmagnetLinePath, SetmagnetLinePath, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("magnetRectPath", "User graphic/Magnet rect path", GetmagnetRectPath, SetmagnetRectPath, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("cornerRectPath2", "User graphic/Corner rect path", GetcornerRectPath2, SetcornerRectPath2, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("borderRectPath2", "User graphic/Border rect path", GetborderRectPath2, SetborderRectPath2, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("pivotPointPath2", "User graphic/Pivot point control path", GetpivotPointPath2, SetpivotPointPath2, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("rotatePath2", "User graphic/Rotate control path", GetrotatePath2, SetrotatePath2, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("magnetLinePath2", "User graphic/Magnet line path", GetmagnetLinePath2, SetmagnetLinePath2, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  PROPERTY("magnetRectPath2", "User graphic/Magnet rect path", GetmagnetRectPath2, SetmagnetRectPath2, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
                   )
 };
 
