@@ -182,7 +182,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 while (currentElement == eInputElements::KB_LWIN ||
                        currentElement == eInputElements::KB_RWIN ||
                        currentElement == eInputElements::KB_SCROLLLOCK ||
-                       currentElement == eInputElements::KB_PAUSE
+                       currentElement == eInputElements::KB_PAUSE ||
                        // TODO: these are just not implemented yet for this platform
                        currentElement == eInputElements::KB_MEDIA_PREVIOUS ||
                        currentElement == eInputElements::KB_MEDIA_NEXT ||
