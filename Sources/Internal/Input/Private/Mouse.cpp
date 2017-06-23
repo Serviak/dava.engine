@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
+#include "Time/SystemTimer.h"
 #include "Input/InputElements.h"
 #include "Input/InputSystem.h"
 #include "Utils/StringFormat.h"
