@@ -154,7 +154,6 @@ protected:
     void SetScene(Scene* scene) override;
 
 private:
-
     void AttachEntityToSlotImpl(SlotComponent* component, Entity* entity, FastName itemName, SlotSystem::eSlotState state);
     void UnloadItem(SlotComponent* component);
 
