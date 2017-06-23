@@ -128,6 +128,8 @@ public:
     SlotComponent* LookUpSlot(Entity* entity) const;
     /** Helper function to get local transform of joint that \c component attached to. If \c component doesn't attached to joint, return Identity*/
     Matrix4 GetJointTransform(SlotComponent* component) const;
+    /** Helper function to get local transform entity that attached to this \c component.*/
+    Matrix4 GetResultTranform(SlotComponent* component) const;
 
     /** Set attachment transform for slot \c component*/
     void SetAttachmentTransform(SlotComponent* component, const Matrix4& transform);
@@ -152,7 +154,6 @@ protected:
     void SetScene(Scene* scene) override;
 
 private:
-    Matrix4 GetResultTranform(SlotComponent* component) const;
 
     void AttachEntityToSlotImpl(SlotComponent* component, Entity* entity, FastName itemName, SlotSystem::eSlotState state);
     void UnloadItem(SlotComponent* component);
