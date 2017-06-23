@@ -42,6 +42,13 @@ TextFieldStbImpl::TextFieldStbImpl(UITextField* control)
     staticText->SetName("TextFieldStaticText");
     staticText->SetMeasureEnable(true);
     staticText->SetForceBiDiSupportEnabled(true);
+
+    control->GetOrCreateComponent<UIClipContentComponent>();
+    control->AddControl(staticText);
+
+    // Ignore staticText parent color because under different platforms
+    // we can't mix colors for text fields and parent backgrounds
+    staticText->SetTextColorInheritType(UIControlBackground::eColorInheritType::COLOR_IGNORE_PARENT);
 }
 
 TextFieldStbImpl::~TextFieldStbImpl()
@@ -210,6 +217,7 @@ void TextFieldStbImpl::UpdateRect(const Rect&)
 
         UpdateCursor(lastCursorPos, stb->IsInsertMode());
         UpdateOffset(cursorRect + staticTextOffset);
+        staticText->SetPosition(staticTextOffset);
         // Fix cursor position for multiline if end of some line contains many
         // spaces over control size (same behavior in MS Word)
         if (isEditing)
@@ -422,9 +430,6 @@ void TextFieldStbImpl::SetRect(const Rect& rect)
 
 void TextFieldStbImpl::SystemDraw(const UIGeometricData& d)
 {
-    Rect clipRect = d.GetUnrotatedRect();
-    RenderSystem2D::Instance()->PushClip();
-    RenderSystem2D::Instance()->IntersectClipRect(clipRect);
 
     const Vector2& scale = d.scale;
     const Vector2& offset = d.GetUnrotatedRect().GetPosition();
@@ -441,16 +446,6 @@ void TextFieldStbImpl::SystemDraw(const UIGeometricData& d)
         RenderSystem2D::Instance()->FillRect(sr + offset, selectionColor);
     }
 
-    UIGeometricData staticGeometric = staticText->GetLocalGeometricData();
-    staticGeometric.AddGeometricData(d);
-    staticGeometric.position += staticTextOffset * scale;
-
-    // Send to staticText white color as parent color because under different platforms
-    // we can't mix colors for text fields and parent backgrounds
-    staticText->SetParentColor(Color::White);
-
-    staticText->Draw(staticGeometric);
-
     if (showCursor)
     {
         Rect sr = cursorRect;
@@ -462,8 +457,6 @@ void TextFieldStbImpl::SystemDraw(const UIGeometricData& d)
         sr.dy *= scale.y;
         RenderSystem2D::Instance()->FillRect(sr + offset, staticText->GetTextColor());
     }
-
-    RenderSystem2D::Instance()->PopClip();
 }
 
 void TextFieldStbImpl::SetSelectionColor(const Color& _selectionColor)
