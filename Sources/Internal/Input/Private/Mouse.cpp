@@ -16,14 +16,20 @@ Mouse::Mouse(uint32 id)
     , mousePosition{}
     , mouseWheelDelta{}
 {
-    Engine::Instance()->endFrame.Connect(this, &Mouse::OnEndFrame);
+    Engine* engine = Engine::Instance();
+    engine->endFrame.Connect(this, &Mouse::OnEndFrame);
+    engine->PrimaryWindow()->focusChanged.Connect(this, &Mouse::OnWindowFocusChanged); // TODO: handle all the windows
+
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Mouse::HandleEvent));
 }
 
 Mouse::~Mouse()
 {
+    Engine* engine = Engine::Instance();
+    engine->endFrame.Disconnect(this);
+    engine->PrimaryWindow()->focusChanged.Disconnect(this);
+
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
-    Engine::Instance()->endFrame.Disconnect(this);
 }
 
 DigitalElementState Mouse::GetLeftButtonState() const
@@ -51,6 +57,18 @@ AnalogElementState Mouse::GetWheelDelta() const
     return GetAnalogElementState(eInputElements::MOUSE_WHEEL);
 }
 
+eInputElements Mouse::GetFirstPressedButton() const
+{
+    for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
+    {
+        if (buttons[i - eInputElements::MOUSE_FIRST_BUTTON].IsPressed())
+        {
+            return static_cast<eInputElements>(i);
+        }
+    }
+    return eInputElements::NONE;
+}
+
 bool Mouse::IsElementSupported(eInputElements elementId) const
 {
     return IsMouseInputElement(elementId);
@@ -76,16 +94,25 @@ AnalogElementState Mouse::GetAnalogElementState(eInputElements elementId) const
     }
 }
 
-eInputElements Mouse::GetFirstPressedButton() const
+void Mouse::OnEndFrame()
 {
-    for (uint32 i = eInputElements::MOUSE_FIRST_BUTTON; i <= eInputElements::MOUSE_LAST_BUTTON; ++i)
+    // Promote JustPressed & JustReleased states to Pressed/Released accordingly
+    for (DigitalElementState& buttonState : buttons)
     {
-        if (buttons[i - eInputElements::MOUSE_FIRST_BUTTON].IsPressed())
-        {
-            return static_cast<eInputElements>(i);
-        }
+        buttonState.OnEndFrame();
     }
-    return eInputElements::NONE;
+
+    mouseWheelDelta.x = 0.f;
+    mouseWheelDelta.y = 0.f;
+}
+
+void Mouse::OnWindowFocusChanged(DAVA::Window* window, bool focused)
+{
+    // Reset mouse state when window is unfocused
+    if (!focused)
+    {
+        ResetState(window);
+    }
 }
 
 bool Mouse::HandleEvent(const Private::MainDispatcherEvent& e)
@@ -112,28 +139,47 @@ bool Mouse::HandleEvent(const Private::MainDispatcherEvent& e)
     return isHandled;
 }
 
+void Mouse::ResetState(Window* window)
+{
+    int64 timestamp = SystemTimer::GetMs();
+    for (size_t i = 0; i < INPUT_ELEMENTS_MOUSE_BUTTON_COUNT; ++i)
+    {
+        DigitalElementState& buttonState = buttons[i];
+        if (buttonState.IsPressed())
+        {
+            buttonState.Release();
+
+            // Generate release event
+            eInputElements elementId = static_cast<eInputElements>(eInputElements::MOUSE_FIRST_BUTTON + i);
+            CreateAndSendButtonInputEvent(elementId,
+                                          buttonState,
+                                          window,
+                                          timestamp,
+                                          false);
+        }
+    }
+
+    mouseWheelDelta.x = 0.f;
+    mouseWheelDelta.y = 0.f;
+}
+
 void Mouse::HandleMouseClick(const Private::MainDispatcherEvent& e)
 {
     bool pressed = e.type == Private::MainDispatcherEvent::MOUSE_BUTTON_DOWN;
     eMouseButtons button = e.mouseEvent.button;
 
-    InputEvent inputEvent;
-    inputEvent.window = e.window;
-    inputEvent.timestamp = e.timestamp / 1000.0f;
-    inputEvent.deviceType = eInputDeviceTypes::MOUSE;
-    inputEvent.device = this;
-    inputEvent.mouseEvent.isRelative = e.mouseEvent.isRelative;
-
     uint32 index = static_cast<uint32>(button) - 1;
     DigitalElementState& buttonState = buttons[index];
     pressed ? buttonState.Press() : buttonState.Release();
-    inputEvent.digitalState = buttonState;
-    inputEvent.elementId = static_cast<eInputElements>(index + eInputElements::MOUSE_FIRST_BUTTON);
 
     mousePosition.x = e.mouseEvent.x;
     mousePosition.y = e.mouseEvent.y;
 
-    inputSystem->DispatchInputEvent(inputEvent);
+    CreateAndSendButtonInputEvent(static_cast<eInputElements>(eInputElements::MOUSE_FIRST_BUTTON + index),
+                                  buttonState,
+                                  e.window,
+                                  e.timestamp / 1000.0f,
+                                  e.mouseEvent.isRelative);
 }
 
 void Mouse::HandleMouseWheel(const Private::MainDispatcherEvent& e)
@@ -177,16 +223,18 @@ void Mouse::HandleMouseMove(const Private::MainDispatcherEvent& e)
     inputSystem->DispatchInputEvent(inputEvent);
 }
 
-void Mouse::OnEndFrame()
+void Mouse::CreateAndSendButtonInputEvent(eInputElements elementId, DigitalElementState state, Window* window, int64 timestamp, bool isRelative)
 {
-    // Promote JustPressed & JustReleased states to Pressed/Released accordingly
-    for (DigitalElementState& buttonState : buttons)
-    {
-        buttonState.OnEndFrame();
-    }
+    InputEvent inputEvent;
+    inputEvent.window = window;
+    inputEvent.timestamp = timestamp;
+    inputEvent.deviceType = eInputDeviceTypes::MOUSE;
+    inputEvent.device = this;
+    inputEvent.mouseEvent.isRelative = isRelative;
+    inputEvent.digitalState = state;
+    inputEvent.elementId = elementId;
 
-    mouseWheelDelta.x = 0.f;
-    mouseWheelDelta.y = 0.f;
+    inputSystem->DispatchInputEvent(inputEvent);
 }
 
 } // namespace DAVA
