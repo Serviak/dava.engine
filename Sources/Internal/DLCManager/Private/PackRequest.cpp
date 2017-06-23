@@ -4,6 +4,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Utils/CRC32.h"
 #include "Logger/Logger.h"
+#include "Compression/Compressor.h"
 
 #include <numeric>
 
@@ -226,12 +227,12 @@ bool PackRequest::Update()
     return needFireUpdateSignal;
 }
 
-void PackRequest::InitializeFileRequest(const uint32 fileIndex_,
+void PackRequest::InitializeFileRequest(const uint32_t fileIndex_,
                                         const FilePath& fileName_,
-                                        const uint32 hash_,
-                                        const uint64 startLoadingPos_,
-                                        const uint64 fileComressedSize_,
-                                        const uint64 fileUncompressedSize_,
+                                        const uint32_t hash_,
+                                        const uint64_t startLoadingPos_,
+                                        const uint64_t fileComressedSize_,
+                                        const uint64_t fileUncompressedSize_,
                                         const String& url_,
                                         const Compressor::Type compressionType_,
                                         FileRequest& fileRequest)
@@ -261,10 +262,10 @@ void PackRequest::DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest
     fileRequest.status = LoadingPackFile;
 }
 
-void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal) const
+void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32_t errVal) const
 {
     packManagerImpl->GetLog() << "device IO Error:(" << errVal << ")"
-                              << std::strerror(errVal) << " file: "
+                              << strerror(errVal) << " file: "
                               << fileRequest.localFile.GetAbsolutePathname()
                               << " disable DLCManager requesting" << std::endl;
     packManagerImpl->SetRequestingEnabled(false);
