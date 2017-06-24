@@ -601,14 +601,6 @@ void PipelineStateDX9_t::VertexProgDX9::SetToRHI(uint32 layoutUID, bool forceExe
 
                 if (VertexLayout::MakeCompatible(*vbLayout, this->vertexLayout, &layout))
                 {
-                    /*
-Logger::Info("vb-layout:");
-vbLayout->Dump();
-Logger::Info("vprog-layout:");
-this->vertexLayout.Dump();
-Logger::Info("compatible-layout:");
-layout.Dump();
-*/
                     info.vdecl = VDeclDX9::Get(layout, forceExecute);
                     info.layoutUID = layoutUID;
                     info.layout = layout;
@@ -617,20 +609,12 @@ layout.Dump();
                     vd = info.vdecl;
                     vl = &(altVdecl9.back().layout);
                 }
-                else
-                {
-                    Logger::Error("can't create compatible vertex-layout");
-                    Logger::Info("vprog-layout:");
-                    this->vertexLayout.Dump();
-                    Logger::Info("custom-layout:");
-                    vbLayout->Dump();
-                }
             }
         }
 
         hr = _D3D9_Device->SetVertexDeclaration(vd);
 
-        for (unsigned s = 0; s != vl->StreamCount(); ++s)
+        for (uint32 s = 0; s != vl->StreamCount(); ++s)
         {
             switch (vl->StreamFrequency(s))
             {
