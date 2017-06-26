@@ -417,6 +417,14 @@ bool PackRequest::CheckHaskState(FileRequest& fileRequest)
             ScopedPtr<File> f(File::Create(fileRequest.localFile, File::WRITE | File::APPEND));
             if (!f)
             {
+                // HACK sometime we can't open for writing just downloaded file, so try to do it on next frame
+                --letsTryOnceMore;
+                if (letsTryOnceMore > 0)
+                {
+                    packManagerImpl->GetLog() << "failed to open file for APPEND file: "
+                                              << fileRequest.localFile.GetAbsolutePathname() << " errno: " << errno << strerror(errno) << " letsTryOnceMore: " << letsTryOnceMore;
+                    return false; // try again on next frame
+                }
                 // not enough space
                 DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_open_local_file_for_append");
                 return false;
