@@ -609,6 +609,14 @@ void PipelineStateDX9_t::VertexProgDX9::SetToRHI(uint32 layoutUID, bool forceExe
                     vd = info.vdecl;
                     vl = &(altVdecl9.back().layout);
                 }
+                else
+                {
+                    Logger::Warning("can't create compatible vertex-layout");
+                    Logger::Info("vprog-layout:");
+                    this->vertexLayout.Dump();
+                    Logger::Info("custom-layout:");
+                    vbLayout->Dump();
+                }
             }
         }
 
