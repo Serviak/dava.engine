@@ -179,7 +179,7 @@ void Mouse::HandleMouseClick(const Private::MainDispatcherEvent& e)
     CreateAndSendButtonInputEvent(static_cast<eInputElements>(eInputElements::MOUSE_FIRST_BUTTON + index),
                                   buttonState,
                                   e.window,
-                                  e.timestamp / 1000.0f,
+                                  e.timestamp,
                                   e.mouseEvent.isRelative);
 }
 
@@ -228,7 +228,7 @@ void Mouse::CreateAndSendButtonInputEvent(eInputElements elementId, DigitalEleme
 {
     InputEvent inputEvent;
     inputEvent.window = window;
-    inputEvent.timestamp = timestamp;
+    inputEvent.timestamp = static_cast<float64>(timestamp / 1000.0f);
     inputEvent.deviceType = eInputDeviceTypes::MOUSE;
     inputEvent.device = this;
     inputEvent.mouseEvent.isRelative = isRelative;

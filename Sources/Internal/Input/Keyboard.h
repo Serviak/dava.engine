@@ -17,6 +17,10 @@ struct MainDispatcherEvent;
     \ingroup input
 
     Represents keyboard input device.
+
+    Some additional notes concerning keyboard handling on different platforms:
+        - On Windows, KB_PRINTSCREEN will only send InputEvent with Released state and no Pressed state
+        - On Android, keyboard elements represent virtual keys and not scancodes like on other platforms (i.e. KB_W is sent on QWERTY keyboard when 'W' is pressed and on AZERTY keyboard when 'Z' is pressed)
 */
 class Keyboard final : public InputDevice
 {
