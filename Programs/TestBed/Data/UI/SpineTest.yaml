@@ -1,5 +1,24 @@
 Header:
-    version: "16"
+    version: "17"
+Prototypes:
+-   class: "UIControl"
+    name: "ProtoBonus"
+    position: [129.000000, 306.000000]
+    size: [50.000000, 50.000000]
+    pivot: [0.500000, 0.500000]
+    components:
+        Background:
+            drawType: "DRAW_BATCH"
+        DebugRender:
+            pivotPointDrawMode: "DRAW_ALWAYS"
+        UISpineComponent:
+            skeletonPath: "~res:/UI/Spine/powerup.json"
+            atlasPath: "~res:/UI/Spine/powerup.atlas"
+            animationName: "animation"
+            animationState: "Played"
+            skinName: "default"
+            timeScale: 1.000000
+            loopedPlayback: true
 Controls:
 -   class: "UIControl"
     name: "UIControl"
@@ -7,7 +26,7 @@ Controls:
     size: [788.000000, 521.000000]
     children:
     -   class: "UIControl"
-        name: "UIControl"
+        name: "Bonus"
         position: [129.000000, 306.000000]
         size: [50.000000, 50.000000]
         pivot: [0.500000, 0.500000]
@@ -25,7 +44,7 @@ Controls:
                 timeScale: 1.000000
                 loopedPlayback: true
     -   class: "UIControl"
-        name: "UIControl"
+        name: "Boy"
         position: [654.000000, 378.000000]
         size: [50.000000, 50.000000]
         scale: [0.500000, 0.500000]
@@ -44,7 +63,7 @@ Controls:
                 timeScale: 1.000000
                 loopedPlayback: true
     -   class: "UIControl"
-        name: "UIControl"
+        name: "Goblin"
         position: [394.000000, 442.000000]
         size: [36.000000, 39.000000]
         pivot: [0.500000, 0.500000]
@@ -66,7 +85,7 @@ Controls:
         children:
         -   class: "UIControl"
             name: "Spear"
-            position: [145.886703, -242.517456]
+            position: [130.062729, -257.236755]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
@@ -75,7 +94,7 @@ Controls:
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
         -   class: "UIControl"
             name: "Head"
-            position: [17.575655, -186.509079]
+            position: [16.348091, -193.243759]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:

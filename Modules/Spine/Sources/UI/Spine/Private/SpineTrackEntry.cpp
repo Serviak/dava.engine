@@ -14,10 +14,11 @@ SpineTrackEntry::SpineTrackEntry(spTrackEntry* track)
 
 bool SpineTrackEntry::IsLoop() const
 {
-    if (trackPtr)
-    {
-        return trackPtr->loop != 0;
-    }
-    return false;
+    return trackPtr->loop != 0;
+}
+
+String SpineTrackEntry::GetName() const
+{
+    return trackPtr->animation ? String(trackPtr->animation->name) : String();
 }
 }
