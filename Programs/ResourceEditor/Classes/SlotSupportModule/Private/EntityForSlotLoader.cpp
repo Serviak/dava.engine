@@ -18,12 +18,23 @@ void EntityForSlotLoader::Load(DAVA::RefPtr<DAVA::Entity> rootEntity, const DAVA
     SceneEditor2* editorScene = DAVA::DynamicTypeCheck<SceneEditor2*>(scene);
 
     DAVA::Entity* loadedEntity = editorScene->structureSystem->Load(path);
-    loadedEntity->SetNotRemovable(true);
-    DAVA::CustomPropertiesComponent* propertiesComponent = DAVA::GetOrCreateCustomProperties(loadedEntity);
-    propertiesComponent->GetArchive()->SetBool(ResourceEditor::EDITOR_IS_LOCKED, true);
-    rootEntity->AddNode(loadedEntity);
-    rootEntity->SetNotRemovable(true);
-    callbacks.push_back(finishCallback);
+    CallbackInfo callbackInfo;
+    callbackInfo.callback = finishCallback;
+
+    if (loadedEntity != nullptr)
+    {
+        loadedEntity->SetNotRemovable(true);
+        DAVA::CustomPropertiesComponent* propertiesComponent = DAVA::GetOrCreateCustomProperties(loadedEntity);
+        propertiesComponent->GetArchive()->SetBool(ResourceEditor::EDITOR_IS_LOCKED, true);
+        rootEntity->AddNode(loadedEntity);
+        rootEntity->SetNotRemovable(true);
+    }
+    else
+    {
+        callbackInfo.message = DAVA::String("Can't load item");
+    }
+
+    callbacks.push_back(callbackInfo);
 }
 
 void EntityForSlotLoader::AddEntity(DAVA::Entity* parent, DAVA::Entity* child)
@@ -56,7 +67,7 @@ void EntityForSlotLoader::Process(DAVA::float32 delta)
 {
     for (auto& callbackNode : callbacks)
     {
-        callbackNode(DAVA::String());
+        callbackNode.callback(std::move(callbackNode.message));
     }
 
     callbacks.clear();
