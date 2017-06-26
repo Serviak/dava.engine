@@ -16,9 +16,10 @@ class UITextSystemLink;
     Text widget component.
     Display plain text with specified font style and basic layout settings.
 */
-class UITextComponent : public UIBaseComponent<UIComponent::TEXT_COMPONENT>
+class UITextComponent : public UIComponent
 {
-    DAVA_VIRTUAL_REFLECTION(UITextComponent, UIBaseComponent<UIComponent::TEXT_COMPONENT>);
+    DAVA_VIRTUAL_REFLECTION(UITextComponent, UIComponent);
+    IMPLEMENT_UI_COMPONENT(UITextComponent);
 
 public:
     /** Text multiline mode */
