@@ -227,12 +227,12 @@ bool PackRequest::Update()
     return needFireUpdateSignal;
 }
 
-void PackRequest::InitializeFileRequest(const uint32_t fileIndex_,
+void PackRequest::InitializeFileRequest(const uint32 fileIndex_,
                                         const FilePath& fileName_,
-                                        const uint32_t hash_,
-                                        const uint64_t startLoadingPos_,
-                                        const uint64_t fileComressedSize_,
-                                        const uint64_t fileUncompressedSize_,
+                                        const uint32 hash_,
+                                        const uint64 startLoadingPos_,
+                                        const uint64 fileComressedSize_,
+                                        const uint64 fileUncompressedSize_,
                                         const String& url_,
                                         const Compressor::Type compressionType_,
                                         FileRequest& fileRequest)
@@ -262,7 +262,7 @@ void PackRequest::DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest
     fileRequest.status = LoadingPackFile;
 }
 
-void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32_t errVal) const
+void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal) const
 {
     packManagerImpl->GetLog() << "device IO Error:(" << errVal << ")"
                               << strerror(errVal) << " file: "
