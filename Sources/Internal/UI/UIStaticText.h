@@ -70,13 +70,11 @@ public:
 
     virtual void SetTextAlign(int32 _align);
     virtual int32 GetTextAlign() const;
+
     virtual int32 GetTextVisualAlign() const;
     virtual bool GetTextIsRtl() const;
     virtual void SetTextUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign);
     virtual TextBlock::eUseRtlAlign GetTextUseRtlAlign() const;
-
-    virtual void SetTextUseRtlAlignFromInt(int32 value);
-    virtual int32 GetTextUseRtlAlignAsInt() const;
 
     virtual const WideString& GetVisualText() const;
     const Vector2& GetTextSize();
@@ -98,8 +96,6 @@ public:
     // Animation methods for Text Color and Shadow Color.
     virtual Animation* TextColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     virtual Animation* ShadowColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 1);
-
-    const Vector<float32>& GetStringSizes() const;
 
     inline bool IsForceBiDiSupportEnabled() const;
     void SetForceBiDiSupportEnabled(bool value);
