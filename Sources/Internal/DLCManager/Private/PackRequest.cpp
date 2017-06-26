@@ -4,6 +4,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Utils/CRC32.h"
 #include "Logger/Logger.h"
+#include "Compression/Compressor.h"
 
 #include <numeric>
 
@@ -265,7 +266,7 @@ void PackRequest::DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest
 void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const
 {
     packManagerImpl->GetLog() << "device IO Error:(" << errVal << ") "
-                              << std::strerror(errVal) << " file: "
+                              << strerror(errVal) << " file: "
                               << fileRequest.localFile.GetAbsolutePathname()
                               << " extended_message: " << extMsg
                               << " disable DLCManager requesting" << std::endl;
