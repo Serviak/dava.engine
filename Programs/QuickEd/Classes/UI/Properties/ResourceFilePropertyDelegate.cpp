@@ -18,10 +18,12 @@ using namespace DAVA;
 ResourceFilePropertyDelegate::ResourceFilePropertyDelegate(
 const QList<QString>& resourceExtensions_,
 const QString& resourceSubDir_,
-PropertiesTreeItemDelegate* delegate)
+PropertiesTreeItemDelegate* delegate,
+bool allowAnyExtension)
     : BasePropertyDelegate(delegate)
     , resourceExtensions(resourceExtensions_)
     , resourceSubDir(resourceSubDir_)
+    , allowAnyExtension(allowAnyExtension)
 {
 }
 
@@ -153,7 +155,7 @@ void ResourceFilePropertyDelegate::OnEditingFinished()
     QWidget* editor = lineEdit->parentWidget();
     DVASSERT(editor != nullptr);
     const QString& text = lineEdit->text();
-    if (!text.isEmpty() && !IsPathValid(text, true))
+    if (!text.isEmpty() && !IsPathValid(text, allowAnyExtension))
     {
         return;
     }
@@ -178,13 +180,17 @@ bool ResourceFilePropertyDelegate::IsPathValid(const QString& path, bool allowAn
     QString fullPath = path;
     DAVA::FilePath filePath(QStringToString(fullPath));
 
-    if (!filePath.IsEmpty())
+    if (!filePath.IsEmpty() && !resourceExtensions.empty())
     {
         String ext = filePath.GetExtension();
-        if ((ext.empty() || !allowAnyExtension) && !resourceExtensions.empty())
+        if (ext.empty() && !resourceExtensions.empty())
         {
             String resExt = QStringToString(resourceExtensions[0]);
             filePath.ReplaceExtension(resExt);
+        }
+        else if (!allowAnyExtension && !resourceExtensions.contains(StringToQString(ext)))
+        {
+            return false;
         }
     }
 
