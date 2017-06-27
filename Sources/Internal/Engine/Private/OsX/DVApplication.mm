@@ -1,5 +1,7 @@
 #import "Engine/Private/OsX/DVApplication.h"
 
+#if defined(__DAVAENGINE_MACOS__)
+
 @implementation DVApplication
 
 - (void)sendEvent:(NSEvent*)event
@@ -17,3 +19,5 @@
 }
 
 @end
+
+#endif
