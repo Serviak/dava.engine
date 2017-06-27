@@ -102,6 +102,18 @@ public:
     ReflectedTypeDB* reflectedTypeDB = nullptr;
 };
 
+// TODO: this is temporary solution
+// we are going on how to add functions like CurlGlobalInit
+// into engine context to be able to call in that way:
+//   DAVA::Context::CurlGlobalInit()
+//   DAVA::Context::GetKeyboard()
+//   etc.
+namespace Context
+{
+void CurlGlobalInit();
+void CurlGlobalDeinit();
+}
+
 } // namespace DAVA
 
 #endif // __DAVAENGINE_COREV2__
