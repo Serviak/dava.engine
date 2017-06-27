@@ -185,8 +185,6 @@ private:
 
     std::shared_ptr<ExternalEntityLoader> externalEntityLoader;
     std::shared_ptr<ItemsCache> sharedCache;
-
-    Vector<Entity*> deletePending;
 };
 
 } // namespace DAVA

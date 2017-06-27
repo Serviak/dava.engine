@@ -31,7 +31,7 @@ void EntityForSlotLoader::Load(DAVA::RefPtr<DAVA::Entity> rootEntity, const DAVA
     }
     else
     {
-        callbackInfo.message = DAVA::String("Can't load item");
+        callbackInfo.message = DAVA::Format("Can't load item: %s", path.GetStringValue().c_str());
     }
 
     callbacks.push_back(callbackInfo);
