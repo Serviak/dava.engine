@@ -103,8 +103,8 @@ public:
 };
 
 // TODO: this is temporary solution
-// we are going on how to add functions like CurlGlobalInit
-// into engine context to be able to call in that way:
+// we are going to think on how to add functions like CurlGlobalInit()
+// into engine context, to be able to call them in such way:
 //   DAVA::Context::CurlGlobalInit()
 //   DAVA::Context::GetKeyboard()
 //   etc.
