@@ -129,7 +129,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 CheckSingleState(kb, currentElement, DigitalElementState::Released());
 
                 uint32 currentElementNativeScancode = kb->GetKeyNativeScancode(currentElement);
-                dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_DOWN, currentElementNativeScancode, DAVA::eModifierKeys::NONE, false));
+                dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_DOWN, currentElementNativeScancode, currentElementNativeScancode, DAVA::eModifierKeys::NONE, false));
 
                 DigitalElementState currentElementStateAfterEvent = kb->GetDigitalElementState(currentElement);
                 CheckSingleState(kb, currentElement, DigitalElementState::JustPressed());
@@ -145,7 +145,7 @@ DAVA_TESTCLASS (KeyboardTestClass)
                 DigitalElementState currentElementStateBeforeEvent = kb->GetDigitalElementState(currentElement);
                 CheckSingleState(kb, currentElement, DigitalElementState::Pressed());
 
-                dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_UP, kb->GetKeyNativeScancode(currentElement), DAVA::eModifierKeys::NONE, false));
+                dispatcher->SendEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(primaryWindow, MainDispatcherEvent::KEY_UP, kb->GetKeyNativeScancode(currentElement), kb->GetKeyNativeScancode(currentElement), DAVA::eModifierKeys::NONE, false));
 
                 DigitalElementState currentElementStateAfterEvent = kb->GetDigitalElementState(currentElement);
                 CheckSingleState(kb, currentElement, DigitalElementState::JustReleased());
