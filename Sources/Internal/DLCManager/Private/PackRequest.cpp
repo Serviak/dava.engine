@@ -418,11 +418,13 @@ bool PackRequest::CheckHaskState(FileRequest& fileRequest)
             if (!f)
             {
                 // HACK sometime we can't open for writing just downloaded file, so try to do it on next frame
-                --letsTryOnceMore;
-                if (letsTryOnceMore > 0)
+                --openRetryCounter;
+                if (openRetryCounter > 0)
                 {
-                    packManagerImpl->GetLog() << "failed to open file for APPEND file: "
-                                              << fileRequest.localFile.GetAbsolutePathname() << " errno: " << errno << strerror(errno) << " letsTryOnceMore: " << letsTryOnceMore;
+                    packManagerImpl->GetLog() << "failed to open file for APPEND: "
+                                              << fileRequest.localFile.GetAbsolutePathname()
+                                              << " errno: " << errno << strerror(errno)
+                                              << " openRetryCounter: " << openRetryCounter << std::endl;
                     return false; // try again on next frame
                 }
                 // not enough space
