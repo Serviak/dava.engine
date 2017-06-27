@@ -8,7 +8,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UILayoutSourceRectComponent)
 {
-    ReflectionRegistrator<UILayoutSourceRectComponent>::Begin()
+    ReflectionRegistrator<UILayoutSourceRectComponent>::Begin()[M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](UILayoutSourceRectComponent* o) { o->Release(); })
     .End();

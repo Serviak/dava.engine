@@ -32,6 +32,14 @@ public:
 
     void Process(float32 elapsedTime) override;
 
+    /** Set pause to all Spine animations. */
+    void SetPause(bool pause);
+    /** Return true is Spine system in pause. */
+    bool IsPause() const;
+
+    /** Rebuild links between all bones and controls for all loaded spine animations. */
+    void RebuildAllBoneLinks();
+
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationStart;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationFinish;
     Signal<UISpineComponent* /*component*/, int32 /*trackIndex*/> onAnimationComplete;
@@ -63,5 +71,6 @@ private:
     void BuildBoneLinks(SpineNode& node);
 
     HashMap<UIControl*, SpineNode> nodes;
+    bool isPause = false;
 };
 }
