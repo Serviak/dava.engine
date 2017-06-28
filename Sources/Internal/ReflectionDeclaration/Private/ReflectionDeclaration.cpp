@@ -4,7 +4,9 @@
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
 
+#include "Engine/Engine.h"
 #include "Entity/Component.h"
+#include "Entity/ComponentManager.h"
 #include "Math/AABBox3.h"
 #include "Math/Color.h"
 #include "Math/Rect.h"
@@ -60,15 +62,20 @@
 #include "UI/Layouts/UIFlowLayoutComponent.h"
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UIIgnoreLayoutComponent.h"
+#include "UI/Layouts/UILayoutIsolationComponent.h"
+#include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UILinearLayoutComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Render/UIClipContentComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
+#include "UI/Render/UISceneComponent.h"
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
 #include "UI/RichContent/UIRichContentObjectComponent.h"
 #include "UI/Scroll/UIScrollBarDelegateComponent.h"
+#include "UI/Scroll/UIScrollComponent.h"
 #include "UI/Sound/UISoundComponent.h"
 #include "UI/Sound/UISoundValueFilterComponent.h"
-#include "UI/Text/UITextComponent.h"
 #include "UI/TheoraPlayer.h"
 #include "UI/UI3DView.h"
 #include "UI/UIButton.h"
@@ -87,6 +94,9 @@
 #include "UI/UISwitch.h"
 #include "UI/UITextField.h"
 #include "UI/UIWebView.h"
+#include "UI/Update/UICustomUpdateDeltaComponent.h"
+#include "UI/Update/UIUpdateComponent.h"
+#include "UI/Text/UITextComponent.h"
 
 namespace DAVA
 {
@@ -250,7 +260,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WaveComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WindComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LodComponent);
-    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(ActionComponent::Action, "Action");
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ActionComponent::Action);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PolygonGroup);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RenderObject);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RenderObject::IndexedRenderBatch);
@@ -287,28 +297,45 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISwitch);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UITextField);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIWebView);
+
     // UI components
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIActionBindingComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIActionComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIAnchorComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIFlowLayoutComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIFlowLayoutHintComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIFocusComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIFocusGroupComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIIgnoreLayoutComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UILinearLayoutComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIModalInputComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UINavigationComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIRichContentAliasesComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIRichContentComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIRichContentObjectComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UIScrollBarDelegateComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISizePolicyComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISoundComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UISoundValueFilterComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UITabOrderComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UITextComponent);
+
+#define DELC_UI_COMPONENT(type, string) \
+DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(type, string); \
+GetEngineContext()->componentManager->RegisterComponent<type>();
+
+    DELC_UI_COMPONENT(UILinearLayoutComponent, "LinearLayout");
+    DELC_UI_COMPONENT(UIFlowLayoutComponent, "FlowLayout");
+    DELC_UI_COMPONENT(UIFlowLayoutHintComponent, "FlowLayoutHint");
+    DELC_UI_COMPONENT(UIIgnoreLayoutComponent, "IgnoreLayout");
+    DELC_UI_COMPONENT(UISizePolicyComponent, "SizePolicy");
+    DELC_UI_COMPONENT(UIAnchorComponent, "Anchor");
+    DELC_UI_COMPONENT(UILayoutSourceRectComponent, "UILayoutSourceRectComponent");
+    DELC_UI_COMPONENT(UILayoutIsolationComponent, "UILayoutIsolationComponent");
+    DELC_UI_COMPONENT(UIControlBackground, "Background");
+    DELC_UI_COMPONENT(UIModalInputComponent, "ModalInput");
+    DELC_UI_COMPONENT(UIFocusComponent, "Focus");
+    DELC_UI_COMPONENT(UIFocusGroupComponent, "FocusGroup");
+    DELC_UI_COMPONENT(UINavigationComponent, "Navigation");
+    DELC_UI_COMPONENT(UITabOrderComponent, "TabOrder");
+    DELC_UI_COMPONENT(UIActionComponent, "Action");
+    DELC_UI_COMPONENT(UIActionBindingComponent, "ActionBinding");
+    DELC_UI_COMPONENT(UIScrollBarDelegateComponent, "ScrollBarDelegate");
+    DELC_UI_COMPONENT(UIScrollComponent, "ScrollComponent");
+    DELC_UI_COMPONENT(UISoundComponent, "Sound");
+    DELC_UI_COMPONENT(UISoundValueFilterComponent, "SoundValueFilter");
+    DELC_UI_COMPONENT(UIUpdateComponent, "Update");
+    DELC_UI_COMPONENT(UICustomUpdateDeltaComponent, "CustomDeltaUpdate");
+    DELC_UI_COMPONENT(UIRichContentComponent, "RichContent");
+    DELC_UI_COMPONENT(UIRichContentAliasesComponent, "RichContentAliases");
+    DELC_UI_COMPONENT(UIRichContentObjectComponent, "RichContentObject");
+    DELC_UI_COMPONENT(UISceneComponent, "SceneComponent");
+    DELC_UI_COMPONENT(UIDebugRenderComponent, "DebugRender");
+    DELC_UI_COMPONENT(UIClipContentComponent, "ClipContent");
+    DELC_UI_COMPONENT(UITextComponent, "Text");
+    
+#undef DELC_UI_COMPONENT
 }
 
 void RegisterReflectionForBaseTypes()
