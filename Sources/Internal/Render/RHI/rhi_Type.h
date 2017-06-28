@@ -398,7 +398,9 @@ enum TextureFace
     TEXTURE_FACE_POSITIVE_Y,
     TEXTURE_FACE_NEGATIVE_Y,
     TEXTURE_FACE_POSITIVE_Z,
-    TEXTURE_FACE_NEGATIVE_Z
+    TEXTURE_FACE_NEGATIVE_Z,
+
+    TEXTURE_FACE_NONE
 };
 
 enum TextureAddrMode
@@ -779,7 +781,7 @@ struct RenderPassConfig
     {
         Handle texture = InvalidHandle;
         Handle multisampleTexture = InvalidHandle;
-        TextureFace textureFace = TEXTURE_FACE_POSITIVE_X;
+        TextureFace textureFace = TEXTURE_FACE_NONE;
         uint32 textureLevel = 0;
         LoadAction loadAction = LOADACTION_CLEAR;
         StoreAction storeAction = STOREACTION_NONE;
