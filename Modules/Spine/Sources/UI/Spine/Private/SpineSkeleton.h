@@ -133,11 +133,11 @@ private:
     spSkeleton* skeleton = nullptr;
     spAnimationState* state = nullptr;
 
-    float32* worldVertices = nullptr;
     Texture* currentTexture = nullptr;
     float32 timeScale = 1.0f;
     uint32 currentVerticesStart = 0;
     uint32 currentIndicesStart = 0;
+    Vector<float32> worldVertices;
     Vector<BatchDescriptor2D> batchDescriptors;
     Vector<Vector2> verticesCoords;
     Vector<Vector2> verticesUVs;
