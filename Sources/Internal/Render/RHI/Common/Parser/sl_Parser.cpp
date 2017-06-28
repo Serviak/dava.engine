@@ -394,9 +394,9 @@ struct BaseTypeDescription
 
 #define INTRINSIC_FLOAT3_FUNCTION(name) \
         Intrinsic(name, HLSLBaseType_Float, HLSLBaseType_Float, HLSLBaseType_Float, HLSLBaseType_Float), \
-    Intrinsic(name, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float, HLSLBaseType_Float2), \
-    Intrinsic(name, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float, HLSLBaseType_Float3), \
-    Intrinsic(name, HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float, HLSLBaseType_Float4), \
+    Intrinsic(name, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2), \
+    Intrinsic(name, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3), \
+    Intrinsic(name, HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4), \
     Intrinsic(name, HLSLBaseType_Half, HLSLBaseType_Half, HLSLBaseType_Half, HLSLBaseType_Half), \
     Intrinsic(name, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2), \
     Intrinsic(name, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Half3), \
