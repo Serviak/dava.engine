@@ -7,6 +7,7 @@
 #include "UI/UIEvent.h"
 #include "Time/SystemTimer.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "UI/Render/UIClipContentComponent.h"
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
 #include "Utils/UTF8Utils.h"
