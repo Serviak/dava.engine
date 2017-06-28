@@ -334,7 +334,7 @@ GetEngineContext() \
     DELC_UI_COMPONENT(UISceneComponent, "SceneComponent");
     DELC_UI_COMPONENT(UIDebugRenderComponent, "DebugRender");
     DELC_UI_COMPONENT(UIClipContentComponent, "ClipContent");
-    
+
 #undef DELC_UI_COMPONENT
 }
 
