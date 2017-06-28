@@ -5,7 +5,7 @@
 #include "Base/FastName.h"
 #include "Debug/DVAssert.h"
 #include "Functional/Signal.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {

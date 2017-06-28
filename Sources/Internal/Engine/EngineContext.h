@@ -34,6 +34,11 @@ class EngineSettings;
 class DeviceManager;
 
 class AutotestingSystem;
+class ComponentManager;
+
+class TypeDB;
+class FastNameDB;
+class ReflectedTypeDB;
 
 namespace Net
 {
@@ -88,6 +93,11 @@ public:
     DeviceManager* deviceManager = nullptr;
 
     AutotestingSystem* autotestingSystem = nullptr;
+    ComponentManager* componentManager = nullptr;
+
+    TypeDB* typeDB = nullptr;
+    FastNameDB* fastNameDB = nullptr;
+    ReflectedTypeDB* reflectedTypeDB = nullptr;
 };
 
 } // namespace DAVA
