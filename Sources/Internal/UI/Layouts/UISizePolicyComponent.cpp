@@ -1,4 +1,5 @@
-#include "UISizePolicyComponent.h"
+#include "UI/Layouts/UISizePolicyComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 #include "UI/UIControl.h"
 #include "UI/Layouts/LayoutFormula.h"
@@ -47,6 +48,12 @@ UISizePolicyComponent::UISizePolicyComponent(const UISizePolicyComponent& src)
         policy[i].value = src.policy[i].value;
         policy[i].min = src.policy[i].min;
         policy[i].max = src.policy[i].max;
+
+        if (src.policy[i].formula)
+        {
+            policy[i].formula.reset(new LayoutFormula());
+            policy[i].formula->SetSource(src.policy[i].formula->GetSource());
+        }
     }
 }
 

@@ -5,23 +5,25 @@
 #include "Scene/SceneEditor2.h"
 #include "Main/QtUtils.h"
 
-using namespace DAVA;
-
-LandscapeEditorSystem::LandscapeEditorSystem(Scene* scene, const DAVA::FilePath& cursorPathname)
-    : SceneSystem(scene)
+LandscapeEditorSystem::LandscapeEditorSystem(DAVA::Scene* scene, const DAVA::FilePath& cursorPath)
+    : DAVA::SceneSystem(scene)
+    , cursorPathName(cursorPath)
     , cursorPosition(-100.f, -100.f)
     , prevCursorPos(-1.f, -1.f)
 {
-    cursorTexture = CreateSingleMipTexture(cursorPathname);
+    cursorTexture = CreateSingleMipTexture(cursorPathName);
     cursorTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
 
     collisionSystem = ((SceneEditor2*)GetScene())->collisionSystem;
     modifSystem = ((SceneEditor2*)GetScene())->modifSystem;
     drawSystem = ((SceneEditor2*)GetScene())->landscapeEditorDrawSystem;
+
+    DAVA::Renderer::GetSignals().needRestoreResources.Connect(this, &LandscapeEditorSystem::RenderRestoreCallback);
 }
 
 LandscapeEditorSystem::~LandscapeEditorSystem()
 {
+    DAVA::Renderer::GetSignals().needRestoreResources.Disconnect(this);
     SafeRelease(cursorTexture);
 
     collisionSystem = nullptr;
@@ -41,14 +43,14 @@ bool LandscapeEditorSystem::IsLandscapeEditingEnabled() const
 
 void LandscapeEditorSystem::UpdateCursorPosition()
 {
-    Vector3 landPos;
+    DAVA::Vector3 landPos;
     isIntersectsLandscape = collisionSystem->LandRayTestFromCamera(landPos);
     if (isIntersectsLandscape)
     {
-        landPos.x = (float32)((int32)landPos.x);
-        landPos.y = (float32)((int32)landPos.y);
+        landPos.x = std::floor(landPos.x);
+        landPos.y = std::floor(landPos.y);
 
-        const AABBox3& box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
+        const DAVA::AABBox3& box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
 
         cursorPosition.x = (landPos.x - box.min.x) / (box.max.x - box.min.x);
         cursorPosition.y = (landPos.y - box.min.y) / (box.max.y - box.min.y);
@@ -61,5 +63,14 @@ void LandscapeEditorSystem::UpdateCursorPosition()
     {
         // hide cursor
         drawSystem->SetCursorPosition(DAVA::Vector2(-100.f, -100.f));
+    }
+}
+
+void LandscapeEditorSystem::RenderRestoreCallback()
+{
+    if (rhi::NeedRestoreTexture(cursorTexture->handle))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(DAVA::ImageSystem::LoadSingleMip(cursorPathName));
+        rhi::UpdateTexture(cursorTexture->handle, image->GetData(), 0);
     }
 }
