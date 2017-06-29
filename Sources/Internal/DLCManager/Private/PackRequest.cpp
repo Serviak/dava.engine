@@ -339,7 +339,7 @@ bool PackRequest::CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCD
 
             std::ostream& out = packManagerImpl->GetLog();
 
-            out << "file_request failed: can't download file: " << dstPath << " status: " << status;
+            out << "file_request failed: can't download file: " << dstPath << " status: " << status << std::endl;
 
             if (status.error.fileErrno != 0)
             {
