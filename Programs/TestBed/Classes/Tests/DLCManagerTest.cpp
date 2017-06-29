@@ -360,7 +360,7 @@ void DLCManagerTest::OnStartInitClicked(DAVA::BaseObject* sender, void* data, vo
 
     DLCManager::Hints hints;
     hints.downloaderMaxHandles = static_cast<uint32>(numHandles);
-    hints.downloaderChankBufSize = static_cast<uint32>(bufSize);
+    hints.downloaderChunkBufSize = static_cast<uint32>(bufSize);
     FilePath publicDocsPath = GetEngineContext()->fileSystem->GetPublicDocumentsPath();
     hints.logFilePath = publicDocsPath.GetStringValue() + "dlc_manager_testbed.log";
 
