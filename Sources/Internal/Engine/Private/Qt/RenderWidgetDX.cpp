@@ -82,6 +82,7 @@ RenderWidgetDX::RenderWidgetDX(IWindowDelegate* windowDelegate, uint32 width, ui
     layout->setSpacing(0);
     layout->addWidget(container);
     container->setFocusProxy(this);
+    setFocusPolicy(Qt::FocusPolicy::WheelFocus);
 }
 
 bool RenderWidgetDX::IsInitialized() const
@@ -99,6 +100,7 @@ void RenderWidgetDX::InitCustomRenderParams(rhi::InitParam& params)
     params.threadedRenderEnabled = false;
     params.threadedRenderFrameCount = 1;
     params.window = reinterpret_cast<void*>(surface->winId());
+    params.useBackBufferExtraSize = true;
 }
 
 void RenderWidgetDX::AcquireContext()
@@ -120,6 +122,7 @@ bool RenderWidgetDX::eventFilter(QObject* obj, QEvent* e)
         case QEvent::MouseButtonRelease:
         case QEvent::MouseButtonDblClick:
         case QEvent::Wheel:
+            setFocus();
         case QEvent::KeyPress:
         case QEvent::KeyRelease:
         case QEvent::DragEnter:
