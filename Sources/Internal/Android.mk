@@ -138,6 +138,8 @@ DV_LOCAL_CPPFLAGS += -frtti -DGL_GLEXT_PROTOTYPES=1
 DV_LOCAL_CPPFLAGS += -std=c++14
 
 DV_LOCAL_CFLAGS += -D__DAVAENGINE_ANDROID__
+DV_LOCAL_CFLAGS += -D__DAVAENGINE_POSIX__
+DV_LOCAL_CFLAGS += -D__DAVAENGINE_COREV2__
 
 # remove warnings about unused arguments to compiler
 DV_LOCAL_CFLAGS += -Qunused-arguments
@@ -246,6 +248,8 @@ DV_LOCAL_CFLAGS += -fno-standalone-debug
 # set exported build flags
 DV_LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) -fno-standalone-debug
 DV_LOCAL_EXPORT_CFLAGS += -D__DAVAENGINE_ANDROID__
+DV_LOCAL_EXPORT_CFLAGS += -D__DAVAENGINE_POSIX__
+DV_LOCAL_EXPORT_CFLAGS += -D__DAVAENGINE_COREV2__
 
 # set exported used libs
 DV_LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
@@ -368,6 +372,7 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Engine/Private/Android/JNI/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Engine/Private/Android/Window/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Entity/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Entity/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/FileSystem/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/FileSystem/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Functional/Private/*.cpp) \
@@ -457,11 +462,13 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/UI/Components/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Styles/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Layouts/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/UI/Layouts/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Formula/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Formula/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Focus/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Input/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/RichContent/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/UI/RichContent/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Scroll/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Sound/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/Private/*.cpp) \
@@ -484,6 +491,8 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Notification/Private/Android/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/CommandLine/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Logger/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Scene3D/Components/SingleComponents/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Scene3D/Components/SingleComponents/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/AnyCasts/Private/*.cpp))
 
 include $(BUILD_STATIC_LIBRARY)
