@@ -21,7 +21,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ParticleEffectComponent)
     .Field("stopWhenEmpty", &ParticleEffectComponent::stopWhenEmpty)[M::DisplayName("Stop When Empty")]
     .Field("effectDuration", &ParticleEffectComponent::effectDuration)[M::DisplayName("Duration")]
     .Field("clearOnRestart", &ParticleEffectComponent::clearOnRestart)[M::DisplayName("Clear On Restart")]
-    .Field("simulateFromTime", &ParticleEffectComponent::simulateFromTime)[M::DisplayName("Simulate From Time")]
+    .Field("startFromTime", &ParticleEffectComponent::GetStartFromTime, &ParticleEffectComponent::SetStartFromTime)[M::DisplayName("Start From Time")]
     .Field("visibleReflection", &ParticleEffectComponent::GetReflectionVisible, &ParticleEffectComponent::SetReflectionVisible)[M::DisplayName("Visible Reflection")]
     .Field("visibleRefraction", &ParticleEffectComponent::GetRefractionVisible, &ParticleEffectComponent::SetRefractionVisible)[M::DisplayName("Visible Refraction")]
     .End();
@@ -68,7 +68,8 @@ Component* ParticleEffectComponent::Clone(Entity* toEntity)
     newComponent->playbackComplete = playbackComplete;
     newComponent->effectDuration = effectDuration;
     newComponent->clearOnRestart = clearOnRestart;
-    newComponent->simulateFromTime = simulateFromTime;
+    newComponent->startFromTime = startFromTime;
+
     for (const auto& instance : emitterInstances)
     {
         newComponent->AddEmitterInstance(ScopedPtr<ParticleEmitterInstance>(instance->Clone()));
@@ -288,8 +289,8 @@ void ParticleEffectComponent::Serialize(KeyedArchive* archive, SerializationCont
     archive->SetFloat("pe.effectDuration", effectDuration);
     archive->SetUInt32("pe.repeatsCount", repeatsCount);
     archive->SetBool("pe.clearOnRestart", clearOnRestart);
-    archive->SetFloat("pe.simulateFromTime", simulateFromTime);
     archive->SetUInt32("pe.emittersCount", static_cast<uint32>(emitterInstances.size()));
+    archive->SetFloat("pe.startFromTime", startFromTime);
     KeyedArchive* emittersArch = new KeyedArchive();
     for (uint32 i = 0; i < emitterInstances.size(); ++i)
     {
@@ -320,8 +321,8 @@ void ParticleEffectComponent::Deserialize(KeyedArchive* archive, SerializationCo
         effectDuration = archive->GetFloat("pe.effectDuration");
         repeatsCount = archive->GetUInt32("pe.repeatsCount");
         clearOnRestart = archive->GetBool("pe.clearOnRestart");
-        simulateFromTime = archive->GetFloat("pe.simulateFromTime");
         uint32 emittersCount = archive->GetUInt32("pe.emittersCount");
+        startFromTime = archive->GetFloat("pe.startFromTime");
         KeyedArchive* emittersArch = archive->GetArchive("pe.emitters");
         emitterInstances.resize(emittersCount);
         for (uint32 i = 0; i < emittersCount; ++i)
