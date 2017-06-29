@@ -64,7 +64,7 @@ public:
     bool FrameFixed() const;
 
 private:
-    void SetupCameraToRenderFromPointToFaceIndex(const DAVA::Vector3& point, DAVA::uint32 faceIndex);
+    void SetupCameraToRenderFromPointToFaceIndex(const DAVA::Vector3& point, DAVA::uint32 faceIndex, DAVA::float32 cubemapSize);
     void RenderWithCurrentSettings(DAVA::RenderSystem* renderSystem);
     bool ShouldRenderObject(DAVA::RenderObject*);
     bool ShouldRenderBatch(DAVA::RenderBatch*);
@@ -101,6 +101,8 @@ private:
     float frameCompleteness = 0.0f;
     bool frameFixed = false;
     bool shouldFixFrame = false;
+
+    friend class VisibilityCheckSystem;
 };
 
 inline bool VisibilityCheckRenderer::FrameFixed() const
