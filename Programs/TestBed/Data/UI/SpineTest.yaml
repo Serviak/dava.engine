@@ -19,30 +19,21 @@ Prototypes:
             skinName: "default"
             timeScale: 1.000000
             loopedPlayback: true
+        UISpineAttachControlsToBonesComponent:
+            bonesBinds: "tokenRoot,box"
+    children:
+    -   class: "UIControl"
+        name: "box"
+        size: [32.000000, 32.000000]
+        pivot: [0.500000, 0.500000]
+        components:
+            DebugRender: {}
 Controls:
 -   class: "UIControl"
     name: "UIControl"
     position: [0.000000, 0.000000]
     size: [788.000000, 521.000000]
     children:
-    -   class: "UIControl"
-        name: "Bonus"
-        position: [129.000000, 306.000000]
-        size: [50.000000, 50.000000]
-        pivot: [0.500000, 0.500000]
-        components:
-            Background:
-                drawType: "DRAW_BATCH"
-            DebugRender:
-                pivotPointDrawMode: "DRAW_ALWAYS"
-            UISpineComponent:
-                skeletonPath: "~res:/UI/Spine/powerup.json"
-                atlasPath: "~res:/UI/Spine/powerup.atlas"
-                animationName: "animation"
-                animationState: "Played"
-                skinName: "default"
-                timeScale: 1.000000
-                loopedPlayback: true
     -   class: "UIControl"
         name: "Boy"
         position: [654.000000, 378.000000]
@@ -85,7 +76,7 @@ Controls:
         children:
         -   class: "UIControl"
             name: "Spear"
-            position: [130.062729, -257.236755]
+            position: [147.117340, -242.045197]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
@@ -94,10 +85,13 @@ Controls:
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
         -   class: "UIControl"
             name: "Head"
-            position: [16.348091, -193.243759]
+            position: [18.034496, -186.811508]
             size: [32.000000, 32.000000]
             pivot: [0.500000, 0.500000]
             components:
                 Background:
                     drawType: "DRAW_FILL"
                     color: [1.000000, 0.333333, 0.000000, 1.000000]
+    -   prototype: "ProtoBonus"
+        name: "ProtoBonus"
+        position: [152.000000, 378.000000]
