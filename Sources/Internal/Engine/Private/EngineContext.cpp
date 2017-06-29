@@ -2,9 +2,19 @@
 
 #include "Concurrency/Mutex.h"
 #include "Concurrency/Thread.h"
+#include "Concurrency/LockGuard.h"
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast" // suppress warnings from openssl headers
+#endif
 
 #include <curl/curl.h>
 #include <openssl/crypto.h>
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 namespace DAVA
 {
