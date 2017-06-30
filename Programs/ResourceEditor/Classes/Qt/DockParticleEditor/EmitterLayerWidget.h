@@ -246,12 +246,14 @@ private:
     EventFilterDoubleSpinBox* stripeStartSizeSpin = nullptr;
     EventFilterDoubleSpinBox* stripeUScrollSpeedSpin = nullptr;
     EventFilterDoubleSpinBox* stripeVScrollSpeedSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeFadeDistanceFromTopSpin = nullptr;
     QLabel* stripeLabel = nullptr;
     QLabel* stripeLifetimeLabel = nullptr;
     QLabel* stripeRateLabel = nullptr;
     QLabel* stripeStartSizeLabel = nullptr;
     QLabel* stripeUScrollSpeedLabel = nullptr;
     QLabel* stripeVScrollSpeedLabel = nullptr;
+    QLabel* stripeFadeDistanceFromTopLabel = nullptr;
     QCheckBox* stripeInheritPositionForBaseCheckBox = nullptr;
     QCheckBox* stripeUsePerspectiveMappingCheckBox = nullptr;
     GradientPickerWidget* stripeColorOverLifeGradient = nullptr;
