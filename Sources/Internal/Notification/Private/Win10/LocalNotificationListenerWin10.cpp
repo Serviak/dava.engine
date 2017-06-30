@@ -1,6 +1,5 @@
 #include "Notification/Private/Win10/LocalNotificationListenerWin10.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Notification/LocalNotificationController.h"
@@ -43,4 +42,3 @@ void LocalNotificationListener::OnLaunched(::Windows::ApplicationModel::Activati
 } // namespace Private
 } // namespace DAVA
 #endif // __DAVAENGINE_WIN_UAP__
-#endif // __DAVAENGINE_COREV2__
