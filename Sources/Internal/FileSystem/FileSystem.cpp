@@ -13,7 +13,6 @@
 #include "Utils/Utils.h"
 #include "Logger/Logger.h"
 #include "FileSystem/ResourceArchive.h"
-#include "Core/Core.h"
 #include "Concurrency/LockGuard.h"
 
 #include "Engine/Private/EngineBackend.h"
@@ -38,12 +37,8 @@
 #include "Platform/DeviceInfo.h"
 #endif
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
-#if defined(__DAVAENGINE_COREV2__)
 #include "Engine/Private/Android/AndroidBridge.h"
-#else
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
-#endif
+#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
 #include <unistd.h>
 #elif defined(__DAVAENGINE_LINUX__)
 #include <sys/types.h>
@@ -459,15 +454,9 @@ FilePath FileSystem::GetCurrentExecutableDirectory()
     proc_pidpath(getpid(), tempDir.data(), PATH_MAX);
     currentExecuteDirectory = FilePath(dirname(tempDir.data()));
 #else
-
-#if defined(__DAVAENGINE_COREV2__)
     // dava.engine's internals can invoke GetCurrentExecutableDirectory before Engine instance is created
     const String& str = Private::EngineBackend::Instance()->GetCommandLine().at(0);
-#else
-    const String& str = Core::Instance()->GetCommandLine().at(0);
-#endif
     currentExecuteDirectory = FilePath(str).GetDirectory();
-
 #endif //PLATFORMS
 
     return currentExecuteDirectory.MakeDirectoryPathname();
@@ -794,22 +783,12 @@ const FilePath FileSystem::GetPublicDocumentsPath()
 #elif defined(__DAVAENGINE_ANDROID__)
 const FilePath FileSystem::GetUserDocumentsPath()
 {
-#if defined(__DAVAENGINE_COREV2__)
     return FilePath(Private::AndroidBridge::GetInternalDocumentsDir());
-#else
-    CorePlatformAndroid* core = static_cast<CorePlatformAndroid*>(Core::Instance());
-    return core->GetInternalStoragePathname();
-#endif
 }
 
 const FilePath FileSystem::GetPublicDocumentsPath()
 {
-#if defined(__DAVAENGINE_COREV2__)
     return FilePath(Private::AndroidBridge::GetExternalDocumentsDir());
-#else
-    CorePlatformAndroid* core = static_cast<CorePlatformAndroid*>(Core::Instance());
-    return core->GetExternalStoragePathname();
-#endif
 }
 #elif defined(__DAVAENGINE_LINUX__)
 const FilePath FileSystem::GetUserDocumentsPath()
