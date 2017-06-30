@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_H__
-#define __DAVAENGINE_H__
+#pragma once
 
 #include "DAVAVersion.h"
 #include "DAVAConfig.h"
@@ -230,10 +229,6 @@
 #include "Scene3D/Components/Controller/RotationControllerComponent.h"
 #include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
 
-// Application core 
-#include "Core/Core.h"
-#include "Core/ApplicationCore.h"
-
 #include "Job/JobManager.h"
 
 // Notifications
@@ -242,5 +237,3 @@
 #include "Notification/LocalNotificationProgress.h"
 #include "Notification/LocalNotificationDelayed.h"
 #include "Notification/LocalNotificationController.h"
-
-#endif // __DAVAENGINE_H__

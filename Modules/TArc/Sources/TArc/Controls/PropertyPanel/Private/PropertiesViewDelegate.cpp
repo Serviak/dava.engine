@@ -4,7 +4,7 @@
 
 #include "TArc/WindowSubSystem/QtTArcEvents.h"
 
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 
 #include <QTreeView>
 #include <QApplication>

@@ -1,15 +1,11 @@
 #pragma once
 
+#include "Base/Any.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Base/Any.h"
 #include "Debug/DVAssert.h"
 #include "Functional/Signal.h"
 #include "Reflection/Reflection.h"
-
-#if !defined(__DAVAENGINE_COREV2__)
-#include "Base/Singleton.h"
-#endif
 
 namespace DAVA
 {
@@ -34,11 +30,7 @@ class FilePath;
         The key is a setting-name. Value depends of setting-type. If setting has enum-type, the key is string-name of `eSettingValue`
 */
 
-#ifdef __DAVAENGINE_COREV2__
 class EngineSettings
-#else
-class EngineSettings : public Singleton<EngineSettings>
-#endif
 {
     struct EngineSettingsDetails;
 

@@ -2,17 +2,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/Singleton.h"
 #include "Functional/Signal.h"
 
 namespace DAVA
 {
-
-#if !defined(__DAVAENGINE_COREV2__)
-class VirtualCoordinatesSystem : public Singleton<VirtualCoordinatesSystem>
-#else
 class VirtualCoordinatesSystem final
-#endif
 {
     struct ResourceSpaceSize
     {
