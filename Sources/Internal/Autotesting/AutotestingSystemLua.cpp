@@ -2,9 +2,10 @@
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-#include "Engine/EngineTypes.h"
 #include "Autotesting/AutotestingSystem.h"
 #include "Autotesting/AutotestingDB.h"
+#include "DeviceManager/DeviceManager.h"
+#include "Engine/Engine.h"
 
 #include "Utils/Utils.h"
 #include "UI/UIControlHelpers.h"
@@ -322,13 +323,11 @@ String AutotestingSystemLua::GetDeviceName()
 
 bool AutotestingSystemLua::IsPhoneScreen()
 {
-#if !defined(__DAVAENGINE_COREV2__)
-    float32 xInch = UIControlSystem::Instance()->vcs->GetPhysicalScreenSize().dx / static_cast<float32>(Core::Instance()->GetScreenDPI());
-    float32 yInch = UIControlSystem::Instance()->vcs->GetPhysicalScreenSize().dy / static_cast<float32>(Core::Instance()->GetScreenDPI());
-    return sqrtf(xInch * xInch + yInch * yInch) <= 6.5f;
-#else
-    return false;
-#endif
+    const DisplayInfo& primaryDisplay = GetEngineContext()->deviceManager->GetPrimaryDisplay();
+    float32 xInch = primaryDisplay.rect.dx / primaryDisplay.rawDpiX;
+    float32 yInch = primaryDisplay.rect.dy / primaryDisplay.rawDpiY;
+    float32 diag = sqrtf(xInch * xInch + yInch * yInch);
+    return diag <= 6.5f;
 }
 
 String AutotestingSystemLua::GetTestParameter(const String& parameter)

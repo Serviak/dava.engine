@@ -19,10 +19,8 @@
 namespace DAVA
 {
 LocalNotificationController::LocalNotificationController()
+    : localListener(std::make_unique<Private::LocalNotificationListener>(*this))
 {
-#if defined(__DAVAENGINE_COREV2__)
-    localListener.reset(new Private::LocalNotificationListener(*this));
-#endif
 }
 
 LocalNotificationController::~LocalNotificationController()
