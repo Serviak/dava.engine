@@ -6,7 +6,7 @@
 #include "Utils/UTF8Utils.h"
 #include "FileSystem/LocalizationSystem.h"
 
-#include "Engine/Android/JNIBridge.h"
+#include "Engine/PlatformApiAndroid.h"
 
 namespace DAVA
 {
