@@ -184,7 +184,7 @@ void PackRequest::InitializeFileRequests()
                               fileInfo.compressedSize,
                               fileInfo.originalSize,
                               nullptr,
-                              Compressor::Type::Lz4HC,
+                              fileInfo.type,
                               Wait);
     }
 
@@ -403,8 +403,12 @@ bool PackRequest::LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest)
 
 bool PackRequest::CheckHaskState(FileRequest& fileRequest)
 {
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    uint64 fileSize = 0;
+    fs->GetFileSize(fileRequest.localFile, fileSize);
     uint32 fileCrc32 = CRC32::ForFile(fileRequest.localFile);
-    if (fileCrc32 == fileRequest.compressedCrc32)
+
+    if (fileCrc32 == fileRequest.compressedCrc32 && fileSize == fileRequest.sizeOfCompressedFile)
     {
         // write 20 bytes LitePack footer
         PackFormat::LitePack::Footer footer;
