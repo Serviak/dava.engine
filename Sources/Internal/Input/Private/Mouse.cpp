@@ -143,6 +143,10 @@ bool Mouse::HandleEvent(const Private::MainDispatcherEvent& e)
     case MainDispatcherEvent::MOUSE_WHEEL:
         HandleMouseWheel(e);
         break;
+    case MainDispatcherEvent::WINDOW_CANCEL_INPUT:
+        ResetState(e.window);
+        isHandled = false;
+        break;
     default:
         isHandled = false;
         break;

@@ -18,10 +18,7 @@ struct MainDispatcherEvent;
 
     Represents keyboard input device.
 
-    Some additional notes concerning keyboard handling on different platforms:
-        - On Windows, KB_PRINTSCREEN will only send InputEvent with Released state and no Pressed state
-        - On macOS, KB_CAPSLOCK works like a toggle: that is, it's state is pressed when it's toggled and released when it's untoggled
-        - On Android, keyboard elements represent virtual keys and not scancodes like on other platforms (i.e. KB_W is sent on QWERTY keyboard when 'W' is pressed and on AZERTY keyboard when 'Z' is pressed)
+    \note On Android, keyboard elements represent virtual keys and not scancodes like on other platforms (i.e. KB_W is sent on QWERTY keyboard when 'W' is pressed and on AZERTY keyboard when 'Z' is pressed)
 */
 class Keyboard final : public InputDevice
 {
