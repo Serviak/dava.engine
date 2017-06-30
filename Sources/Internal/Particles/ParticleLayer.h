@@ -33,6 +33,7 @@ struct ParticleLayer : public BaseObject
     RefPtr<PropertyLine<float32>> stripeTextureTile;
     float32 stripeUScrollSpeed = 0.0f;
     float32 stripeVScrollSpeed = -0.01f;
+    float32 stripeFadeDistanceFromTop = 0.0f;
     RefPtr<PropertyLine<Color>> stripeColorOverLife;
     bool stripeInheritPositionForBase = false;
     bool usePerspectiveMapping = false;
