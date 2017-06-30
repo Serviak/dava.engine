@@ -71,6 +71,7 @@ private:
 
     void OnEndFrame();
     void OnWindowFocusChanged(DAVA::Window* window, bool focused);
+    void OnWindowSizeChanged(DAVA::Window* window, Size2f, Size2f);
 
     void ResetState(Window* window);
     void OnKeyPressed(eInputElements element, Window* window, int64 timestamp);
