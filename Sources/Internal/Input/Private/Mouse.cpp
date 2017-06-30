@@ -19,7 +19,12 @@ Mouse::Mouse(uint32 id)
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Connect(this, &Mouse::OnEndFrame);
-    engine->PrimaryWindow()->focusChanged.Connect(this, &Mouse::OnWindowFocusChanged); // TODO: handle all the windows
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Connect(this, &Mouse::OnWindowFocusChanged); // TODO: handle all the windows
+    }
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Mouse::HandleEvent));
 }
@@ -28,7 +33,12 @@ Mouse::~Mouse()
 {
     Engine* engine = Engine::Instance();
     engine->endFrame.Disconnect(this);
-    engine->PrimaryWindow()->focusChanged.Disconnect(this);
+
+    Window* primaryWindow = engine->PrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->focusChanged.Disconnect(this);
+    }
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
