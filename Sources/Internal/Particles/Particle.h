@@ -13,12 +13,14 @@ struct StripeNode
     Vector3 position = {};
     Vector3 speed = {};
     float32 distanceFromBase = 0.0f;
+    float32 distanceFromPrevNode = 0.0f;
 
-    StripeNode(float32 lifetime_, Vector3 position_, Vector3 speed_, float32 distanceFromBase_)
+    StripeNode(float32 lifetime_, Vector3 position_, Vector3 speed_, float32 distanceFromBase_, float32 distanceFromPrevNode_)
         : lifeime(lifetime_)
         , position(position_)
         , speed(speed_)
         , distanceFromBase(distanceFromBase_)
+        , distanceFromPrevNode(distanceFromPrevNode_)
     {
     }
 
