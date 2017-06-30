@@ -9,6 +9,7 @@ DAVA::M::Validator CreateHeightMapValidator();
 DAVA::M::Validator CreateTextureValidator();
 DAVA::M::Validator CreateImageValidator();
 DAVA::M::Validator CreateSceneValidator();
+DAVA::M::Validator CreateExistsFile();
 
 class REFileMeta : public DAVA::Metas::File
 {
