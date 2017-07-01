@@ -2,6 +2,11 @@
 
 #include "EditorSystems/EditorSystemsManager.h"
 
+#include "UI/Preview/ScaleComboBoxData.h"
+#include "UI/Preview/ScrollBarData.h"
+
+#include <TArc/DataProcessing/DataWrapper.h>
+
 #include <Engine/Qt/IClientDelegate.h>
 #include <Engine/Qt/RenderWidget.h>
 
@@ -14,6 +19,7 @@ namespace DAVA
 namespace TArc
 {
 class ContextAccessor;
+class UI;
 class DataContext;
 }
 }
@@ -47,7 +53,7 @@ class PreviewWidget : public QFrame, private DAVA::IClientDelegate
 {
     Q_OBJECT
 public:
-    explicit PreviewWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager);
+    explicit PreviewWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager);
     ~PreviewWidget();
 
     FindInDocumentWidget* GetFindInDocumentWidget();
@@ -75,10 +81,6 @@ public slots:
     void SetActualScale();
 
 private slots:
-    void OnScaleChanged(DAVA::float32 scale);
-    void OnScaleByComboIndex(int value);
-    void OnScaleByComboText();
-
     void OnVScrollbarActionTriggered(int action);
     void OnHScrollbarActionTriggered(int action);
 
@@ -110,11 +112,11 @@ private:
     void OnDrop(QDropEvent* event) override;
     void OnKeyPressed(QKeyEvent* event) override;
 
-    float GetScaleFromComboboxText() const;
-
     bool event(QEvent* event) override;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::UI* ui = nullptr;
+
     DAVA::RenderWidget* renderWidget = nullptr;
 
     RulerController* rulerController = nullptr;
@@ -132,7 +134,6 @@ private:
     //we can show model dialogs only when mouse released, so remember node to change text when mouse will be released
     ControlNode* nodeToChangeTextOnMouseRelease = nullptr;
 
-    QGridLayout* gridLayout = nullptr;
     RulerWidget* horizontalRuler = nullptr;
     RulerWidget* verticalRuler = nullptr;
 
@@ -140,7 +141,12 @@ private:
     GuidesController* vGuidesController = nullptr;
 
     FindInDocumentWidget* findInDocumentWidget = nullptr;
-    QComboBox* scaleCombo = nullptr;
     QScrollBar* horizontalScrollBar = nullptr;
     QScrollBar* verticalScrollBar = nullptr;
+
+    DAVA::TArc::DataWrapper centralWidgetDataWrapper;
+
+    ScaleComboBoxData scaleComboBoxData;
+    ScrollBarData hScrollBarData;
+    ScrollBarData vScrollBarData;
 };
