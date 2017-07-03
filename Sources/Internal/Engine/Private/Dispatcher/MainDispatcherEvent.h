@@ -1,14 +1,10 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_COREV2__)
-
-#include "Functional/Function.h"
-
-#include "Engine/EngineTypes.h"
 #include "DeviceManager/DeviceManagerTypes.h"
+#include "Engine/EngineTypes.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Functional/Function.h"
 
 namespace DAVA
 {
@@ -282,5 +278,3 @@ MainDispatcherEvent MainDispatcherEvent::CreateFunctorEvent(F&& functor)
 
 } // namespace Private
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

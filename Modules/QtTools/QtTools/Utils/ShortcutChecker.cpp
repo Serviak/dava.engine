@@ -3,7 +3,7 @@
 #include "QtTools/Utils/DavaQtKeyboard.h"
 
 #include <Logger/Logger.h>
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 
 #include <QObject>
 #include <QKeyEvent>

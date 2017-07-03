@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Input/InputDevice.h"
+#include "Math/Math2D.h"
 
 namespace DAVA
 {
@@ -68,7 +69,7 @@ private:
 
     void OnEndFrame();
     void OnWindowFocusChanged(DAVA::Window* window, bool focused);
-    void OnWindowSizeChanged(DAVA::Window* window, Size2f, Size2f);
+    void OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f, DAVA::Size2f);
 
     void ResetState(Window* window);
     void OnKeyPressed(eInputElements element, Window* window, int64 timestamp);
