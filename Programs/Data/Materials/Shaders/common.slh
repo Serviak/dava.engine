@@ -126,13 +126,18 @@
 #ensuredefined TEST_OCCLUSION 0
 
 #ensuredefined HEIGHTMAP_FLOAT_TEXTURE 0
+#ensuredefined TILEMASK 1
 #ensuredefined LANDSCAPE_SPECULAR 0
 #ensuredefined LANDSCAPE_MORPHING_COLOR 0
 #ensuredefined LANDSCAPE_USE_INSTANCING 0
 #ensuredefined LANDSCAPE_LOD_MORPHING 0
 #ensuredefined LANDSCAPE_MORPHING_COLOR 0
+#ensuredefined LANDSCAPE_TOOL 0
+#ensuredefined LANDSCAPE_TOOL_MIX 0
+#ensuredefined LANDSCAPE_CURSOR 0
 
 #ensuredefined CURSOR 0
+#ensuredefined DEBUG_2D 0
 
 
 #ensuredefined FRESNEL_TO_ALPHA 0
@@ -141,4 +146,5 @@
 #ensuredefined PARTICLE_DEBUG_SHOW_ALPHA 0
 #ensuredefined PARTICLE_DEBUG_SHOW_OVERDRAW 0
 
+#ensuredefined FORCED_SHADOW_DIRECTION 0
 
