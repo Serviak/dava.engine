@@ -55,7 +55,8 @@ struct ParticleLayer : public BaseObject
         PARTICLE_ORIENTATION_X_FACING = 1 << 1,
         PARTICLE_ORIENTATION_Y_FACING = 1 << 2,
         PARTICLE_ORIENTATION_Z_FACING = 1 << 3,
-        PARTICLE_ORIENTATION_WORLD_ALIGN = 1 << 4
+        PARTICLE_ORIENTATION_WORLD_ALIGN = 1 << 4,
+        PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL = 1 << 5
     };
 
     enum eDegradeStrategy
