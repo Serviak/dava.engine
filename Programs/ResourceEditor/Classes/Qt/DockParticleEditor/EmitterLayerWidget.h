@@ -166,6 +166,7 @@ private:
     QCheckBox* yFacingCheckBox = nullptr;
     QCheckBox* zFacingCheckBox = nullptr;
     QCheckBox* worldAlignCheckBox = nullptr;
+    QCheckBox* cameraFacingStripeSphericalCheckBox = nullptr;
     QCheckBox* fogCheckBox = nullptr;
     QCheckBox* frameOverlifeCheckBox = nullptr;
     QCheckBox* randomSpinDirectionCheckBox = nullptr;
