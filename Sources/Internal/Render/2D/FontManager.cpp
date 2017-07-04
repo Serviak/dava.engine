@@ -4,7 +4,6 @@
 #include "Render/2D/Private/FTManager.h"
 #include "Logger/Logger.h"
 #include "Render/2D/Sprite.h"
-#include "Core/Core.h"
 #include "Utils/StringFormat.h"
 
 #include "Engine/Engine.h"
@@ -24,13 +23,8 @@ FontManager::~FontManager()
 
 void FontManager::RegisterFont(Font* font)
 {
-#if defined(__DAVAENGINE_COREV2__)
     if (!Engine::Instance()->GetOptions()->GetBool("trackFont"))
         return;
-#else
-    if (!Core::Instance()->GetOptions()->GetBool("trackFont"))
-        return;
-#endif
 
     if (registeredFonts.find(font) == registeredFonts.end())
     {
