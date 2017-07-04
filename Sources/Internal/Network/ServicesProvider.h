@@ -17,7 +17,7 @@ class ServicesProviderImpl;
     Usage:
         1. Create instance of ServicesProvider
         2. Create instances of necessary network services. 
-           Only services from Modules/NetworkServices/ should be used as remote peer expects that services will be placed there.
+           Only LoggerService, MemoryProfilerService should be used as remote peer expects these services only.
            Instance of service must be enclosed in shared_ptr.
         3. Add these services to ServicesProvider instance
         4. Call Start()
