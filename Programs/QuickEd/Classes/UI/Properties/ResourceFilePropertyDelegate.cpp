@@ -16,12 +16,14 @@
 using namespace DAVA;
 
 ResourceFilePropertyDelegate::ResourceFilePropertyDelegate(
-const QString& resourceExtension_,
+const QList<QString>& resourceExtensions_,
 const QString& resourceSubDir_,
-PropertiesTreeItemDelegate* delegate)
+PropertiesTreeItemDelegate* delegate,
+bool allowAnyExtension)
     : BasePropertyDelegate(delegate)
-    , resourceExtension(resourceExtension_)
+    , resourceExtensions(resourceExtensions_)
     , resourceSubDir(resourceSubDir_)
+    , allowAnyExtension(allowAnyExtension)
 {
 }
 
@@ -109,7 +111,12 @@ void ResourceFilePropertyDelegate::selectFileClicked()
         dir = projectResourceDir + resourceSubDir;
     }
 
-    QString filePathText = FileDialog::getOpenFileName(editor->parentWidget(), tr("Select resource file"), dir, "*" + resourceExtension);
+    QString filters;
+    for (QString& filter : resourceExtensions)
+    {
+        filters += "*" + filter + " ";
+    }
+    QString filePathText = FileDialog::getOpenFileName(editor->parentWidget(), tr("Select resource file"), dir, filters);
 
     if (project)
     {
@@ -148,7 +155,7 @@ void ResourceFilePropertyDelegate::OnEditingFinished()
     QWidget* editor = lineEdit->parentWidget();
     DVASSERT(editor != nullptr);
     const QString& text = lineEdit->text();
-    if (!text.isEmpty() && !IsPathValid(text, true))
+    if (!text.isEmpty() && !IsPathValid(text, allowAnyExtension))
     {
         return;
     }
@@ -173,13 +180,17 @@ bool ResourceFilePropertyDelegate::IsPathValid(const QString& path, bool allowAn
     QString fullPath = path;
     DAVA::FilePath filePath(QStringToString(fullPath));
 
-    if (!filePath.IsEmpty())
+    if (!filePath.IsEmpty() && !resourceExtensions.empty())
     {
         String ext = filePath.GetExtension();
-        String resExt = QStringToString(resourceExtension);
-        if (ext.empty() || !allowAnyExtension)
+        if (ext.empty() && !resourceExtensions.empty())
         {
+            String resExt = QStringToString(resourceExtensions[0]);
             filePath.ReplaceExtension(resExt);
+        }
+        else if (!allowAnyExtension && !resourceExtensions.contains(StringToQString(ext)))
+        {
+            return false;
         }
     }
 

@@ -20,6 +20,16 @@ void SetFieldValueCommand::Undo()
     field.ref.SetValueWithCast(oldValue);
 }
 
+const DAVA::Any& SetFieldValueCommand::GetOldValue() const
+{
+    return oldValue;
+}
+
+const DAVA::Any& SetFieldValueCommand::GetNewValue() const
+{
+    return newValue;
+}
+
 const DAVA::Reflection::Field& SetFieldValueCommand::GetField() const
 {
     return field;
