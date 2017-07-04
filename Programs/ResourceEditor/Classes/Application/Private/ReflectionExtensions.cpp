@@ -15,6 +15,7 @@
 #include <Scene3D/Components/SoundComponent.h>
 #include <Scene3D/Components/WaveComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/SlotComponent.h>
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
@@ -42,12 +43,15 @@ void RegisterNMaterialExtensions()
 void RegisterFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
 {
     // HeightMap
-    EmplaceFieldMeta<Landscape>(FastName("heightmapPath"), CreateHeightMapValidator(accessor));
-    EmplaceFieldMeta<Landscape>(FastName("heightmapPath"), CreateHeightMapFileMeta(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>(FastName("lightmap"), CreateTextureValidator(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>(FastName("lightmap"), CreateTextureFileMeta(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>(FastName("customGeometry"), CreateSceneValidator(accessor));
-    EmplaceFieldMeta<VegetationRenderObject>(FastName("customGeometry"), CreateSceneFileMeta(accessor));
+    InitFilePathExtensions(accessor);
+    EmplaceFieldMeta<Landscape>(DAVA::FastName("heightmapPath"), CreateHeightMapValidator());
+    EmplaceFieldMeta<Landscape>(DAVA::FastName("heightmapPath"), CreateHeightMapFileMeta());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("lightmap"), CreateTextureValidator());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("lightmap"), CreateTextureFileMeta());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("customGeometry"), CreateSceneValidator());
+    EmplaceFieldMeta<VegetationRenderObject>(DAVA::FastName("customGeometry"), CreateSceneFileMeta());
+    EmplaceFieldMeta<SlotComponent>(DAVA::FastName("configPath"), GenericFileMeta<REFileMeta>("All supported formats (*.yaml *.xml);;Yaml (*.yaml);;XML(*.xml)", "Open items list"));
+    EmplaceFieldMeta<SlotComponent>(DAVA::FastName("configPath"), CreateExistsFile());
 }
 
 void RegisterComponentsExtensions()
