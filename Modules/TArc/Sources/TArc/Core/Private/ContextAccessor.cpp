@@ -30,5 +30,10 @@ const DataContext* ContextAccessor::GetActiveContext() const
     return const_cast<ContextAccessor*>(this)->GetActiveContext();
 }
 
+const EngineContext* ContextAccessor::GetEngineContext() const
+{
+    return const_cast<ContextAccessor*>(this)->GetEngineContext();
+}
+
 } // namespace TArc
 } // namespace DAVA

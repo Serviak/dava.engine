@@ -1,7 +1,5 @@
 #include "Engine/Engine.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 
@@ -85,6 +83,11 @@ void Engine::QuitAsync(int exitCode)
     engineBackend->Quit(exitCode);
 }
 
+void Engine::Terminate(int exitCode)
+{
+    engineBackend->Terminate(exitCode);
+}
+
 void Engine::SetCloseRequestHandler(const Function<bool(Window*)>& handler)
 {
     engineBackend->SetCloseRequestHandler(handler);
@@ -121,5 +124,3 @@ void Engine::SetScreenTimeoutEnabled(bool enabled)
 }
 
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__
