@@ -1,6 +1,8 @@
 
-#if defined(__DAVAENGINE_IPHONE__)
 #include "Engine/Private/Ios/RenderViewIos.h"
+
+#if defined(__DAVAENGINE_IPHONE__)
+
 #include "Engine/Private/Ios/WindowNativeBridgeIos.h"
 
 #import <UIKit/UIScreen.h>

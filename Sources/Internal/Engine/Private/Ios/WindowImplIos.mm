@@ -1,6 +1,7 @@
+#include "Engine/Private/Ios/WindowImplIos.h"
+
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include "Engine/Private/Ios/WindowImplIos.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Ios/PlatformCoreIos.h"
