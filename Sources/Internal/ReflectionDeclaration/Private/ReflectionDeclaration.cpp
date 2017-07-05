@@ -33,6 +33,8 @@
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/WaveComponent.h"
 #include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/SlotComponent.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Entity/Component.h"
 #include "Entity/ComponentManager.h"
@@ -260,6 +262,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WaveComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WindComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LodComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SlotComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ActionComponent::Action);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PolygonGroup);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RenderObject);
@@ -303,8 +306,7 @@ void RegisterPermanentNames()
 
 #define DELC_UI_COMPONENT(type, string) \
 DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(type, string); \
-GetEngineContext() \
-    ->componentManager->RegisterComponent<type>();
+GetEngineContext()->componentManager->RegisterComponent<type>();
 
     DELC_UI_COMPONENT(UILinearLayoutComponent, "LinearLayout");
     DELC_UI_COMPONENT(UIFlowLayoutComponent, "FlowLayout");
@@ -334,7 +336,7 @@ GetEngineContext() \
     DELC_UI_COMPONENT(UISceneComponent, "SceneComponent");
     DELC_UI_COMPONENT(UIDebugRenderComponent, "DebugRender");
     DELC_UI_COMPONENT(UIClipContentComponent, "ClipContent");
-    
+
 #undef DELC_UI_COMPONENT
 }
 

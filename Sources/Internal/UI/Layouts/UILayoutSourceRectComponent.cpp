@@ -8,7 +8,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UILayoutSourceRectComponent)
 {
-    ReflectionRegistrator<UILayoutSourceRectComponent>::Begin()
+    ReflectionRegistrator<UILayoutSourceRectComponent>::Begin()[M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](UILayoutSourceRectComponent* o) { o->Release(); })
     .End();
@@ -40,6 +40,11 @@ const Vector2& UILayoutSourceRectComponent::GetPosition() const
 
 void UILayoutSourceRectComponent::SetPosition(const Vector2& position_)
 {
+    if (postion == position_)
+    {
+        return;
+    }
+
     postion = position_;
     SetLayoutDirty();
 }
@@ -51,6 +56,11 @@ const Vector2& UILayoutSourceRectComponent::GetSize() const
 
 void UILayoutSourceRectComponent::SetSize(const Vector2& size_)
 {
+    if (size == size_)
+    {
+        return;
+    }
+
     size = size_;
     SetLayoutDirty();
 }
