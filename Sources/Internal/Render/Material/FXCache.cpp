@@ -9,6 +9,8 @@
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/YamlNode.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Concurrency/Mutex.h"
+#include "Concurrency/LockGuard.h"
 
 namespace DAVA
 {
@@ -19,6 +21,7 @@ Map<std::pair<FastName, FastName>, FXDescriptor> oldTemplateMap;
 
 FXDescriptor defaultFX;
 bool initialized = false;
+Mutex fxCacheMutex;
 }
 
 namespace FXCache
@@ -76,6 +79,7 @@ const FXDescriptor& GetFXDescriptor(const FastName& fxName, HashMap<FastName, in
     //[METAL_COMPLETE] to be able to switch fx depending on metal/non-metal option
     key.push_back(QualitySettingsSystem::Instance()->GetAllowMetalFeatures() ? 1 : 0);
 
+    LockGuard<Mutex> guard(FXCacheDetails::fxCacheMutex);
     auto it = fxDescriptors.find(key);
     if (it != fxDescriptors.end())
         return it->second;
