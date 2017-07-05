@@ -288,11 +288,11 @@ SelectableGroup EntityModificationSystem::BeginModification(const SelectableGrou
         etm.object = item;
         etm.originalTransform = item.GetLocalTransform();
 
-        etm.toLocalZero.CreateTranslation(-etm.originalTransform.GetTranslationVector());
-        etm.fromLocalZero.CreateTranslation(etm.originalTransform.GetTranslationVector());
+        etm.toLocalZero.BuildTranslation(-etm.originalTransform.GetTranslationVector());
+        etm.fromLocalZero.BuildTranslation(etm.originalTransform.GetTranslationVector());
 
-        etm.toWorldZero.CreateTranslation(-averageLocalTranslation);
-        etm.fromWorldZero.CreateTranslation(averageLocalTranslation);
+        etm.toWorldZero.BuildTranslation(-averageLocalTranslation);
+        etm.fromWorldZero.BuildTranslation(averageLocalTranslation);
 
         etm.originalParentWorldTransform.Identity();
 
@@ -1081,19 +1081,19 @@ void EntityModificationSystem::ApplyRotateValues(ST_Axis axis, const SelectableG
             DAVA::Matrix4 rotationMatrix;
             DAVA::Matrix4 moveToZeroPos;
             DAVA::Matrix4 moveFromZeroPos;
-            moveToZeroPos.CreateTranslation(-origMatrix.GetTranslationVector());
-            moveFromZeroPos.CreateTranslation(origMatrix.GetTranslationVector());
+            moveToZeroPos.BuildTranslation(-origMatrix.GetTranslationVector());
+            moveFromZeroPos.BuildTranslation(origMatrix.GetTranslationVector());
 
             switch (axis)
             {
             case ST_AXIS_X:
-                rotationMatrix.CreateRotation(DAVA::Vector3(1, 0, 0), x - rotate.x);
+                rotationMatrix.BuildRotation(DAVA::Vector3(1, 0, 0), x - rotate.x);
                 break;
             case ST_AXIS_Y:
-                rotationMatrix.CreateRotation(DAVA::Vector3(0, 1, 0), y - rotate.y);
+                rotationMatrix.BuildRotation(DAVA::Vector3(0, 1, 0), y - rotate.y);
                 break;
             case ST_AXIS_Z:
-                rotationMatrix.CreateRotation(DAVA::Vector3(0, 0, 1), z - rotate.z);
+                rotationMatrix.BuildRotation(DAVA::Vector3(0, 0, 1), z - rotate.z);
                 break;
             default:
                 DVASSERT(0, "Unable to rotate around several axis at once");
@@ -1148,13 +1148,13 @@ void EntityModificationSystem::ApplyScaleValues(ST_Axis axis, const SelectableGr
             }
 
             DAVA::Matrix4 moveToZeroPos;
-            moveToZeroPos.CreateTranslation(-origMatrix.GetTranslationVector());
+            moveToZeroPos.BuildTranslation(-origMatrix.GetTranslationVector());
 
             DAVA::Matrix4 moveFromZeroPos;
-            moveFromZeroPos.CreateTranslation(origMatrix.GetTranslationVector());
+            moveFromZeroPos.BuildTranslation(origMatrix.GetTranslationVector());
 
             DAVA::Matrix4 scaleMatrix;
-            scaleMatrix.CreateScale(DAVA::Vector3(scaleValue, scaleValue, scaleValue));
+            scaleMatrix.BuildScale(DAVA::Vector3(scaleValue, scaleValue, scaleValue));
 
             DAVA::Matrix4 newMatrix = origMatrix * moveToZeroPos * scaleMatrix * moveFromZeroPos;
             newMatrix.SetTranslationVector(origMatrix.GetTranslationVector());
