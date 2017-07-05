@@ -29,6 +29,19 @@ public:
         OBJECT_COUNT
     };
 
+    struct ExportedObjectDesc
+    {
+        ExportedObjectDesc(eExportedObjectType objType, const DAVA::Vector<DAVA::String>& ext)
+            : type(objType)
+            , extensions(ext)
+        {
+        }
+        eExportedObjectType type;
+        DAVA::Vector<DAVA::String> extensions;
+    };
+
+    static const DAVA::Array<ExportedObjectDesc, OBJECT_COUNT>& GetExportedObjectsDescriptions();
+
     struct ExportedObject
     {
         ExportedObject(eExportedObjectType type_, DAVA::String path)
