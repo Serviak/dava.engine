@@ -3,6 +3,7 @@
 #include <cmath>
 #include "Math/Math2D.h"
 #include "Math/Vector.h"
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/MathConstants.h"
 
@@ -209,5 +210,15 @@ inline Vector3 Polar(DAVA::float32 angle, DAVA::float32 distance)
 {
     return DAVA::Vector3(std::cos(angle) * distance, std::sin(angle) * distance, 0.0f);
 };
+
+inline Matrix4 Convert2DTransformTo3DTransform(const Matrix3& m2d)
+{
+    return Matrix4(
+    m2d._00, m2d._01, 0.f, 0.f,
+    m2d._10, m2d._11, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    m2d._20, m2d._21, 0.f, 1.f
+    );
+}
 
 } // end of namespace DAVA
