@@ -14,6 +14,7 @@ class ParticleEffectComponent;
 class ParticleEmitter;
 class ParticleEmitterInstance;
 class NMaterial;
+class SlotComponent;
 }
 
 class SceneDumper
@@ -28,6 +29,8 @@ public:
     static DAVA::Set<DAVA::FilePath> DumpLinks(const DAVA::FilePath& scenePath, eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs);
 
 private:
+    static DAVA::Set<DAVA::FilePath> DumpLinks(const DAVA::FilePath& scenePath, eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, DAVA::Set<DAVA::FilePath>& dumpedLinks);
+
     SceneDumper(const DAVA::FilePath& scenePath, eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs);
     ~SceneDumper();
 
@@ -38,6 +41,7 @@ private:
     void DumpMaterial(DAVA::NMaterial* material, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& descriptorPathnames) const;
     void DumpEffect(DAVA::ParticleEffectComponent* effect, DAVA::Set<DAVA::FilePath>& links) const;
     void DumpEmitter(DAVA::ParticleEmitterInstance* emitter, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& gfxFolders) const;
+    void DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>& links) const;
 
     DAVA::Scene* scene = nullptr;
     DAVA::FilePath scenePathname;
