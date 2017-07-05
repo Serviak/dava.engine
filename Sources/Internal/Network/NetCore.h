@@ -2,8 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
+#include "Concurrency/Dispatcher.h"
 #include "Functional/Function.h"
-#include "Engine/Dispatcher.h"
 
 #include "Network/Base/IOLoop.h"
 #include "Network/Base/IfAddress.h"
@@ -132,13 +132,7 @@ public:
     };
 
 public:
-#if defined(__DAVAENGINE_COREV2__)
-
     NetCore(Engine* e);
-    Engine* engine = nullptr;
-#else
-    NetCore();
-#endif
     ~NetCore();
 
     IOLoop* Loop() const;
@@ -164,11 +158,7 @@ public:
     size_t ControllersCount() const;
 
     int32 Run();
-#if defined(__DAVAENGINE_COREV2__)
     void Poll(float32 frameDelta = 0.0f);
-#else
-    int32 Poll();
-#endif
     void Finish(bool runOutLoop = false);
 
     bool TryDiscoverDevice(const Endpoint& endpoint);
@@ -202,6 +192,7 @@ private:
     IController* TrackIdToObject(TrackId id) const;
 
 private:
+    Engine* engine = nullptr;
     IOLoop* loop = nullptr; // Heart of NetCore and network library - event loop
     bool useSeparateThread = false;
 
@@ -276,17 +267,10 @@ inline int32 NetCore::Run()
     return loop->Run(IOLoop::RUN_DEFAULT);
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 inline void NetCore::Poll(float32 /*frameDelta*/)
 {
     loop->Run(IOLoop::RUN_NOWAIT);
 }
-#else
-inline int32 NetCore::Poll()
-{
-    return loop->Run(IOLoop::RUN_NOWAIT);
-}
-#endif
 
 inline bool NetCore::IsNetworkEnabled()
 {
