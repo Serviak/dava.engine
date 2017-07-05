@@ -4,11 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.content.Intent;
+import android.content.res.Configuration;
 
 import com.dava.engine.DavaActivity;
 
 // Class for testing com.dava.engine.BootClasses meta-tag specified in AndroidManifest.xml
-public class TestBed implements DavaActivity.ActivityListener
+public class TestBed extends DavaActivity.ActivityListenerImpl
 {
     public TestBed()
     {
@@ -58,7 +59,25 @@ public class TestBed implements DavaActivity.ActivityListener
         Log.d(DavaActivity.LOG_TAG, "TestBed.onDestroy");
         DavaActivity.instance().unregisterActivityListener(this);
     }
-    
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus)
+    {
+        Log.d(DavaActivity.LOG_TAG, "TestBed.onWindowFocusChanged");
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        Log.d(DavaActivity.LOG_TAG, "TestBed.onConfigurationChanged");
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        Log.d(DavaActivity.LOG_TAG, "TestBed.onBackPressed");
+    }
+
 	@Override
 	public void onSaveInstanceState(Bundle outState)
 	{
