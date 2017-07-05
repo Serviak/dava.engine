@@ -14,6 +14,7 @@ LabelTest.h
 LineEditTest.h
 NotificationTest.h
 PlainTextEditTest.h
+PopupLineEditTests.h
 PropertiesViewTests.h
 PropertiesViewTimerUpdaterTests.h
 QtWrapLayoutTests.h
