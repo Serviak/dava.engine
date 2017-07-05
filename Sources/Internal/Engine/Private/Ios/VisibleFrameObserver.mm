@@ -1,6 +1,7 @@
+#include "Engine/Private/Ios/VisibleFrameObserver.h"
+
 #if defined(__DAVAENGINE_IPHONE__)
 
-#include "Engine/Private/Ios/VisibleFrameObserver.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Ios/RenderViewIos.h"
 #include "Engine/Private/Ios/WindowNativeBridgeIos.h"
