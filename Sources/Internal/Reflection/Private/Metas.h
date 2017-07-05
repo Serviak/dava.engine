@@ -232,5 +232,13 @@ class CantBeDeletedManualyComponent
 {
 };
 
+/** Indicate field in current type, that will return tooltip */
+class Tooltip
+{
+public:
+    Tooltip(const String& tooltipFieldName);
+    String tooltipFieldName;
+};
+
 } // namespace Mates
 } // namespace DAVA

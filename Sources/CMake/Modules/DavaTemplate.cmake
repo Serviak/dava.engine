@@ -694,6 +694,7 @@ list ( APPEND DAVA_FOLDERS ${DAVA_ENGINE_DIR} )
 list ( APPEND DAVA_FOLDERS ${FILE_TREE_CHECK_FOLDERS} )
 
 if( WIN32 AND NOT WINDOWS_UAP )
+
     set( COMMAND_PY dpiAwarness --pathVcxProj ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vcxproj --typeAwerness PerMonitorHighDPIAware )
 
     add_custom_target( VS_MODIFIED_${PROJECT_NAME}  ALL
