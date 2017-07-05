@@ -39,6 +39,7 @@ public:
     virtual PropertiesItem CreatePropertiesNode(const String& nodeName) = 0;
 
     virtual const EngineContext* GetEngineContext() = 0;
+    const EngineContext* GetEngineContext() const;
 
 private:
     virtual const Vector<DataContext*>& GetContexts() const = 0;
