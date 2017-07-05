@@ -40,13 +40,6 @@ int main(int argc, char* argv[])
         Logger::PlatformLog(Logger::LEVEL_ERROR, ss.str().c_str());
         throw;
     }
-    catch (const std::exception& e)
-    {
-        StringStream ss;
-        ss << "!!! Unhandled std::exception in DAVAMain: " << e.what() << std::endl;
-        Logger::PlatformLog(Logger::LEVEL_ERROR, ss.str().c_str());
-        throw;
-    }
 }
 
 #endif // __DAVAENGINE_MACOS__ || __DAVAENGINE_IPHONE__
