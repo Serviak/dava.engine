@@ -20,9 +20,6 @@ public:
     //Set ruler orientation
     void SetRulerOrientation(Qt::Orientation orientation);
 
-signals:
-    void GeometryChanged();
-
 public slots:
     // Ruler Settings are changed.
     void OnRulerSettingsChanged(const RulerSettings& rulerSettings);
@@ -39,7 +36,6 @@ private:
     QSize minimumSizeHint() const override;
 
     void resizeEvent(QResizeEvent* resizeEvent) override;
-    void moveEvent(QMoveEvent* moveEvent) override;
 
     // We are using double buffering to avoid flicker and excessive updates.
     void UpdateDoubleBufferImage();
