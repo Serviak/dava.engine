@@ -7,9 +7,8 @@
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
-#include "Utils/KeyboardProxy.h"
-
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Utils/KeyboardProxy.h>
 
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIEvent.h>

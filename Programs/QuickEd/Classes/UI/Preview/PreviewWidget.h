@@ -2,8 +2,8 @@
 
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "UI/Preview/ScaleComboBoxData.h"
-#include "UI/Preview/ScrollBarData.h"
+#include "UI/Preview/ScaleComboBoxAdapter.h"
+#include "UI/Preview/ScrollBarAdapter.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
 
@@ -123,7 +123,7 @@ private:
     DAVA::TArc::DataWrapper centralWidgetDataWrapper;
     DAVA::TArc::DataWrapper editorCanvasDataWrapper;
 
-    ScaleComboBoxData scaleComboBoxData;
-    ScrollBarData hScrollBarData;
-    ScrollBarData vScrollBarData;
+    ScaleComboBoxAdapter scaleComboBoxData;
+    ScrollBarAdapter hScrollBarData;
+    ScrollBarAdapter vScrollBarData;
 };

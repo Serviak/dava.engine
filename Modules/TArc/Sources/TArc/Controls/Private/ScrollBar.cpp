@@ -31,40 +31,40 @@ void ScrollBar::UpdateControl(const ControlDescriptor& changedFields)
 
     if (changedFields.IsChanged(Fields::Enabled))
     {
-        this->setEnabled(this->template GetFieldValue<bool>(Fields::Enabled, true));
+        setEnabled(GetFieldValue<bool>(Fields::Enabled, true));
     }
 
     if (minChanged)
     {
-        this->setMinimum(this->template GetFieldValue<int>(Fields::Minimum, 0));
+        setMinimum(GetFieldValue<int>(Fields::Minimum, 0));
     }
 
     if (maxChanged)
     {
-        this->setMaximum(this->template GetFieldValue<int>(Fields::Maximum, 0));
+        setMaximum(GetFieldValue<int>(Fields::Maximum, 0));
     }
 
     if (changedFields.IsChanged(Fields::PageStep))
     {
-        this->setPageStep(this->template GetFieldValue<int>(Fields::PageStep, 0));
+        setPageStep(GetFieldValue<int>(Fields::PageStep, 0));
     }
 
     if (minChanged || maxChanged || changedFields.IsChanged(Fields::Value))
     {
-        this->setValue(this->template GetFieldValue<int>(Fields::Value, 0));
+        setValue(GetFieldValue<int>(Fields::Value, 0));
     }
 
     if (changedFields.IsChanged(Fields::Orientation))
     {
-        Qt::Orientation orientation = this->template GetFieldValue<Qt::Orientation>(Fields::Orientation, Qt::Horizontal);
-        this->setSizePolicy(orientation == Qt::Horizontal ? QSizePolicy::Expanding : QSizePolicy::Maximum,
-                            orientation == Qt::Horizontal ? QSizePolicy::Maximum : QSizePolicy::Expanding);
-        this->setOrientation(orientation);
+        Qt::Orientation orientation = GetFieldValue<Qt::Orientation>(Fields::Orientation, Qt::Horizontal);
+        setSizePolicy(orientation == Qt::Horizontal ? QSizePolicy::Expanding : QSizePolicy::Maximum,
+                      orientation == Qt::Horizontal ? QSizePolicy::Maximum : QSizePolicy::Expanding);
+        setOrientation(orientation);
     }
 
     if (changedFields.IsChanged(Fields::Visible))
     {
-        this->setVisible(this->template GetFieldValue<bool>(Fields::Visible, true));
+        setVisible(GetFieldValue<bool>(Fields::Visible, true));
     }
 
     connections.AddConnection(this, &QScrollBar::valueChanged, MakeFunction(this, &ScrollBar::OnValueChanged));
@@ -72,12 +72,16 @@ void ScrollBar::UpdateControl(const ControlDescriptor& changedFields)
 
 void ScrollBar::OnValueChanged(int value)
 {
-    if (this->isEnabled() == false)
+    if (isEnabled() == false)
     {
         return;
     }
 
-    wrapper.SetFieldValue(GetFieldName(Fields::Value), value);
+    int currentValue = GetFieldValue<int>(Fields::Value, 0);
+    if (value != currentValue)
+    {
+        wrapper.SetFieldValue(GetFieldName(Fields::Value), value);
+    }
 }
 
 } // namespace TArc
