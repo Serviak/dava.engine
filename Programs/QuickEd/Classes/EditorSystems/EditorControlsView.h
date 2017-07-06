@@ -40,6 +40,8 @@ private:
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
 
+    void RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control);
+
     // UILayoutSystemListener
     void OnControlLayouted(DAVA::UIControl* control) override;
 
@@ -55,4 +57,6 @@ private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
     PackageListenerProxy packageListenerProxy;
+
+    QtDelayedExecutor delayedExecutor;
 };
