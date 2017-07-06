@@ -14,10 +14,10 @@
 PixelGrid::PixelGrid(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(parent, accessor)
 {
-    updater.SetUpdater(DAVA::MakeFunction(this, &PixelGrid::DrawGrid));
+    updater.SetCallback(DAVA::MakeFunction(this, &PixelGrid::UpdateGrid));
 
     InitControls();
-    preferences.settingsChanged.Connect(this, &PixelGrid::DrawGrid);
+    preferences.settingsChanged.Connect(&updater, &DirtyFrameUpdater::MarkDirty);
     BindFields();
 }
 
@@ -58,7 +58,7 @@ void PixelGrid::BindFields()
 
 void PixelGrid::OnVisualSettingsChanged(const DAVA::Any&)
 {
-    updater.Update();
+    updater.MarkDirty();
 }
 
 bool PixelGrid::CanShowGrid() const
@@ -83,7 +83,7 @@ bool PixelGrid::CanShowGrid() const
     return true;
 }
 
-void PixelGrid::DrawGrid()
+void PixelGrid::UpdateGrid()
 {
     using namespace DAVA;
 
@@ -140,7 +140,15 @@ void PixelGrid::DrawGrid()
         {
             UIControlBackground* background = line->GetOrCreateComponent<UIControlBackground>();
             background->SetColor(preferences.GetGridColor());
-            int32 position = scale - offset + index * scale;
+            int32 position = index * scale;
+            if (offset > 0)
+            {
+                position += scale - offset;
+            }
+            else if (offset < 0)
+            {
+                position -= offset;
+            }
             DAVA::Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
             if (axis == Vector2::AXIS_X)
             {

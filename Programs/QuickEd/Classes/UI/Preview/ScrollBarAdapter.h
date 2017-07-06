@@ -18,7 +18,7 @@ class ContextAccessor;
 
 //Qt scrollbar can not be in invalid state and uses int for values and range
 
-class ScrollBarData
+class ScrollBarAdapter
 {
 public:
     static DAVA::FastName positionPropertyName;
@@ -29,7 +29,7 @@ public:
     static DAVA::FastName visiblePropertyName;
     static DAVA::FastName orientationPropertyName;
 
-    ScrollBarData(DAVA::Vector2::eAxis orientation, DAVA::TArc::ContextAccessor* accessor);
+    ScrollBarAdapter(DAVA::Vector2::eAxis orientation, DAVA::TArc::ContextAccessor* accessor);
 
 private:
     int GetPosition() const;
@@ -52,5 +52,5 @@ private:
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 
-    DAVA_REFLECTION(ScrollBarData);
+    DAVA_REFLECTION(ScrollBarAdapter);
 };
