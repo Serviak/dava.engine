@@ -35,7 +35,7 @@ void InitFieldsList(Vector<typename TEditor::FieldDescriptor>& fields)
     DVASSERT(false);
 }
 
-template <typename T>
+template <typename T, typename TComponent>
 void InitRanges(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
     DVASSERT(false);
@@ -91,7 +91,7 @@ void InitFieldsList<Vector2, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
 }
 
 template <>
-void InitRanges<Vector2>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
+void InitRanges<Vector2, float32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
 }
 
@@ -166,7 +166,7 @@ void InitFieldsList<Vector3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
 }
 
 template <>
-void InitRanges<Vector3>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
+void InitRanges<Vector3, float32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
 }
 
@@ -262,7 +262,7 @@ void InitFieldsList<Vector4, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
 }
 
 template <>
-void InitRanges<Vector4>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
+void InitRanges<Vector4, float32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
 }
 
@@ -358,7 +358,7 @@ void InitFieldsList<Rect, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldDe
 }
 
 template <>
-void InitRanges<Rect>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
+void InitRanges<Rect, float32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
 }
 
@@ -422,6 +422,7 @@ void InitFieldsList<Color, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldD
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "rRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -431,6 +432,7 @@ void InitFieldsList<Color, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldD
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "gRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -440,6 +442,7 @@ void InitFieldsList<Color, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldD
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "bRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -449,17 +452,115 @@ void InitFieldsList<Color, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldD
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "aRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 }
 
 template <>
-void InitRanges<Color>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
+void InitRanges<Color, float32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
     ranges[0] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
     ranges[1] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
     ranges[2] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
     ranges[3] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
+}
+
+template <>
+uint32 GetAxisValue<Color, uint32, 0>(const Color& v)
+{
+    return static_cast<uint32>(255 * v.r);
+}
+
+template <>
+uint32 GetAxisValue<Color, uint32, 1>(const Color& v)
+{
+    return static_cast<uint32>(v.g);
+}
+
+template <>
+uint32 GetAxisValue<Color, uint32, 2>(const Color& v)
+{
+    return static_cast<uint32>(v.b);
+}
+
+template <>
+uint32 GetAxisValue<Color, uint32, 3>(const Color& v)
+{
+    return static_cast<uint32>(v.a);
+}
+
+template <>
+void SetAxisValue<Color, uint32, 0>(Color& v, uint32 component)
+{
+    v.r = static_cast<float32>(component) / 255.0f;
+}
+
+template <>
+void SetAxisValue<Color, uint32, 1>(Color& v, uint32 component)
+{
+    v.g = static_cast<float32>(component) / 255.0f;
+}
+
+template <>
+void SetAxisValue<Color, uint32, 2>(Color& v, uint32 component)
+{
+    v.b = static_cast<float32>(component) / 255.0f;
+}
+
+template <>
+void SetAxisValue<Color, uint32, 3>(Color& v, uint32 component)
+{
+    v.a = static_cast<float32>(component) / 255.0f;
+}
+
+template <>
+void InitFieldsList<Color, MultiIntSpinBox>(Vector<MultiIntSpinBox::FieldDescriptor>& fields)
+{
+    {
+        MultiIntSpinBox::FieldDescriptor descr;
+        descr.valueRole = "R";
+        descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
+        descr.rangeRole = "rRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
+        fields.push_back(descr);
+    }
+
+    {
+        MultiIntSpinBox::FieldDescriptor descr;
+        descr.valueRole = "G";
+        descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
+        descr.rangeRole = "gRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
+        fields.push_back(descr);
+    }
+
+    {
+        MultiIntSpinBox::FieldDescriptor descr;
+        descr.valueRole = "B";
+        descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
+        descr.rangeRole = "bRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
+        fields.push_back(descr);
+    }
+
+    {
+        MultiIntSpinBox::FieldDescriptor descr;
+        descr.valueRole = "A";
+        descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
+        descr.rangeRole = "aRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
+        fields.push_back(descr);
+    }
+}
+
+template <>
+void InitRanges<Color, uint32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
+{
+    ranges[0] = std::make_unique<M::Range>(0u, 255u, 1u);
+    ranges[1] = std::make_unique<M::Range>(0u, 255u, 1u);
+    ranges[2] = std::make_unique<M::Range>(0u, 255u, 1u);
+    ranges[3] = std::make_unique<M::Range>(0u, 255u, 1u);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -596,7 +697,7 @@ void InitFieldsList<AABBox3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
 }
 
 template <>
-void InitRanges<AABBox3>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
+void InitRanges<AABBox3, float32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
 }
 

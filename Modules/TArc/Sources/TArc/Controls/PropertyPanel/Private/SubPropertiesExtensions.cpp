@@ -1,5 +1,7 @@
 #include "TArc/Controls/PropertyPanel/Private/SubPropertiesExtensions.h"
 #include "TArc/Controls/PropertyPanel/Private/kDComponentValue.h"
+#include "TArc/Controls/PropertyPanel/Private/MultiIntSpinBox.h"
+#include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
 
 #include <Math/Vector.h>
 #include <Math/Rect.h>
@@ -71,7 +73,14 @@ std::unique_ptr<BaseComponentValue> SubPropertyEditorCreator::GetEditor(const st
         }
         else if (valueType == Type::Instance<Color>())
         {
-            return std::make_unique<kDComponentValue<Color, MultiDoubleSpinBox, float32>>();
+            if (node->field.ref.GetMeta<DAVA::M::FloatColor>() == nullptr)
+            {
+                return std::make_unique<kDComponentValue<Color, MultiIntSpinBox, uint32>>();
+            }
+            else
+            {
+                return std::make_unique<kDComponentValue<Color, MultiDoubleSpinBox, float32>>();
+            }
         }
         else if (valueType == Type::Instance<AABBox3>())
         {

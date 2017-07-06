@@ -9,7 +9,7 @@ namespace DAVA
 {
 namespace TArc
 {
-class MultiDoubleSpinBox : public ControlProxyImpl<QWidget>
+class MultiIntSpinBox : public ControlProxyImpl<QWidget>
 {
     using TBase = ControlProxyImpl<QWidget>;
 
@@ -20,7 +20,6 @@ public:
         String readOnlyRole;
         String rangeRole;
         String showSpinArrowsRole;
-        String accuracyRole;
 
         bool operator==(const FieldDescriptor& other) const;
     };
@@ -32,8 +31,8 @@ public:
     };
 
     DECLARE_CONTROL_PARAMS(Fields);
-    MultiDoubleSpinBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
-    MultiDoubleSpinBox(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
+    MultiIntSpinBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
+    MultiIntSpinBox(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
 
 private:
     template <typename T>

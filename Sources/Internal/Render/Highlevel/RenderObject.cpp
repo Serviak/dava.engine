@@ -55,10 +55,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(RenderObject)
     ReflectionRegistrator<RenderObject>::Begin()
     .Field("type", &RenderObject::type)[M::DisplayName("Type"), M::EnumT<RenderObject::eType>(), M::ReadOnly()]
     .Field("flags", &RenderObject::flags)[M::DisplayName("Flags"), M::FlagsT<RenderObject::eFlags>(), M::DeveloperModeOnly()]
-    .Field("debugFlags", &RenderObject::debugFlags)[M::DisplayName("Debug flags")]
+    .Field("debugFlags", &RenderObject::debugFlags)[M::DisplayName("Debug flags"), M::DeveloperModeOnly()]
     .Field("removeIndex", &RenderObject::removeIndex)[M::ReadOnly(), M::HiddenField()]
-    .Field("bbox", &RenderObject::bbox)[M::DisplayName("Bounding box")]
-    .Field("worldBBox", &RenderObject::worldBBox)[M::DisplayName("World Bounding box")]
+    .Field("bbox", &RenderObject::bbox)[M::DisplayName("Bounding box"), M::Group("Bounding boxes"), M::DeveloperModeOnly()]
+    .Field("worldBBox", &RenderObject::worldBBox)[M::DisplayName("World Bounding box"), M::Group("Bounding boxes"), M::DeveloperModeOnly()]
     .Field("lodIndex", &RenderObject::GetLodIndex, &RenderObject::SetLodIndex)[M::DisplayName("LOD index"), M::Range(-1, 3, 1)]
     // we have to put upper bound of switchIndex to 1 because in ResourceEditor we have asserts like this one DVASSERT(switch < 2)
     .Field("switchIndex", &RenderObject::GetSwitchIndex, &RenderObject::SetSwitchIndex)[M::DisplayName("Switch index"), M::Range(-1, 1, 1)]

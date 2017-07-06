@@ -240,5 +240,10 @@ public:
     String tooltipFieldName;
 };
 
+/** Indicate that color's components should be edited as float*/
+class FloatColor
+{
+};
+
 } // namespace Mates
 } // namespace DAVA
