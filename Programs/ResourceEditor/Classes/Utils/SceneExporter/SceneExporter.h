@@ -97,6 +97,7 @@ private:
     bool ExportSceneFileInternal(const DAVA::FilePath& scenePathname, const DAVA::FilePath& outScenePathname, DAVA::Vector<ExportedObjectCollection>& exportedObjects); //without cache
     bool ExportDescriptor(DAVA::TextureDescriptor& descriptor, const Params::Output& output);
     bool SplitCompressedFile(const DAVA::TextureDescriptor& descriptor, DAVA::eGPUFamily gpu, const Params::Output& output) const;
+    void CollectObjects(DAVA::Scene* scene, DAVA::Vector<ExportedObjectCollection>& exportedObjects);
 
     void CreateFoldersStructure(const ExportedObjectCollection& exportedObjects);
     bool CopyFile(const DAVA::FilePath& fromPath, const DAVA::FilePath& toPath) const;
@@ -107,6 +108,8 @@ private:
 
     SceneExporter::Params exportingParams;
     DAVA::Vector<ExportedObjectCollection> objectsToExport;
+
+    DAVA::Set<DAVA::FilePath> alreadyExportedScenes;
 };
 
 bool operator==(const SceneExporter::ExportedObject& left, const SceneExporter::ExportedObject& right);
