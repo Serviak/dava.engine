@@ -96,6 +96,7 @@ public:
         \return Items that described in \c configPath
     */
     Vector<ItemsCache::Item> GetItems(const FilePath& configPath);
+    static Vector<ItemsCache::Item> ParseConfig(const FilePath& configPath);
     /** Override default async loader */
     void SetExternalEntityLoader(std::shared_ptr<ExternalEntityLoader> externalEntityLoader);
 
