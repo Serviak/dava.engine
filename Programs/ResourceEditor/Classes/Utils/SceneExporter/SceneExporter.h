@@ -24,9 +24,23 @@ public:
         OBJECT_TEXTURE,
         OBJECT_HEIGHTMAP,
         OBJECT_EMITTER_CONFIG,
+        OBJECT_SLOT_CONFIG,
 
         OBJECT_COUNT
     };
+
+    struct ExportedObjectDesc
+    {
+        ExportedObjectDesc(eExportedObjectType objType, const DAVA::Vector<DAVA::String>& ext)
+            : type(objType)
+            , extensions(ext)
+        {
+        }
+        eExportedObjectType type;
+        DAVA::Vector<DAVA::String> extensions;
+    };
+
+    static const DAVA::Array<ExportedObjectDesc, OBJECT_COUNT>& GetExportedObjectsDescriptions();
 
     struct ExportedObject
     {
