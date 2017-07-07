@@ -67,22 +67,22 @@ public:
     UITextComponent& operator=(const UITextComponent&) = delete;
 
     /** Set text align style bit mask. \sa eAlign */
-    void SetAlign(int32 _align);
+    void SetAlign(int32 align);
     /** Return text align style bit mask. \sa eAlign */
     int32 GetAlign() const;
 
     /** Set widget text. */
-    void SetText(const String& text_);
+    void SetText(const String& text);
     /** Return widget text. */
     String GetText() const;
 
     /** Set content fitting style. */
-    void SetFitting(eTextFitting fitting_);
+    void SetFitting(eTextFitting fitting);
     /** Return content fitting style.*/
     eTextFitting GetFitting() const;
 
     /** Set font by preset name from FontManager registery. \sa FontManager */
-    void SetFontName(const String& fontName_);
+    void SetFontName(const String& fontName);
     /** Return font preset name. \sa FontManager */
     String GetFontName() const;
 
@@ -92,7 +92,7 @@ public:
     const Color& GetColor() const;
 
     /** Set multiline style. */
-    void SetMultiline(eTextMultiline multilineType);
+    void SetMultiline(eTextMultiline multiline);
     /** Return multiline style. */
     eTextMultiline GetMultiline() const;
 

@@ -338,7 +338,7 @@ GetEngineContext()->componentManager->RegisterComponent<type>();
     DELC_UI_COMPONENT(UISceneComponent, "SceneComponent");
     DELC_UI_COMPONENT(UIDebugRenderComponent, "DebugRender");
     DELC_UI_COMPONENT(UIClipContentComponent, "ClipContent");
-    DELC_UI_COMPONENT(UITextComponent, "Text");
+    DELC_UI_COMPONENT(UITextComponent, "UITextComponent");
     
 
 #undef DELC_UI_COMPONENT
