@@ -31,12 +31,13 @@ struct StripeNode
 
 struct StripeData
 {
-    List<StripeNode> strpeNodes; // List of stripe control points.
+    List<StripeNode> stripeNodes; // List of stripe control points.
     StripeNode baseNode = {};
     float32 spawnTimer = 0;
     Vector3 inheritPositionOffset = {};
     bool isActive = true;
     float32 uvOffset = 0.0f;
+    float32 prevBaseLen = 0.0f;
 };
 
 struct Particle
