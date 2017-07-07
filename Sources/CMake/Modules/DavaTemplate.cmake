@@ -352,48 +352,6 @@ if( DAVA_FOUND )
 
     endif()
 
-    if ( NOT DAVA_COREV2 )
-        if( QT5_FOUND )
-            if( WIN32 )
-                set ( PLATFORM_INCLUDES_DIR ${DAVA_PLATFORM_SRC}/Qt5 ${DAVA_PLATFORM_SRC}/Qt5/Win32 )
-                list( APPEND PATTERNS_CPP   ${DAVA_PLATFORM_SRC}/Qt5/*.cpp ${DAVA_PLATFORM_SRC}/Qt5/Win32/*.cpp )
-                list( APPEND PATTERNS_H     ${DAVA_PLATFORM_SRC}/Qt5/*.h   ${DAVA_PLATFORM_SRC}/Qt5/Win32/*.h   )
-
-            elseif( MACOS )
-                set ( PLATFORM_INCLUDES_DIR  ${DAVA_PLATFORM_SRC}/Qt5  ${DAVA_PLATFORM_SRC}/Qt5/MacOS )
-                list( APPEND PATTERNS_CPP    ${DAVA_PLATFORM_SRC}/Qt5/*.cpp ${DAVA_PLATFORM_SRC}/Qt5/MacOS/*.cpp ${DAVA_PLATFORM_SRC}/Qt5/MacOS/*.mm )
-                list( APPEND PATTERNS_H      ${DAVA_PLATFORM_SRC}/Qt5/*.h   ${DAVA_PLATFORM_SRC}/Qt5/MacOS/*.h   )
-                list( APPEND UNIFIED_IGNORE_LIST_APPLE "Qt5/MacOS/CoreMacOSPlatformQt.cpp" )
-            endif()
-
-            include_directories( ${PLATFORM_INCLUDES_DIR} )
-
-        else()
-            if( WIN32 )
-                add_definitions        ( -D_UNICODE
-                                         -DUNICODE )
-                list( APPEND ADDED_SRC  ${DAVA_PLATFORM_SRC}/TemplateWin32/CorePlatformWin32.cpp
-                                        ${DAVA_PLATFORM_SRC}/TemplateWin32/CorePlatformWin32.h  )
-
-            elseif( MACOS )
-                set( MACOS_PLATFORM_SRC  
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/AppDelegate.h
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/AppDelegate.mm
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/HelperAppDelegate.h
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/HelperAppDelegate.mm
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/MainWindowController.h
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/MainWindowController.mm
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/OpenGLView.h
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/OpenGLView.mm
-                                    ${DAVA_PLATFORM_SRC}/TemplateMacOS/CorePlatformMacOS.h
-                            )
-
-                list( APPEND ADDED_SRC ${MACOS_PLATFORM_SRC} )
-            endif()
-
-        endif()
-    endif()
-
     file( GLOB_RECURSE CPP_FILES ${PATTERNS_CPP} )
     file( GLOB_RECURSE H_FILES   ${PATTERNS_H} )
     set ( PLATFORM_ADDED_SRC ${H_FILES} ${CPP_FILES} )
@@ -552,27 +510,20 @@ if( ANDROID AND NOT ANDROID_CUSTOM_BUILD )
     set( ANDROID_MIN_SDK_VERSION     ${ANDROID_NATIVE_API_LEVEL} )
     set( ANDROID_TARGET_SDK_VERSION  ${ANDROID_TARGET_API_LEVEL} )
 
-    if (DAVA_COREV2)
-        # In core v2 application should specify under meta-data tag in AndroidManifest.xml which library modules should be
-        # loaded and which classes should be instantiated at startup
-        # ANDROID_BOOT_MODULES variable should contain semicolon delimited list of library names
-        # ANDROID_BOOT_CLASSES variable should contain semicolon delimited list of class names
-        # Both ANDROID_BOOT_MODULES and ANDROID_BOOT_CLASSES are not required to be set in CMakeLists.txt
-        if (ANDROID_BOOT_MODULES)
-            set (ANDROID_BOOT_MODULES "<meta-data android:name=\"com.dava.engine.BootModules\" android:value=\"${ANDROID_BOOT_MODULES}\"/>")
-        endif()
-        if (ANDROID_BOOT_CLASSES)
-            set (ANDROID_BOOT_CLASSES "<meta-data android:name=\"com.dava.engine.BootClasses\" android:value=\"${ANDROID_BOOT_CLASSES}\"/>")
-        endif()
+    # Application should specify under meta-data tag in AndroidManifest.xml which library modules should be
+    # loaded and which classes should be instantiated at startup
+    # ANDROID_BOOT_MODULES variable should contain semicolon delimited list of library names
+    # ANDROID_BOOT_CLASSES variable should contain semicolon delimited list of class names
+    # Both ANDROID_BOOT_MODULES and ANDROID_BOOT_CLASSES are not required to be set in CMakeLists.txt
+    if (ANDROID_BOOT_MODULES)
+        set (ANDROID_BOOT_MODULES "<meta-data android:name=\"com.dava.engine.BootModules\" android:value=\"${ANDROID_BOOT_MODULES}\"/>")
+    endif()
+    if (ANDROID_BOOT_CLASSES)
+        set (ANDROID_BOOT_CLASSES "<meta-data android:name=\"com.dava.engine.BootClasses\" android:value=\"${ANDROID_BOOT_CLASSES}\"/>")
     endif()
 
-    if (DAVA_COREV2)
-        configure_file( ${DAVA_CONFIGURE_FILES_PATH}/AndroidManifest_v2.in
-                        ${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml )
-    else()
-        configure_file( ${DAVA_CONFIGURE_FILES_PATH}/AndroidManifest.in
-                        ${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml )
-    endif()
+    configure_file( ${DAVA_CONFIGURE_FILES_PATH}/AndroidManifest.in
+                    ${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml )
 
     configure_file( ${DAVA_CONFIGURE_FILES_PATH}/AntProperties.in
                     ${CMAKE_CURRENT_BINARY_DIR}/ant.properties )
@@ -673,11 +624,7 @@ elseif( MACOS )
 elseif ( WIN32 )
 
     if( "${EXECUTABLE_FLAG}" STREQUAL "WIN32" )
-        if (DAVA_COREV2)
-            set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/ENTRY:wWinMainCRTStartup /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib" )
-        else()
-            set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/ENTRY: /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib" )
-        endif()
+        set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/ENTRY:wWinMainCRTStartup /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib" )
     else()
         set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib" )
     endif()
@@ -747,6 +694,7 @@ list ( APPEND DAVA_FOLDERS ${DAVA_ENGINE_DIR} )
 list ( APPEND DAVA_FOLDERS ${FILE_TREE_CHECK_FOLDERS} )
 
 if( WIN32 AND NOT WINDOWS_UAP )
+
     set( COMMAND_PY dpiAwarness --pathVcxProj ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vcxproj --typeAwerness PerMonitorHighDPIAware )
 
     add_custom_target( VS_MODIFIED_${PROJECT_NAME}  ALL

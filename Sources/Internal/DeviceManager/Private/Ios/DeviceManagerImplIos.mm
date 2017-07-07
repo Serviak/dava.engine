@@ -1,6 +1,5 @@
 #include "DeviceManager/Private/Ios/DeviceManagerImplIos.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include <sys/utsname.h>
@@ -181,4 +180,3 @@ float32 DeviceManagerImpl::GetCpuTemperature() const
 } // namespace DAVA
 
 #endif // __DAVAENGINE_IPHONE__
-#endif // __DAVAENGINE_COREV2__

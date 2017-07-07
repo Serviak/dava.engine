@@ -3,10 +3,13 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <Reflection/ReflectedMeta.h>
 
-DAVA::M::Validator CreateHeightMapValidator(DAVA::TArc::ContextAccessor* accessor);
-DAVA::M::Validator CreateTextureValidator(DAVA::TArc::ContextAccessor* accessor);
-DAVA::M::Validator CreateImageValidator(DAVA::TArc::ContextAccessor* accessor);
-DAVA::M::Validator CreateSceneValidator(DAVA::TArc::ContextAccessor* accessor);
+void InitFilePathExtensions(DAVA::TArc::ContextAccessor* accessor);
+
+DAVA::M::Validator CreateHeightMapValidator();
+DAVA::M::Validator CreateTextureValidator();
+DAVA::M::Validator CreateImageValidator();
+DAVA::M::Validator CreateSceneValidator();
+DAVA::M::Validator CreateExistsFile();
 
 class REFileMeta : public DAVA::Metas::File
 {
@@ -41,7 +44,10 @@ public:
     SceneFileMeta(const DAVA::String& filters);
 };
 
-DAVA::Meta<HeightMapFileMeta, DAVA::Metas::File> CreateHeightMapFileMeta(DAVA::TArc::ContextAccessor* accessor);
-DAVA::Meta<TextureFileMeta, DAVA::Metas::File> CreateTextureFileMeta(DAVA::TArc::ContextAccessor* accessor);
-DAVA::Meta<ImageFileMeta, DAVA::Metas::File> CreateImageFileMeta(DAVA::TArc::ContextAccessor* accessor);
-DAVA::Meta<SceneFileMeta, DAVA::Metas::File> CreateSceneFileMeta(DAVA::TArc::ContextAccessor* accessor);
+template <typename T>
+using GenericFileMeta = DAVA::Meta<T, DAVA::Metas::File>;
+
+GenericFileMeta<HeightMapFileMeta> CreateHeightMapFileMeta();
+GenericFileMeta<TextureFileMeta> CreateTextureFileMeta();
+GenericFileMeta<ImageFileMeta> CreateImageFileMeta();
+GenericFileMeta<SceneFileMeta> CreateSceneFileMeta();
