@@ -240,8 +240,8 @@ public:
     String tooltipFieldName;
 };
 
-/** Indicate that color's components should be edited as float*/
-class FloatColor
+/** Indicate that color's components should be edited as int*/
+class IntColor
 {
 };
 

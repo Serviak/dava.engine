@@ -76,6 +76,7 @@ public:
 
     bool IsEditorSpanned(const QModelIndex& index) const;
 
+    QModelIndex GetRootIndex() const;
     QModelIndex GetRegularRootIndex() const;
     QModelIndex GetFavoriteRootIndex() const;
 
@@ -107,6 +108,17 @@ private:
     void GetExpandedListImpl(QModelIndexList& list, ReflectedPropertyItem* item) const;
 
 private:
+    struct RootItemValue
+    {
+        DAVA_REFLECTION(RootItemValue)
+        {
+            ReflectionRegistrator<RootItemValue>::Begin()
+            .End();
+        }
+    };
+
+    RootItemValue dummyRootValue;
+
     std::unique_ptr<ReflectedPropertyItem> rootItem;
     UnorderedMap<std::shared_ptr<PropertyNode>, ReflectedPropertyItem*> nodeToItem;
     UnorderedMap<std::shared_ptr<PropertyNode>, ReflectedPropertyItem*> nodeToFavorite;
