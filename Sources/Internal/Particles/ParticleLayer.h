@@ -31,6 +31,8 @@ struct ParticleLayer : public BaseObject
     float32 stripeStartSize = 1.0f;
     RefPtr<PropertyLine<float32>> stripeSizeOverLifeProp;
     RefPtr<PropertyLine<float32>> stripeTextureTile;
+    RefPtr<PropertyLine<float32>> stripeNoiseUScrollSpeedOverLife;
+    RefPtr<PropertyLine<float32>> stripeNoiseVScrollSpeedOverLife;
     float32 stripeUScrollSpeed = 0.0f;
     float32 stripeVScrollSpeed = -0.01f;
     float32 stripeFadeDistanceFromTop = 0.0f;
