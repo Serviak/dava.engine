@@ -1,11 +1,10 @@
 #include "EditorSystems/PixelGrid.h"
 
-#include "Modules/DocumentsModule/EditorCanvasData.h"
+#include "UI/Preview/Data/CanvasDataAdapter.h"
 
-#include <TArc/Core/FieldBinder.h>
+#include <TArc/Core/ContextAccessor.h>
 
 #include <UI/UIControl.h>
-
 #include <Reflection/ReflectedTypeDB.h>
 #include <Logger/Logger.h>
 #include <Preferences/PreferencesStorage.h>
@@ -13,15 +12,30 @@
 
 PixelGrid::PixelGrid(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(parent, accessor)
+    , canvasDataAdapter(accessor)
 {
+    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
+    canvasDataAdapterWrapper.SetListener(this);
+
     updater.SetCallback(DAVA::MakeFunction(this, &PixelGrid::UpdateGrid));
 
     InitControls();
     preferences.settingsChanged.Connect(&updater, &DirtyFrameUpdater::MarkDirty);
-    BindFields();
 }
 
 PixelGrid::~PixelGrid() = default;
+
+void PixelGrid::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+{
+    bool startValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
+    bool lastValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::lastValuePropertyName) != fields.end();
+    bool scaleChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
+
+    if (startValueChanged || lastValueChanged || scaleChanged)
+    {
+        updater.MarkDirty();
+    }
+}
 
 void PixelGrid::InitControls()
 {
@@ -36,31 +50,6 @@ void PixelGrid::InitControls()
     gridControl->AddControl(vLinesContainer.Get());
 }
 
-void PixelGrid::BindFields()
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    fieldBinder.reset(new FieldBinder(accessor));
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = EditorCanvasData::startValuePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &PixelGrid::OnVisualSettingsChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorCanvasData>();
-        fieldDescr.fieldName = EditorCanvasData::lastValuePropertyName;
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &PixelGrid::OnVisualSettingsChanged));
-    }
-}
-
-void PixelGrid::OnVisualSettingsChanged(const DAVA::Any&)
-{
-    updater.MarkDirty();
-}
-
 bool PixelGrid::CanShowGrid() const
 {
     if (preferences.IsVisible() == false || preferences.GetScaleToDisplay() < 1.0f)
@@ -68,14 +57,7 @@ bool PixelGrid::CanShowGrid() const
         return false;
     }
 
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return false;
-    }
-
-    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
-    if (canvasData->GetScale() < preferences.GetScaleToDisplay())
+    if (canvasDataAdapter.GetScale() < preferences.GetScaleToDisplay())
     {
         return false;
     }
@@ -94,13 +76,10 @@ void PixelGrid::UpdateGrid()
         return;
     }
 
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
-    EditorCanvasData* canvasData = activeContext->GetData<EditorCanvasData>();
-
-    Vector2 startValue = canvasData->GetStartValue();
-    Vector2 lastValue = canvasData->GetLastValue();
-    Vector2 viewSize = canvasData->GetViewSize();
-    int32 scale = static_cast<int32>(canvasData->GetScale());
+    Vector2 startValue = canvasDataAdapter.GetStartValue();
+    Vector2 lastValue = canvasDataAdapter.GetLastValue();
+    Vector2 viewSize = canvasDataAdapter.GetViewSize();
+    int32 scale = static_cast<int32>(canvasDataAdapter.GetScale());
 
     for (int i = 0; i < Vector2::AXIS_COUNT; ++i)
     {

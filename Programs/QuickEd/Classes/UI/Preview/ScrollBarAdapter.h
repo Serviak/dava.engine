@@ -1,5 +1,7 @@
 #pragma once
 
+#include "UI/Preview/Data/CanvasDataAdapter.h"
+
 #include <TArc/DataProcessing/DataWrapper.h>
 
 #include <Base/BaseTypes.h>
@@ -48,9 +50,9 @@ private:
 
     const DAVA::Vector2::eAxis orientation;
 
-    DAVA::TArc::DataWrapper editorCanvasDataWrapper;
-
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+
+    CanvasDataAdapter canvasDataAdapter;
 
     DAVA_REFLECTION(ScrollBarAdapter);
 };
