@@ -164,7 +164,11 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
         }
 
         float32 restSize = data.GetWidth() - usedSize;
-        restSize -= horizontalPadding * 2.0f + horizontalSpacing * stickChildrenInLine + childSize;
+        restSize -= horizontalPadding * 2.0f + horizontalSpacing * (stickChildrenInLine - 1) + childSize;
+        if (!stickItemBeforeThis)
+        {
+            restSize -= horizontalSpacing;
+        }
 
         if (restSize < -LayoutHelpers::EPSILON)
         {
