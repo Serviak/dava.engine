@@ -106,6 +106,7 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
     int32 firstIndex = data.GetFirstChildIndex();
 
     bool newLineBeforeNext = false;
+    bool stickItemBeforeNext = false;
     int32 childrenInLine = 0;
     float32 usedSize = 0.0f;
 
@@ -135,11 +136,20 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
 
         bool newLineBeforeThis = newLineBeforeNext;
         newLineBeforeNext = false;
+        bool stickItemBeforeThis = stickItemBeforeNext;
+        stickItemBeforeNext = false;
+
         UIFlowLayoutHintComponent* hint = childData.GetControl()->GetComponent<UIFlowLayoutHintComponent>();
         if (hint != nullptr)
         {
             newLineBeforeThis |= hint->IsNewLineBeforeThis();
             newLineBeforeNext = hint->IsNewLineAfterThis();
+            stickItemBeforeThis |= hint->IsStickItemBeforeThis();
+            stickItemBeforeNext = hint->IsStickItemAfterThis();
+        }
+        if (stickItemBeforeThis)
+        {
+            childData.SetFlag(ControlLayoutData::FLAG_STICK_THIS);
         }
 
         if (newLineBeforeThis && index > firstIndex)
@@ -154,9 +164,28 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
         }
 
         float32 restSize = data.GetWidth() - usedSize;
-        restSize -= horizontalPadding * 2.0f + horizontalSpacing * childrenInLine + childSize;
+        restSize -= horizontalPadding * 2.0f + childSize;
+        if (!stickItemBeforeThis)
+        {
+            restSize -= horizontalSpacing;
+        }
+
         if (restSize < -LayoutHelpers::EPSILON)
         {
+            if (stickItemBeforeThis && index > firstIndex)
+            {
+                int32 i = index - 1;
+                float32 usedSizeBack = 0;
+                while (i > firstIndex && layoutData[i].HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+                {
+                    usedSize -= layoutData[i].GetWidth();
+                    i--;
+                }
+                childrenInLine -= i - index;
+                index = i;
+                childSize = layoutData[index].GetWidth();
+            }
+
             if (index > firstIndex)
             {
                 if (childrenInLine > 0)
@@ -177,6 +206,10 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
         }
         else
         {
+            if (childrenInLine > 0 && !stickItemBeforeThis)
+            {
+                usedSize += horizontalSpacing;
+            }
             childrenInLine++;
             usedSize += childSize;
         }
@@ -227,19 +260,34 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
     SortLineItemsByContentDirection(firstIndex, lastIndex, order, realLastIndex);
 
     // Layout controls in correct order
+    bool first = true;
     for (uint32 i : order)
     {
         ControlLayoutData& childData = layoutData[i];
+
+        if (!first && !childData.HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+        {
+            if (inverse)
+            {
+                position -= spacing;
+            }
+            else
+            {
+                position += spacing;
+            }
+        }
+        first = false;
+
         float32 size = childData.GetWidth();
         childData.SetPosition(Vector2::AXIS_X, inverse ? position - size : position);
 
         if (inverse)
         {
-            position -= size + spacing;
+            position -= size;
         }
         else
         {
-            position += size + spacing;
+            position += size;
         }
     }
 
