@@ -97,11 +97,22 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> KeyedArchiveEditorCreator::GetEd
 
     if (node->propertyType == PropertyNode::RealProperty && node->cachedValue.GetType() == Type::Instance<KeyedArchive*>())
     {
-        return std::make_unique<PropertyPanel::KeyedArchiveEditor>();
+        ProjectManagerData* data = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
+        DVASSERT(data);
+
+        const EditorConfig* editorConfig = data->GetEditorConfig();
+        const DAVA::Vector<DAVA::String>& presets = editorConfig->GetProjectPropertyNames();
+        Vector<DAVA::VariantType> defaultValues;
+        defaultValues.reserve(presets.size());
+        for (const DAVA::String& name : presets)
+        {
+            defaultValues.push_back(*editorConfig->GetPropertyDefaultValue(name));
+        }
+        return std::make_unique<PropertyPanel::KeyedArchiveEditor>(presets, defaultValues);
     }
 
     std::shared_ptr<DAVA::TArc::PropertyNode> parent = node->parent.lock();
-    if (parent->propertyType == PropertyNode::RealProperty && parent->cachedValue.GetType() == Type::Instance<KeyedArchive*>())
+    if (parent != nullptr && parent->propertyType == PropertyNode::RealProperty && parent->cachedValue.GetType() == Type::Instance<KeyedArchive*>())
     {
         String key = node->field.key.Cast<String>();
 

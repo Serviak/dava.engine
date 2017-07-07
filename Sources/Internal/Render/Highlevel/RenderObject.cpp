@@ -59,9 +59,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(RenderObject)
     .Field("removeIndex", &RenderObject::removeIndex)[M::ReadOnly(), M::HiddenField()]
     .Field("bbox", &RenderObject::bbox)[M::DisplayName("Bounding box"), M::Group("Bounding boxes"), M::DeveloperModeOnly()]
     .Field("worldBBox", &RenderObject::worldBBox)[M::DisplayName("World Bounding box"), M::Group("Bounding boxes"), M::DeveloperModeOnly()]
-    .Field("lodIndex", &RenderObject::GetLodIndex, &RenderObject::SetLodIndex)[M::DisplayName("LOD index"), M::Range(-1, 3, 1)]
+    .Field("lodIndex", &RenderObject::GetLodIndex, &RenderObject::SetLodIndex)[M::DisplayName("LOD index"), M::Range(-1, 3, 1), M::DeveloperModeOnly()]
     // we have to put upper bound of switchIndex to 1 because in ResourceEditor we have asserts like this one DVASSERT(switch < 2)
-    .Field("switchIndex", &RenderObject::GetSwitchIndex, &RenderObject::SetSwitchIndex)[M::DisplayName("Switch index"), M::Range(-1, 1, 1)]
+    .Field("switchIndex", &RenderObject::GetSwitchIndex, &RenderObject::SetSwitchIndex)[M::DisplayName("Switch index"), M::Range(-1, 1, 1), M::DeveloperModeOnly()]
     .Field("visibleReflection", &RenderObject::GetReflectionVisible, &RenderObject::SetReflectionVisible)[M::DisplayName("Visible reflection")]
     .Field("visibleRefraction", &RenderObject::GetRefractionVisible, &RenderObject::SetRefractionVisible)[M::DisplayName("Visible refraction")]
     .Field("renderBatchArray", &RenderObject::renderBatchArray)[M::DisplayName("Render batches")]

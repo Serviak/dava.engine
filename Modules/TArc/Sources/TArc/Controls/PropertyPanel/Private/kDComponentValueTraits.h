@@ -77,6 +77,7 @@ void InitFieldsList<Vector2, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "xRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -86,6 +87,7 @@ void InitFieldsList<Vector2, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "yRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 }
@@ -143,6 +145,7 @@ void InitFieldsList<Vector3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "xRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -152,6 +155,7 @@ void InitFieldsList<Vector3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "yRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -161,6 +165,7 @@ void InitFieldsList<Vector3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "zRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 }
@@ -230,6 +235,7 @@ void InitFieldsList<Vector4, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "xRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -239,6 +245,7 @@ void InitFieldsList<Vector4, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "yRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -248,6 +255,7 @@ void InitFieldsList<Vector4, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "zRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -257,6 +265,7 @@ void InitFieldsList<Vector4, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "wRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 }
@@ -326,6 +335,7 @@ void InitFieldsList<Rect, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldDe
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "xRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -335,6 +345,7 @@ void InitFieldsList<Rect, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldDe
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "yRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -344,6 +355,7 @@ void InitFieldsList<Rect, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldDe
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "widthRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -353,6 +365,7 @@ void InitFieldsList<Rect, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldDe
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "heightRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 }
@@ -460,10 +473,6 @@ void InitFieldsList<Color, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::FieldD
 template <>
 void InitRanges<Color, float32>(const Vector<std::shared_ptr<PropertyNode>>& nodes, Array<std::unique_ptr<M::Range>, 6>& ranges)
 {
-    ranges[0] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
-    ranges[1] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
-    ranges[2] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
-    ranges[3] = std::make_unique<M::Range>(0.0f, 1.0f, 0.1f);
 }
 
 template <>
@@ -647,6 +656,7 @@ void InitFieldsList<AABBox3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "minXRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -656,6 +666,7 @@ void InitFieldsList<AABBox3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "minYRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -665,6 +676,7 @@ void InitFieldsList<AABBox3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "minZRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -674,6 +686,7 @@ void InitFieldsList<AABBox3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "maxXRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -683,6 +696,7 @@ void InitFieldsList<AABBox3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "maxYRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 
@@ -692,6 +706,7 @@ void InitFieldsList<AABBox3, MultiDoubleSpinBox>(Vector<MultiDoubleSpinBox::Fiel
         descr.accuracyRole = "accuracy";
         descr.readOnlyRole = BaseComponentValue::readOnlyFieldName;
         descr.rangeRole = "maxZRange";
+        descr.showSpinArrowsRole = "showSpinArrows";
         fields.push_back(descr);
     }
 }

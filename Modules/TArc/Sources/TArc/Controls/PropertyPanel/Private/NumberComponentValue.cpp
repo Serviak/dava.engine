@@ -41,6 +41,7 @@ ControlProxy* NumberComponentValue<T>::CreateEditorWidget(QWidget* parent, const
         DoubleSpinBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
         params.fields[DoubleSpinBox::Fields::Value] = "value";
         params.fields[DoubleSpinBox::Fields::IsReadOnly] = readOnlyFieldName;
+        params.fields[DoubleSpinBox::Fields::ShowSpinArrows] = "showSpinArrows";
         return new DoubleSpinBox(params, wrappersProcessor, model, parent);
     }
     else
@@ -69,10 +70,18 @@ void NumberComponentValue<T>::SetNumberValue(const Any& v)
     SetValue(v.Cast<T>());
 }
 
+template <typename T>
+bool DAVA::TArc::NumberComponentValue<T>::ShowSpinArrows() const
+{
+    const Type* editorType = Type::Instance<T>();
+    return editorType != Type::Instance<float32>() && editorType != Type::Instance<float64>();
+}
+
 DAVA_VIRTUAL_TEMPLATE_REFLECTION_IMPL(NumberComponentValue)
 {
     ReflectionRegistrator<NumberComponentValue<T>>::Begin(CreateComponentStructureWrapper<NumberComponentValue<T>>())
     .Field("value", &NumberComponentValue<T>::GetNumberValue, &NumberComponentValue<T>::SetNumberValue)[M::ProxyMetaRequire()]
+    .Field("showSpinArrows", &NumberComponentValue<T>::ShowSpinArrows, nullptr)
     .End();
 }
 

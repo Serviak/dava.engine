@@ -73,13 +73,13 @@ std::unique_ptr<BaseComponentValue> SubPropertyEditorCreator::GetEditor(const st
         }
         else if (valueType == Type::Instance<Color>())
         {
-            if (node->field.ref.GetMeta<DAVA::M::FloatColor>() == nullptr)
+            if (node->field.ref.GetMeta<DAVA::M::IntColor>() == nullptr)
             {
-                return std::make_unique<kDComponentValue<Color, MultiIntSpinBox, uint32>>();
+                return std::make_unique<kDComponentValue<Color, MultiDoubleSpinBox, float32>>();
             }
             else
             {
-                return std::make_unique<kDComponentValue<Color, MultiDoubleSpinBox, float32>>();
+                return std::make_unique<kDComponentValue<Color, MultiIntSpinBox, uint32>>();
             }
         }
         else if (valueType == Type::Instance<AABBox3>())
