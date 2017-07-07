@@ -121,7 +121,7 @@ private:
     FindInDocumentWidget* findInDocumentWidget = nullptr;
 
     DAVA::TArc::DataWrapper centralWidgetDataWrapper;
-    DAVA::TArc::DataWrapper editorCanvasDataWrapper;
+    DAVA::TArc::DataWrapper canvasDataWrapper;
 
     ScaleComboBoxAdapter scaleComboBoxData;
     ScrollBarAdapter hScrollBarData;

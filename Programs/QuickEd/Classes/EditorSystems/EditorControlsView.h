@@ -56,5 +56,5 @@ private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
     PackageListenerProxy packageListenerProxy;
-    DAVA::TArc::DataWrapper editorCanvasDataWrapper;
+    DAVA::TArc::DataWrapper canvasDataWrapper;
 };
