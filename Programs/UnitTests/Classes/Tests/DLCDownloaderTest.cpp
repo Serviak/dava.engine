@@ -8,12 +8,12 @@
 #include <FileSystem/FileSystem.h>
 #include <Time/SystemTimer.h>
 #include <Utils/CRC32.h>
-#include <EmbeddedWebServer.h>
+#include <EmbeddedWebServer/EmbeddedWebServer.h>
 #include <Engine/Engine.h>
 
 #include <iomanip>
 
-#include <Private/mongoose.h>
+#include <EmbeddedWebServer/Private/mongoose.h>
 
 static const DAVA::String URL = "http://127.0.0.1:8181/superpack_for_unittests.dvpk";
 // "http://127.0.0.1:8080/superpack_for_unittests.dvpk"; // embedded web server
