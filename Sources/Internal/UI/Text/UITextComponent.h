@@ -161,6 +161,9 @@ public:
     */
     bool IsHeightDependsOnWidth() const;
 
+    /**
+        Apply component properties to internal TextBlock
+    */
     void ApplyDataImmediately() const;
 
 private:
