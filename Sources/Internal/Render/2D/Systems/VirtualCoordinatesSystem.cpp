@@ -114,10 +114,6 @@ void VirtualCoordinatesSystem::ScreenSizeChanged()
         inputOffset.x = 0.5f * (virtualScreenSize.dx - inputAreaSize.dx * inputScaleFactor);
     }
 
-#if !defined(__DAVAENGINE_COREV2__)
-    virtualSizeChanged.Emit(virtualScreenSize);
-#endif
-
     RenderSystem2D::Instance()->ScreenSizeChanged();
     UIControlSystem::Instance()->ScreenSizeChanged(GetFullScreenVirtualRect());
 }
@@ -138,9 +134,7 @@ void VirtualCoordinatesSystem::SetPhysicalScreenSize(int32 width, int32 height)
     physicalScreenSize.dy = height;
     wasScreenResized = true;
 
-#if defined(__DAVAENGINE_COREV2__)
     ScreenSizeChanged();
-#endif
     physicalSizeChanged.Emit(physicalScreenSize);
 }
 
@@ -150,9 +144,7 @@ void VirtualCoordinatesSystem::SetVirtualScreenSize(int32 width, int32 height)
     requestedVirtualScreenSize.dy = virtualScreenSize.dy = height;
     wasScreenResized = true;
 
-#if defined(__DAVAENGINE_COREV2__)
     ScreenSizeChanged();
-#endif
     virtualSizeChanged.Emit(virtualScreenSize);
 }
 
@@ -162,9 +154,7 @@ void VirtualCoordinatesSystem::SetInputScreenAreaSize(int32 width, int32 height)
     inputAreaSize.dy = height;
     wasScreenResized = true;
 
-#if defined(__DAVAENGINE_COREV2__)
     ScreenSizeChanged();
-#endif
     inputAreaSizeChanged.Emit(inputAreaSize);
 }
 
@@ -183,9 +173,7 @@ void VirtualCoordinatesSystem::RegisterAvailableResourceSize(int32 width, int32 
 
     allowedSizes.push_back(newSize);
 
-#if defined(__DAVAENGINE_COREV2__)
     ScreenSizeChanged();
-#endif
 }
 
 void VirtualCoordinatesSystem::UnregisterAllAvailableResourceSizes()
