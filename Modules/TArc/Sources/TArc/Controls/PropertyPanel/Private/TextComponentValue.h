@@ -16,7 +16,7 @@ namespace TArc
 class IFieldAccessor
 {
 public:
-    virtual String GetFieldValue(const Any& v) const = 0;
+    virtual String GetFieldValue(const Any& v, const Reflection& field) const = 0;
     virtual Any CreateNewValue(const String& newFieldValue, const Any& propertyValue, M::ValidationResult& result) const = 0;
     virtual Any Parse(const String& strValue, M::ValidationResult& result) const = 0;
     virtual bool IsReadOnly() const
@@ -32,7 +32,7 @@ public:
 class DefaultFieldAccessor : public IFieldAccessor
 {
 public:
-    String GetFieldValue(const Any& v) const override;
+    String GetFieldValue(const Any& v, const Reflection& field) const override;
     Any CreateNewValue(const String& newFieldValue, const Any& propertyValue, M::ValidationResult& result) const override;
     Any Parse(const String& strValue, M::ValidationResult& result) const override;
 };
