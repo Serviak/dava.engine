@@ -46,15 +46,6 @@ void UI3DView::SetScene(Scene* _scene)
     SafeRelease(scene);
 
     scene = SafeRetain(_scene);
-
-    if (scene)
-    {
-        float32 aspect = size.dx / size.dy;
-        for (int32 k = 0; k < scene->GetCameraCount(); ++k)
-        {
-            scene->GetCamera(k)->SetAspect(aspect);
-        }
-    }
 }
 
 Scene* UI3DView::GetScene() const
@@ -175,15 +166,6 @@ void UI3DView::SetClearRequested(bool requested)
 void UI3DView::SetSize(const DAVA::Vector2& newSize)
 {
     UIControl::SetSize(newSize);
-    float32 aspect = size.dx / size.dy;
-
-    if (scene)
-    {
-        for (int32 k = 0; k < scene->GetCameraCount(); ++k)
-        {
-            scene->GetCamera(k)->SetAspect(aspect);
-        }
-    }
 }
 
 UI3DView* UI3DView::Clone()
