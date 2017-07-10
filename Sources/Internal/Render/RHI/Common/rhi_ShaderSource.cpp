@@ -1,6 +1,7 @@
 #include "Render/RHI/rhi_ShaderSource.h"
 #include "Render/RHI/rhi_Public.h"
 #include "Render/RHI/Common/rhi_Utils.h"
+#include "Render/RHI/Common/PreProcessor.h"
 
 
 #include "Logger/Logger.h"
@@ -16,16 +17,119 @@ using DAVA::DynamicMemoryFile;
 using DAVA::Mutex;
 using DAVA::LockGuard;
 
-#include "PreProcess.h"
-    
 #include "Parser/sl_Parser.h"
 #include "Parser/sl_Tree.h"
 #include "Parser/sl_GeneratorHLSL.h"
 #include "Parser/sl_GeneratorGLES.h"
 #include "Parser/sl_GeneratorMSL.h"
 
+#define RHI_DUMP_SHADERSOURCE 0
+
 namespace rhi
 {
+//==============================================================================
+
+class ShaderFileCallback : public PreProc::FileCallback
+{
+public:
+    ShaderFileCallback(const char* base_dir)
+    {
+        inclDir.emplace_back(base_dir);
+    }
+    ~ShaderFileCallback()
+    {
+        for (size_t k = 0; k != _file.size(); ++k)
+        {
+            ::free(_file[k].data);
+        }
+    }
+
+    bool Open(const char* file_name) override
+    {
+        bool success = false;
+
+        for (size_t k = 0; k != _file.size(); ++k)
+        {
+            if (_file[k].name == file_name)
+            {
+                _cur_data = _file[k].data;
+                _cur_data_sz = _file[k].data_sz;
+                success = true;
+                break;
+            }
+        }
+
+        if (!success)
+        {
+            DAVA::File* in = nullptr;
+
+            for (const std::string& d : inclDir)
+            {
+                in = DAVA::File::Create(d + "/" + file_name, DAVA::File::READ | DAVA::File::OPEN);
+
+                if (in)
+                    break;
+            }
+
+            if (in)
+            {
+                file_t f;
+
+                f.name = file_name;
+                f.data_sz = unsigned(in->GetSize());
+                f.data = ::malloc(f.data_sz);
+
+                in->Read(f.data, f.data_sz);
+                in->Release();
+
+                _file.push_back(f);
+                _cur_data = f.data;
+                _cur_data_sz = f.data_sz;
+
+                success = true;
+            }
+        }
+
+        return success;
+    }
+    void Close() override
+    {
+        _cur_data = nullptr;
+        _cur_data_sz = 0;
+    }
+    unsigned Size() const override
+    {
+        return _cur_data_sz;
+    }
+    unsigned Read(unsigned max_sz, void* dst) override
+    {
+        DVASSERT(_cur_data);
+        DVASSERT(max_sz <= _cur_data_sz);
+        memcpy(dst, _cur_data, max_sz);
+        return max_sz;
+    }
+
+    void AddIncludeDirectory(const char* dir)
+    {
+        inclDir.emplace_back(dir);
+    }
+
+private:
+    struct file_t
+    {
+        std::string name;
+        unsigned data_sz;
+        void* data;
+    };
+    std::vector<file_t> _file;
+    const void* _cur_data;
+    unsigned _cur_data_sz;
+
+    std::vector<std::string> inclDir;
+};
+
+static ShaderFileCallback ShaderSourceFileCallback("~res:/Materials/Shaders");
+
 //==============================================================================
 
 ShaderSource::ShaderSource(const char* filename)
@@ -56,84 +160,80 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText)
 
 bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::vector<std::string>& defines)
 {
-    ShaderPreprocessScope preprocessScope;
-
     bool success = false;
-    std::vector<std::string> def;
-    const char* argv[128];
-    int argc = 0;
-    std::string src;
-
-    // pre-process source text with #defines, if any
+    PreProc pre_proc(&ShaderSourceFileCallback);
+    std::vector<char> src;
 
     DVASSERT(defines.size() % 2 == 0);
-    def.reserve(defines.size() / 2);
     for (size_t i = 0, n = defines.size() / 2; i != n; ++i)
     {
-        const char* s1 = defines[i * 2 + 0].c_str();
-        const char* s2 = defines[i * 2 + 1].c_str();
-        def.push_back(DAVA::Format("-D %s=%s", s1, s2));
+        const char* name = defines[i * 2 + 0].c_str();
+        const char* value = defines[i * 2 + 1].c_str();
+        pre_proc.AddDefine(name, value);
     }
-    for (unsigned i = 0; i != def.size(); ++i)
-        argv[argc++] = def[i].c_str();
-    SetPreprocessCurFile(fileName.c_str());
-    PreProcessText(srcText, argv, argc, &src);
 
-#if 0
-{
-    Logger::Info("\n\nsrc-code:");
-
-    char ss[64 * 1024];
-    unsigned line_cnt = 0;
-
-    if (strlen(src.c_str()) < sizeof(ss))
+    if (pre_proc.Process(srcText, &src))
     {
-        strcpy(ss, src.c_str());
-
-        const char* line = ss;
-        for (char* s = ss; *s; ++s)
+        #if RHI_DUMP_SHADERSOURCE
         {
-            if( *s=='\r')
-                *s=' ';
+            Logger::Info("\n\nsrc-code:");
 
-            if (*s == '\n')
+            char ss[64 * 1024];
+            unsigned line_cnt = 0;
+
+            if (src.size() < sizeof(ss))
             {
-                *s = 0;
-                Logger::Info("%4u |  %s", 1 + line_cnt, line);
-                line = s+1;
-                ++line_cnt;
+                strcpy(ss, &src[0]);
+
+                const char* line = ss;
+                for (char* s = ss; *s; ++s)
+                {
+                    if (*s == '\r')
+                        *s = ' ';
+
+                    if (*s == '\n')
+                    {
+                        *s = 0;
+                        Logger::Info("%4u |  %s", 1 + line_cnt, line);
+                        line = s + 1;
+                        ++line_cnt;
+                    }
+                }
             }
+            else
+            {
+                Logger::Info(&src[0]);
+            }
+        }
+        #endif
+
+        static sl::Allocator alloc;
+        sl::HLSLParser parser(&alloc, "<shader>", &(src[0]), src.size());
+        ast = new sl::HLSLTree(&alloc);
+
+        if (parser.Parse(ast))
+        {
+            success = ProcessMetaData(ast);
+            type = progType;
+
+            if (success)
+                InlineFunctions();
+
+            // ugly workaround to save some memory
+            GetSourceCode(HostApi());
+            delete ast;
+            ast = nullptr;
+        }
+        else
+        {
+            delete ast;
+            ast = nullptr;
+            DAVA::Logger::Error("failed to parse shader source-text");
         }
     }
     else
     {
-        Logger::Info(src.c_str());
-    }
-}
-#endif
-
-    static sl::Allocator alloc;
-    sl::HLSLParser parser(&alloc, "<shader>", src.c_str(), strlen(src.c_str()));
-    ast = new sl::HLSLTree(&alloc);
-
-    if (parser.Parse(ast))
-    {
-        success = ProcessMetaData(ast);
-        type = progType;
-
-        if (success)
-            InlineFunctions();
-
-        // ugly workaround to save some memory
-        GetSourceCode(HostApi());
-        delete ast;
-        ast = nullptr;
-    }
-    else
-    {
-        delete ast;
-        ast = nullptr;
-        DAVA::Logger::Error("failed to parse shader source-text");
+        DAVA::Logger::Error("failed to pre-process source-text");
     }
 
     return success;
@@ -1753,6 +1853,11 @@ void ShaderSource::Reset()
         code[i].clear();
 }
 
+void ShaderSource::AddIncludeDirectory(const char* dir)
+{
+    ShaderSourceFileCallback.AddIncludeDirectory(dir);
+}
+
 //------------------------------------------------------------------------------
 
 void ShaderSource::Dump() const
@@ -1863,7 +1968,8 @@ void ShaderSource::Dump() const
 //version increment history:
 //5 is for new shader language
 //6 is after fixing Add/Update problem
-const uint32 ShaderSourceCache::FormatVersion = 6;
+//7 is after MCPP replaced with in-house pre-processor
+const uint32 ShaderSourceCache::FormatVersion = 7;
 
 Mutex shaderSourceEntryMutex;
 std::vector<ShaderSourceCache::entry_t> ShaderSourceCache::Entry;
