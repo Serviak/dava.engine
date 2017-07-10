@@ -3,12 +3,14 @@
 #include "TArc/Controls/PropertyPanel/PropertyModelExtensions.h"
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
+#include "TArc/Controls/PropertyPanel/Private/MultiIntSpinBox.h"
 
 #include <Reflection/ReflectedMeta.h>
 #include <Math/Vector.h>
 #include <Math/Color.h>
 #include <Math/Rect.h>
 #include <Math/AABBox3.h>
+#include <Base/Vector.h>
 
 namespace DAVA
 {
