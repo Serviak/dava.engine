@@ -266,17 +266,12 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
     for (uint32 i : order)
     {
         ControlLayoutData& childData = layoutData[i];
+        bool stickThis = childData.HasFlag(ControlLayoutData::FLAG_STICK_THIS);
 
-        if (!first && !childData.HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+        // Add space before item if need
+        if (!inverse && !first && !stickThis)
         {
-            if (inverse)
-            {
-                position -= spacing;
-            }
-            else
-            {
-                position += spacing;
-            }
+            position += spacing;
         }
         first = false;
 
@@ -290,6 +285,12 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
         else
         {
             position += size;
+        }
+
+        // Add space after item if need
+        if (inverse && !stickThis)
+        {
+            position -= spacing;
         }
     }
 
