@@ -5,7 +5,6 @@
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
 #include "Render/RHI/rhi_ShaderSource.h"
-#include "Render/RHI/Common/PreProcess.h"
 
 #define RHI_TRACE_CACHE_USAGE 0
 
@@ -342,8 +341,6 @@ void ReloadShaders()
 
     LockGuard<Mutex> guard(shaderCacheMutex);
     shaderSourceCodes.clear();
-
-    ShaderPreprocessScope preprocessScope;
 
     //reload shaders
     for (auto& shaderDescr : shaderDescriptors)
