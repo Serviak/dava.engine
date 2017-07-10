@@ -63,6 +63,9 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     case rhi::RHI_METAL:
         api = "Metal";
         break;
+    case rhi::RHI_NULL_RENDERER:
+        api = "NULL";
+        break;
     }
 
     DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit] | %s", DAVAENGINE_VERSION,
