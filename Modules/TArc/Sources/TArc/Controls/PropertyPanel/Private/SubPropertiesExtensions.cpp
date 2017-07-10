@@ -14,6 +14,8 @@
 #include <Base/BaseTypes.h>
 #include <Utils/StringFormat.h>
 
+#include <QHBoxLayout>
+
 namespace DAVA
 {
 namespace TArc
