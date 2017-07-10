@@ -20,31 +20,35 @@ namespace TArc
 {
 namespace SubPropertiesExtensionsDetail
 {
-UnorderedSet<const Type*> subPropertyTypes;
-
-void InitSubPropertyTypes()
-{
-    if (subPropertyTypes.empty())
-    {
-        subPropertyTypes.insert(Type::Instance<Vector2>());
-        subPropertyTypes.insert(Type::Instance<Vector3>());
-        subPropertyTypes.insert(Type::Instance<Vector4>());
-        subPropertyTypes.insert(Type::Instance<Rect>());
-        subPropertyTypes.insert(Type::Instance<AABBox3>());
-        subPropertyTypes.insert(Type::Instance<Color>());
-    }
-}
-
 FastName colorR = FastName("R");
 FastName colorG = FastName("G");
 FastName colorB = FastName("B");
 FastName colorA = FastName("A");
+FastName vectorX = FastName("X");
+FastName vectorY = FastName("Y");
+FastName vectorZ = FastName("Z");
+FastName vectorW = FastName("W");
+FastName rectX = FastName("X");
+FastName rectY = FastName("Y");
+FastName rectW = FastName("Width");
+FastName rectH = FastName("Height");
+FastName boxMinX = FastName("Min X");
+FastName boxMinY = FastName("Min Y");
+FastName boxMinZ = FastName("Min Z");
+FastName boxMaxX = FastName("Max X");
+FastName boxMaxY = FastName("Max Y");
+FastName boxMaxZ = FastName("Max Z");
 
 void ReduceZeros(String& value)
 {
     int32 zerosCount = 0;
     for (auto iter = value.rbegin(); iter != value.rend(); ++iter)
     {
+        if ((*iter) == '.')
+        {
+            zerosCount = std::max(zerosCount - 1, 0);
+            break;
+        }
         if ((*iter) != '0')
         {
             break;
@@ -52,122 +56,867 @@ void ReduceZeros(String& value)
         ++zerosCount;
     }
 
-    value.reserve(value.size() - zerosCount);
+    value.resize(value.size() - zerosCount);
 }
 
-class ColorFieldAccessor : public IFieldAccessor
+struct NotReadOnlyTrait
 {
-public:
-    String GetFieldValue(const Any& v) const override
+    static bool IsReadOnly()
     {
-        if (v.CanCast<Color>() == false)
-        {
-            return v.Cast<String>();
-        }
-        Color c = v.Cast<Color>();
-        String result = Format("[ %.3f; %.3f; %.3f; %.3f]", c.r, c.g, c.b, c.a);
-        ReduceZeros(result);
-        return result;
-    }
-
-    Any CreateNewValue(const String& newFieldValue, const Any& propertyValue, M::ValidationResult& result) const override
-    {
-        return Parse(newFieldValue, result);
-    }
-
-    Any Parse(const String& strValue, M::ValidationResult& result) const override
-    {
-        if (strValue.empty())
-        {
-            result.state = M::ValidationResult::eState::Valid;
-            return Color();
-        }
-
-        Vector<float32> parseResult = ParseFloatList(strValue);
-        size_t componentCount = parseResult.size();
-        if (componentCount > 4)
-        {
-            result.state = Metas::ValidationResult::eState::Invalid;
-            result.message = "Incorrect color format. Color format [ r; g; b; a]";
-            return Any();
-        }
-
-        result.state = M::ValidationResult::eState::Valid;
-        Color c;
-        if (componentCount > 0)
-            c.r = parseResult[0];
-        if (componentCount > 1)
-            c.g = parseResult[1];
-        if (componentCount > 2)
-            c.b = parseResult[2];
-        if (componentCount == 4)
-            c.a = parseResult[3];
-        return c;
+        return false;
     }
 };
 
-class ColorSubFieldAccessor : public IFieldAccessor
+struct ColorTraits : public NotReadOnlyTrait
 {
-public:
-    ColorSubFieldAccessor(int32 fieldIndex_, const QString& propertyName_)
-        : fieldIndex(fieldIndex_)
-        , propertyName(propertyName_)
+    using Type = Color;
+    static int32 GetFieldIndex(const FastName& /*name*/)
     {
-        DVASSERT(fieldIndex != -1);
+        return -1;
     }
 
-    String GetFieldValue(const Any& v) const override
+    static String ToString(const Color& c, int32 /*fieldIndex*/, const Reflection& /*ref*/)
     {
-        if (v.CanCast<Color>() == false)
+        String r = Format("%.3f", c.r);
+        String g = Format("%.3f", c.g);
+        String b = Format("%.3f", c.b);
+        String a = Format("%.3f", c.a);
+        ReduceZeros(r);
+        ReduceZeros(g);
+        ReduceZeros(b);
+        ReduceZeros(a);
+        return Format("[ %s, %s, %s, %s]", r.c_str(), g.c_str(), b.c_str(), a.c_str());
+    }
+
+    static uint32 GetMaxComponentCount()
+    {
+        return 4;
+    }
+
+    static Color CombineValue(const Any& v, const Color& /*prevValue*/, int32 /*fieldIndex*/)
+    {
+        const Vector<float32>& values = v.Get<Vector<float32>>();
+        uint32 componentCount = static_cast<uint32>(values.size());
+        Color c;
+        if (componentCount > 0)
+            c.r = values[0];
+        if (componentCount > 1)
+            c.g = values[1];
+        if (componentCount > 2)
+            c.b = values[2];
+        if (componentCount == 4)
+            c.a = values[3];
+
+        return c;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            Color c;
+            Vector<float32> result = { c.r, c.g, c.b, c.a };
+            return result;
+        }
+        return value;
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect color format. Color format [ r; g; b; a]";
+    }
+};
+struct Vector2Traits : public NotReadOnlyTrait
+{
+    using Type = Vector2;
+    static int32 GetFieldIndex(const FastName& /*name*/)
+    {
+        return -1;
+    }
+
+    static String ToString(const Vector2& v, int32 /*fieldIndex*/, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String x = Format(formatString.c_str(), v.x);
+        String y = Format(formatString.c_str(), v.y);
+        ReduceZeros(x);
+        ReduceZeros(y);
+        return Format("[ %s, %s]", x.c_str(), y.c_str());
+    }
+
+    static uint32 GetMaxComponentCount()
+    {
+        return 2;
+    }
+
+    static Vector2 CombineValue(const Any& v, const Vector2& /*prevValue*/, int32 /*fieldIndex*/)
+    {
+        const Vector<float32>& values = v.Get<Vector<float32>>();
+        uint32 componentCount = static_cast<uint32>(values.size());
+        Vector2 vec;
+        if (componentCount > 0)
+            vec.x = values[0];
+        if (componentCount > 1)
+            vec.y = values[1];
+
+        return vec;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            Vector2 vec;
+            Vector<float32> result = { vec.x, vec.y };
+            return result;
+        }
+        return value;
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect vector2 format. Vector2 format [ x; y]";
+    }
+};
+struct Vector3Traits : public NotReadOnlyTrait
+{
+    using Type = Vector3;
+    static int32 GetFieldIndex(const FastName& /*name*/)
+    {
+        return -1;
+    }
+
+    static Vector3 GetDefaultValue()
+    {
+        return Vector3();
+    }
+
+    static String ToString(const Vector3& v, int32 /*fieldIndex*/, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String x = Format(formatString.c_str(), v.x);
+        String y = Format(formatString.c_str(), v.y);
+        String z = Format(formatString.c_str(), v.z);
+        ReduceZeros(x);
+        ReduceZeros(y);
+        ReduceZeros(z);
+        return Format("[ %s, %s, %s]", x.c_str(), y.c_str(), z.c_str());
+    }
+
+    static uint32 GetMaxComponentCount()
+    {
+        return 3;
+    }
+
+    static Vector3 CombineValue(const Any& v, const Vector3& /*prevValue*/, int32 /*fieldIndex*/)
+    {
+        const Vector<float32>& values = v.Get<Vector<float32>>();
+        uint32 componentCount = static_cast<uint32>(values.size());
+        Vector3 vec;
+        if (componentCount > 0)
+            vec.x = values[0];
+        if (componentCount > 1)
+            vec.y = values[1];
+        if (componentCount > 2)
+            vec.z = values[2];
+
+        return vec;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            Vector3 vec;
+            Vector<float32> result = { vec.x, vec.y, vec.z };
+            return result;
+        }
+
+        return value;
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect vector3 format. Vector3 format [ x; y; z]";
+    }
+};
+struct Vector4Traits : public NotReadOnlyTrait
+{
+    using Type = Vector4;
+    static int32 GetFieldIndex(const FastName& /*name*/)
+    {
+        return -1;
+    }
+
+    static Vector4 GetDefaultValue()
+    {
+        return Vector4();
+    }
+
+    static String ToString(const Vector4& v, int32 /*fieldIndex*/, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String x = Format(formatString.c_str(), v.x);
+        String y = Format(formatString.c_str(), v.y);
+        String z = Format(formatString.c_str(), v.z);
+        String w = Format(formatString.c_str(), v.w);
+        ReduceZeros(x);
+        ReduceZeros(y);
+        ReduceZeros(z);
+        ReduceZeros(w);
+        return Format("[ %s, %s, %s, %s]", x.c_str(), y.c_str(), z.c_str(), w.c_str());
+    }
+
+    static uint32 GetMaxComponentCount()
+    {
+        return 4;
+    }
+
+    static Vector4 CombineValue(const Any& v, const Vector4& /*prevValue*/, int32 /*fieldIndex*/)
+    {
+        const Vector<float32>& values = v.Get<Vector<float32>>();
+        uint32 componentCount = static_cast<uint32>(values.size());
+        Vector4 vec;
+        if (componentCount > 0)
+            vec.x = values[0];
+        if (componentCount > 1)
+            vec.y = values[1];
+        if (componentCount > 2)
+            vec.y = values[2];
+        if (componentCount > 3)
+            vec.y = values[3];
+
+        return vec;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            Vector4 vec;
+            Vector<float32> result = { vec.x, vec.y, vec.z, vec.w };
+            return result;
+        }
+
+        return value;
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect vector4 format. Vector4 format [ x; y; z; w]";
+    }
+};
+struct RectTraits
+{
+    using Type = Rect;
+    static int32 GetFieldIndex(const FastName& /*name*/)
+    {
+        return -1;
+    }
+
+    static String ToString(const Rect& v, int32 /*fieldIndex*/, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String x = Format(formatString.c_str(), v.x);
+        String y = Format(formatString.c_str(), v.y);
+        String w = Format(formatString.c_str(), v.dx);
+        String h = Format(formatString.c_str(), v.dy);
+        ReduceZeros(x);
+        ReduceZeros(y);
+        ReduceZeros(w);
+        ReduceZeros(h);
+        return Format("[ %s, %s, %s, %s]", x.c_str(), y.c_str(), w.c_str(), h.c_str());
+    }
+
+    static uint32 GetMaxComponentCount()
+    {
+        DVASSERT(false);
+        return 0;
+    }
+
+    static Rect CombineValue(const Any& v, const Rect& /*prevValue*/, int32 /*fieldIndex*/)
+    {
+        DVASSERT(false);
+        return Rect();
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        DVASSERT(false);
+        return value;
+    }
+
+    static bool IsReadOnly()
+    {
+        return true;
+    }
+
+    static String GetParseErrorMessage()
+    {
+        DVASSERT(false);
+        return "";
+    }
+};
+struct AABBox3Traits
+{
+    using Type = AABBox3;
+    static int32 GetFieldIndex(const FastName& /*name*/)
+    {
+        return -1;
+    }
+
+    static String ToString(const AABBox3& v, int32 /*fieldIndex*/, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String minX = Format(formatString.c_str(), v.min.x);
+        String minY = Format(formatString.c_str(), v.min.y);
+        String minZ = Format(formatString.c_str(), v.min.z);
+        String maxX = Format(formatString.c_str(), v.max.x);
+        String maxY = Format(formatString.c_str(), v.max.y);
+        String maxZ = Format(formatString.c_str(), v.max.z);
+        ReduceZeros(minX);
+        ReduceZeros(minY);
+        ReduceZeros(minZ);
+        ReduceZeros(maxX);
+        ReduceZeros(maxY);
+        ReduceZeros(maxZ);
+        return Format("[ %s, %s, %s,\n %s, %s, %s]", minX.c_str(), minY.c_str(), minZ.c_str(), maxX.c_str(), maxY.c_str(), maxZ.c_str());
+    }
+
+    static uint32 GetMaxComponentCount()
+    {
+        DVASSERT(false);
+        return 0;
+    }
+
+    static AABBox3 CombineValue(const Any& v, const AABBox3& /*prevValue*/, int32 /*fieldIndex*/)
+    {
+        DVASSERT(false);
+        return AABBox3();
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        DVASSERT(false);
+        return value;
+    }
+
+    static bool IsReadOnly()
+    {
+        return true;
+    }
+
+    static String GetParseErrorMessage()
+    {
+        DVASSERT(false);
+        return "";
+    }
+};
+
+struct ColorChannelTraits : public NotReadOnlyTrait
+{
+public:
+    using Type = Color;
+    static int32 GetFieldIndex(const FastName& name)
+    {
+        if (name == colorR)
+            return 0;
+        else if (name == colorG)
+            return 1;
+        else if (name == colorB)
+            return 2;
+        else if (name == colorA)
+            return 3;
+
+        return -1;
+    }
+
+    static String ToString(const Color& value, int32 fieldIndex, const Reflection& ref)
+    {
+        String result = Format("%.3f", value.color[fieldIndex]);
+        ReduceZeros(result);
+
+        return result;
+    }
+    static uint32 GetMaxComponentCount()
+    {
+        return 1;
+    }
+
+    static Color CombineValue(const Any& v, const Color& prevValue, int32 fieldIndex)
+    {
+        Color result = prevValue;
+        result.color[fieldIndex] = v.Get<float32>();
+
+        return result;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            return 0.0f;
+        }
+        return value[0];
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect color channel format. Value should be float";
+    }
+};
+struct Vector2ChannelTraits : public NotReadOnlyTrait
+{
+public:
+    using Type = Vector2;
+    static int32 GetFieldIndex(const FastName& name)
+    {
+        if (name == vectorX)
+            return 0;
+        else if (name == vectorY)
+            return 1;
+
+        return -1;
+    }
+
+    static String ToString(const Vector2& value, int32 fieldIndex, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String result = Format(formatString.c_str(), value.data[fieldIndex]);
+        ReduceZeros(result);
+
+        return result;
+    }
+    static uint32 GetMaxComponentCount()
+    {
+        return 1;
+    }
+
+    static Vector2 CombineValue(const Any& v, const Vector2& prevValue, int32 fieldIndex)
+    {
+        Vector2 result = prevValue;
+        result.data[fieldIndex] = v.Get<float32>();
+
+        return result;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            return 0.0f;
+        }
+        return value[0];
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect vector component format. Value should be float";
+    }
+};
+struct Vector3ChannelTraits : public NotReadOnlyTrait
+{
+public:
+    using Type = Vector3;
+    static int32 GetFieldIndex(const FastName& name)
+    {
+        if (name == vectorX)
+            return 0;
+        else if (name == vectorY)
+            return 1;
+        else if (name == vectorZ)
+            return 2;
+
+        return -1;
+    }
+
+    static String ToString(const Vector3& value, int32 fieldIndex, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String result = Format(formatString.c_str(), value.data[fieldIndex]);
+        ReduceZeros(result);
+
+        return result;
+    }
+    static uint32 GetMaxComponentCount()
+    {
+        return 1;
+    }
+
+    static Vector3 CombineValue(const Any& v, const Vector3& prevValue, int32 fieldIndex)
+    {
+        Vector3 result = prevValue;
+        result.data[fieldIndex] = v.Get<float32>();
+
+        return result;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            return 0.0f;
+        }
+        return value[0];
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect vector component format. Value should be float";
+    }
+};
+struct Vector4ChannelTraits : public NotReadOnlyTrait
+{
+public:
+    using Type = Vector4;
+    static int32 GetFieldIndex(const FastName& name)
+    {
+        if (name == vectorX)
+            return 0;
+        else if (name == vectorY)
+            return 1;
+        else if (name == vectorZ)
+            return 2;
+        else if (name == vectorW)
+            return 3;
+
+        return -1;
+    }
+
+    static String ToString(const Vector4& value, int32 fieldIndex, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String result = Format(formatString.c_str(), value.data[fieldIndex]);
+        ReduceZeros(result);
+
+        return result;
+    }
+    static uint32 GetMaxComponentCount()
+    {
+        return 1;
+    }
+
+    static Vector4 CombineValue(const Any& v, const Vector4& prevValue, int32 fieldIndex)
+    {
+        Vector4 result = prevValue;
+        result.data[fieldIndex] = v.Get<float32>();
+
+        return result;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            return 0.0f;
+        }
+        return value[0];
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect vector component format. Value should be float";
+    }
+};
+
+struct RectChannelTraits : public NotReadOnlyTrait
+{
+public:
+    using Type = Rect;
+    static int32 GetFieldIndex(const FastName& name)
+    {
+        if (name == rectX)
+            return 0;
+        else if (name == rectY)
+            return 1;
+        else if (name == rectW)
+            return 2;
+        else if (name == rectH)
+            return 3;
+
+        return -1;
+    }
+
+    static String ToString(const Rect& value, int32 fieldIndex, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String result = Format(formatString.c_str(), *GetComponentPointer<const Rect, const float32>(value, fieldIndex));
+        ReduceZeros(result);
+
+        return result;
+    }
+    static uint32 GetMaxComponentCount()
+    {
+        return 1;
+    }
+
+    static Rect CombineValue(const Any& v, const Rect& prevValue, int32 fieldIndex)
+    {
+        Rect result = prevValue;
+        *GetComponentPointer<Rect, float32>(result, fieldIndex) = v.Get<float32>();
+
+        return result;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            return 0.0f;
+        }
+        return value[0];
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect rect component format. Value should be float";
+    }
+
+private:
+    template <typename T, typename TRet>
+    static TRet* GetComponentPointer(T& r, int32 index)
+    {
+        switch (index)
+        {
+        case 0:
+            return &r.x;
+        case 1:
+            return &r.y;
+        case 2:
+            return &r.dx;
+        case 3:
+            return &r.dy;
+        default:
+            DVASSERT(false);
+            break;
+        }
+
+        return nullptr;
+    }
+};
+
+struct AABBox3ChannelTraits : public NotReadOnlyTrait
+{
+public:
+    using Type = AABBox3;
+    static int32 GetFieldIndex(const FastName& name)
+    {
+        if (name == boxMinX)
+            return 0;
+        else if (name == boxMinY)
+            return 1;
+        else if (name == boxMinZ)
+            return 2;
+        else if (name == boxMaxX)
+            return 3;
+        else if (name == boxMaxY)
+            return 4;
+        else if (name == boxMaxZ)
+            return 5;
+
+        return -1;
+    }
+
+    static String ToString(const AABBox3& value, int32 fieldIndex, const Reflection& ref)
+    {
+        int32 accuracy = 6;
+        const M::FloatNumberAccuracy* accuracyMeta = ref.GetMeta<M::FloatNumberAccuracy>();
+        if (accuracyMeta != nullptr)
+        {
+            accuracy = accuracyMeta->accuracy;
+        }
+
+        String formatString = Format("%%.%df", accuracy);
+        String result = Format(formatString.c_str(), *GetComponentPointer<const AABBox3, const float32>(value, fieldIndex));
+        ReduceZeros(result);
+
+        return result;
+    }
+    static uint32 GetMaxComponentCount()
+    {
+        return 1;
+    }
+
+    static AABBox3 CombineValue(const Any& v, const AABBox3& prevValue, int32 fieldIndex)
+    {
+        AABBox3 result = prevValue;
+        *GetComponentPointer<AABBox3, float32>(result, fieldIndex) = v.Get<float32>();
+
+        return result;
+    }
+
+    static Any GetParseResult(const Vector<float32>& value)
+    {
+        if (value.empty())
+        {
+            return 0.0f;
+        }
+        return value[0];
+    }
+
+    static String GetParseErrorMessage()
+    {
+        return "Incorrect aabbox3 component format. Value should be float";
+    }
+
+private:
+    template <typename T, typename TRet>
+    static TRet* GetComponentPointer(T& r, int32 index)
+    {
+        if (index < 3)
+        {
+            return &r.min.data[index];
+        }
+        else
+        {
+            DVASSERT(index < 6);
+            index = index - 3;
+            return &r.max.data[index];
+        }
+    }
+};
+
+template <typename Traits>
+class TraitsFieldAccessor : public IFieldAccessor
+{
+public:
+    TraitsFieldAccessor(const FastName& propertyName_)
+        : fieldIndex(Traits::GetFieldIndex(propertyName_))
+        , propertyName(propertyName_.c_str())
+    {
+    }
+
+    String GetFieldValue(const Any& v, const Reflection& r) const override
+    {
+        if (v.CanCast<typename Traits::Type>() == false)
         {
             return v.Cast<String>();
         }
 
-        Color c = v.Cast<Color>();
-        String result = Format("%.3f", c.color[fieldIndex]);
-        ReduceZeros(result);
-        return result;
+        return Traits::ToString(v.Cast<typename Traits::Type>(), fieldIndex, r);
     }
 
     Any CreateNewValue(const String& newFieldValue, const Any& propertyValue, M::ValidationResult& result) const override
     {
-        DVASSERT(propertyValue.CanCast<Color>());
-        Any channelValue = Parse(newFieldValue, result);
+        if (IsReadOnly())
+        {
+            result.state = M::ValidationResult::eState::Valid;
+            return Any();
+        }
+
+        DVASSERT(propertyValue.CanCast<typename Traits::Type>());
+        Any parseResult = Parse(newFieldValue, result);
         if (result.state == M::ValidationResult::eState::Invalid)
         {
             return result;
         }
 
         result.state = M::ValidationResult::eState::Valid;
-        Color color = propertyValue.Cast<Color>();
-        color.color[fieldIndex] = channelValue.Get<float32>();
-        return color;
+        return Traits::CombineValue(parseResult, propertyValue.Cast<typename Traits::Type>(), fieldIndex);
     }
 
     Any Parse(const String& strValue, M::ValidationResult& result) const override
     {
-        Vector<float32> parseResult;
+        if (IsReadOnly())
+        {
+            result.state = M::ValidationResult::eState::Valid;
+            return Any();
+        }
+
         if (strValue.empty())
         {
-            parseResult.push_back(0.0f);
+            result.state = M::ValidationResult::eState::Valid;
+            return Traits::GetParseResult(Vector<float32>());
         }
-        else
+
+        Vector<float32> parseResult = ParseFloatList(strValue);
+        uint32 componentCount = static_cast<uint32>(parseResult.size());
+        if (componentCount > Traits::GetMaxComponentCount())
         {
-            parseResult = ParseFloatList(strValue);
-            if (parseResult.size() != 1)
-            {
-                result.state = M::ValidationResult::eState::Invalid;
-                result.message = "Incorrect color channel format. Value should be float";
-                return Any();
-            }
+            result.state = M::ValidationResult::eState::Invalid;
+            result.message = Traits::GetParseErrorMessage();
+            return Any();
         }
 
         result.state = M::ValidationResult::eState::Valid;
-        return parseResult[0];
+        return Traits::GetParseResult(parseResult);
+    }
+
+    bool IsReadOnly() const override
+    {
+        return Traits::IsReadOnly();
     }
 
     bool OverridePropertyName(QString& name) const override
     {
+        if (fieldIndex == -1)
+        {
+            return false;
+        }
+
         name = propertyName;
         return true;
     }
@@ -181,7 +930,7 @@ class ColorComponentValue : public TextComponentValue
 {
 public:
     ColorComponentValue()
-        : TextComponentValue(std::make_unique<ColorFieldAccessor>())
+        : TextComponentValue(std::make_unique<TraitsFieldAccessor<ColorTraits>>(FastName("Color")))
     {
     }
 
@@ -220,125 +969,287 @@ protected:
         .End();
     }
 };
+
+using TCreatorFn = Function<std::unique_ptr<BaseComponentValue>(const FastName&)>;
+struct Key
+{
+    Key() = default;
+    Key(const Type* t, int32 propType)
+        : type(t)
+        , propertyType(propType)
+    {
+    }
+
+    bool operator<(const Key& other) const
+    {
+        if (type != other.type)
+        {
+            return type < other.type;
+        }
+        return propertyType < other.propertyType;
+    }
+
+    const Type* type = nullptr;
+    int32 propertyType;
+};
+
+Map<Key, TCreatorFn> creatorMap;
+
+void InitSubPropertyTypes()
+{
+    if (creatorMap.empty())
+    {
+        {
+            Key k(Type::Instance<Color>(), PropertyNode::RealProperty);
+            creatorMap[k] = [](const FastName&) { return std::make_unique<ColorComponentValue>(); };
+        }
+
+        {
+            Key k(Type::Instance<Color>(), PropertyNode::VirtualProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<ColorChannelTraits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Vector2>(), PropertyNode::RealProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<Vector2Traits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Vector2>(), PropertyNode::VirtualProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<Vector2ChannelTraits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Vector3>(), PropertyNode::RealProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<Vector3Traits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Vector3>(), PropertyNode::VirtualProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<Vector3ChannelTraits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Vector4>(), PropertyNode::RealProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<Vector4Traits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Vector4>(), PropertyNode::VirtualProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<Vector4ChannelTraits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Rect>(), PropertyNode::RealProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<RectTraits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<Rect>(), PropertyNode::VirtualProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<RectChannelTraits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<AABBox3>(), PropertyNode::RealProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<AABBox3Traits>>(fieldName)); };
+        }
+
+        {
+            Key k(Type::Instance<AABBox3>(), PropertyNode::VirtualProperty);
+            creatorMap[k] = [](const FastName& fieldName) { return std::make_unique<TextComponentValue>(std::make_unique<TraitsFieldAccessor<AABBox3ChannelTraits>>(fieldName)); };
+        }
+    }
+}
 }
 
 void SubPropertyValueChildCreator::ExposeChildren(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const
 {
     using namespace SubPropertiesExtensionsDetail;
     InitSubPropertyTypes();
-    if (parent->field.ref.GetValueType()->Decay() == DAVA::Type::Instance<DAVA::Color>() &&
-        parent->propertyType == PropertyNode::RealProperty)
+    bool isOurType = false;
+    if (parent->propertyType == PropertyNode::RealProperty)
     {
+        const Type* valueType = parent->field.ref.GetValueType()->Decay();
+        if (valueType == Type::Instance<Color>())
         {
-            DAVA::Reflection::Field field = parent->field;
-            field.key = colorR;
-            children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+            ExposeColorChildren(parent, children);
+            isOurType = true;
         }
+        else if (valueType == Type::Instance<Vector2>())
         {
-            DAVA::Reflection::Field field = parent->field;
-            field.key = colorG;
-            children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+            ExposeVectorChildren<Vector2>(parent, children);
+            isOurType = true;
         }
+        else if (valueType == Type::Instance<Vector3>())
         {
-            DAVA::Reflection::Field field = parent->field;
-            field.key = colorB;
-            children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+            ExposeVectorChildren<Vector3>(parent, children);
+            isOurType = true;
         }
+        else if (valueType == Type::Instance<Vector3>())
         {
-            DAVA::Reflection::Field field = parent->field;
-            field.key = colorA;
-            children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+            ExposeVectorChildren<Vector4>(parent, children);
+            isOurType = true;
         }
-    }
-    else
-    {
-        if (parent->propertyType == PropertyNode::RealProperty)
+        else if (valueType == Type::Instance<Rect>())
         {
-            const Type* valueType = parent->field.ref.GetValueType()->Decay();
-            if (subPropertyTypes.count(valueType) > 0)
-            {
-                return;
-            }
+            ExposeRectChildren(parent, children);
+            isOurType = true;
+        }
+        else if (valueType == Type::Instance<AABBox3>())
+        {
+            ExposeAABBox3Children(parent, children);
+            isOurType = true;
         }
     }
 
-    ChildCreatorExtension::ExposeChildren(parent, children);
+    if (isOurType == false)
+    {
+        ChildCreatorExtension::ExposeChildren(parent, children);
+    }
 }
+
+void SubPropertyValueChildCreator::ExposeColorChildren(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const
+{
+    using namespace SubPropertiesExtensionsDetail;
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = colorR;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = colorG;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = colorB;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = colorA;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+}
+
+void SubPropertyValueChildCreator::ExposeRectChildren(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const
+{
+    using namespace SubPropertiesExtensionsDetail;
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = rectX;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = rectY;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = rectW;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = rectH;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+}
+
+void SubPropertyValueChildCreator::ExposeAABBox3Children(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const
+{
+    using namespace SubPropertiesExtensionsDetail;
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = boxMinX;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = boxMinY;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = boxMinZ;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = boxMaxX;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = boxMaxY;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = boxMaxZ;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+}
+
+template <typename TVector>
+void SubPropertyValueChildCreator::ExposeVectorChildren(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const
+{
+    using namespace SubPropertiesExtensionsDetail;
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = vectorX;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = vectorY;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+
+    const Type* vecType = Type::Instance<TVector>();
+    const Type* vec3Type = Type::Instance<Vector3>();
+    const Type* vec4Type = Type::Instance<Vector4>();
+    if (vecType == vec3Type || vecType == vec4Type)
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = vectorZ;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+
+    if (vecType == vec4Type)
+    {
+        DAVA::Reflection::Field field = parent->field;
+        field.key = colorA;
+        children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
+    }
+}
+
+#if __clang__
+_Pragma("clang diagnostic push")
+_Pragma("clang diagnostic ignored \"-Wweak-template-vtables\"")
+#endif
+
+template void SubPropertyValueChildCreator::ExposeVectorChildren<Vector2>(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const;
+template void SubPropertyValueChildCreator::ExposeVectorChildren<Vector3>(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const;
+template void SubPropertyValueChildCreator::ExposeVectorChildren<Vector4>(const std::shared_ptr<PropertyNode>& parent, Vector<std::shared_ptr<PropertyNode>>& children) const;
+
+#if __clang__
+_Pragma("clang diagnostic pop")
+#endif
 
 std::unique_ptr<BaseComponentValue> SubPropertyEditorCreator::GetEditor(const std::shared_ptr<const PropertyNode>& node) const
 {
     using namespace SubPropertiesExtensionsDetail;
     InitSubPropertyTypes();
 
-    if (node->field.ref.GetValueType()->Decay() == Type::Instance<Color>())
-    {
-        if (node->propertyType == PropertyNode::RealProperty)
-        {
-            return std::make_unique<ColorComponentValue>();
-        }
-        else if (node->propertyType == PropertyNode::VirtualProperty)
-        {
-            int32 fieldIndex = -1;
-            QString name;
-            if (node->field.key == colorR)
-            {
-                fieldIndex = 0;
-                name = QString(colorR.c_str());
-            }
-            else if (node->field.key == colorG)
-            {
-                fieldIndex = 1;
-                name = QString(colorG.c_str());
-            }
-            else if (node->field.key == colorB)
-            {
-                fieldIndex = 2;
-                name = QString(colorB.c_str());
-            }
-            else if (node->field.key == colorA)
-            {
-                fieldIndex = 3;
-                name = QString(colorA.c_str());
-            }
-
-            return std::make_unique<TextComponentValue>(std::make_unique<ColorSubFieldAccessor>(fieldIndex, name));
-        }
-    }
-
     const Type* valueType = node->field.ref.GetValueType()->Decay();
-    if (subPropertyTypes.count(valueType) > 0)
+    Key k(valueType, node->propertyType);
+    auto iter = creatorMap.find(k);
+    if (iter != creatorMap.end())
     {
-        if (valueType == Type::Instance<Vector2>())
-        {
-            return std::make_unique<kDComponentValue<Vector2, MultiDoubleSpinBox, float32>>();
-        }
-        else if (valueType == Type::Instance<Vector3>())
-        {
-            return std::make_unique<kDComponentValue<Vector3, MultiDoubleSpinBox, float32>>();
-        }
-        else if (valueType == Type::Instance<Vector4>())
-        {
-            return std::make_unique<kDComponentValue<Vector4, MultiDoubleSpinBox, float32>>();
-        }
-        else if (valueType == Type::Instance<Rect>())
-        {
-            return std::make_unique<kDComponentValue<Rect, MultiDoubleSpinBox, float32>>();
-        }
-        else if (valueType == Type::Instance<Color>())
-        {
-            if (node->field.ref.GetMeta<DAVA::M::IntColor>() == nullptr)
-            {
-                return std::make_unique<kDComponentValue<Color, MultiDoubleSpinBox, float32>>();
-            }
-            else
-            {
-                return std::make_unique<kDComponentValue<Color, MultiIntSpinBox, uint32>>();
-            }
-        }
-        else if (valueType == Type::Instance<AABBox3>())
-        {
-            return std::make_unique<kDComponentValue<AABBox3, MultiDoubleSpinBox, float32>>();
-        }
+        return (*iter).second(node->field.key.Cast<FastName>());
     }
 
     return EditorComponentExtension::GetEditor(node);
