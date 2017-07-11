@@ -50,13 +50,18 @@ def main():
         for build in build_status['build_dependencies']:
 
             build_dependencies_status = None
+            build_id = None
 
             if args.costum_dependent_build == build['buildTypeId']:
                 costum_build_properties = teamcity.get_build_properties( build['id'] )
-                build_id = costum_build_properties['env.run_build_id']
-                build_dependencies_status = teamcity.get_build_status( build_id )
+                if 'env.run_build_id' in costum_build_properties:
+                    build_id = costum_build_properties['env.run_build_id']
+                else:
+                    build_id = build['id']
             else:
-                build_dependencies_status = teamcity.get_build_status( build['id'] )
+                build_id =  build['id']
+
+            build_dependencies_status = teamcity.get_build_status( build_id )
 
             configuration_info = teamcity.configuration_info(build_dependencies_status['buildTypeId'])
 
