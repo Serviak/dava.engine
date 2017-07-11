@@ -17,6 +17,7 @@ const QString menuFile("File");
 const QString menuEdit("Edit");
 const QString menuView("View");
 const QString menuHelp("Help");
+const QString menuFind("Find");
 }
 
 WindowKey::WindowKey(const FastName& appID_)

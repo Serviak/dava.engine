@@ -14,6 +14,7 @@ namespace DAVA
 namespace TArc
 {
 class ContextAccessor;
+class OperationInvoker;
 class DataContext;
 }
 }
@@ -47,7 +48,7 @@ class PreviewWidget : public QFrame, private DAVA::IClientDelegate
 {
     Q_OBJECT
 public:
-    explicit PreviewWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager);
+    explicit PreviewWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::OperationInvoker* invoker, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager);
     ~PreviewWidget();
 
     FindInDocumentWidget* GetFindInDocumentWidget();
@@ -117,6 +118,8 @@ private:
     bool event(QEvent* event) override;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::OperationInvoker* invoker = nullptr;
+
     DAVA::RenderWidget* renderWidget = nullptr;
 
     RulerController* rulerController = nullptr;
