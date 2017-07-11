@@ -1,6 +1,5 @@
 #include "Engine/Private/Qt/RenderWidgetDX.h"
 
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_QT__)
 #include "Engine/Private/Qt/RenderWidgetBackend.h"
 
@@ -171,4 +170,3 @@ QPaintEngine* RenderWidgetDX::paintEngine() const
 
 } // namespace DAVA
 #endif // __DAVAENGINE_QT__
-#endif // __DAVAENGINE_COREV2__

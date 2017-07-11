@@ -1,20 +1,21 @@
-#include "UIWebView.h"
+#include "UI/UIWebView.h"
+
+#include "Engine/Engine.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Update/UIUpdateComponent.h"
-#include "Engine/Engine.h"
-#include "Reflection/ReflectionRegistrator.h"
 
 #if defined(DISABLE_NATIVE_WEBVIEW) && !defined(ENABLE_CEF_WEBVIEW)
 #include "UI/Private/WebViewControlStub.h"
 #elif defined(ENABLE_CEF_WEBVIEW)
 #include "UI/Private/CEF/WebViewControl.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "UI/Private/OSX/WebViewControlMacOS.h"
+#include "UI/Private/Mac/WebViewControlMac.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/Private/iOS/WebViewControliOS.h"
+#include "UI/Private/Ios/WebViewControlIos.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "UI/Private/UWP/WebViewControlUWP.h"
+#include "UI/Private/Win10/WebViewControlWin10.h"
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "UI/Private/Android/WebViewControlAndroid.h"
 #else
@@ -34,11 +35,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIWebView)
 
 UIWebView::UIWebView(const Rect& rect)
     : UIControl(rect)
-#if defined(__DAVAENGINE_COREV2__)
     , webViewControl(std::make_shared<WebViewControl>(Engine::Instance()->PrimaryWindow(), this))
-#else
-    , webViewControl(std::make_shared<WebViewControl>(this))
-#endif
     , isNativeControlVisible(false)
 {
     Rect newRect = GetAbsoluteRect();

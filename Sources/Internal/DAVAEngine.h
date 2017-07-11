@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_H__
-#define __DAVAENGINE_H__
+#pragma once
 
 #include "DAVAVersion.h"
 #include "DAVAConfig.h"
@@ -225,14 +224,11 @@
 #include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Scene3D/Components/WindComponent.h"
 #include "Scene3D/Components/WaveComponent.h"
+#include "Scene3D/Components/SlotComponent.h"
 #include "Scene3D/Components/Waypoint/PathComponent.h"
 #include "Scene3D/Components/Controller/WASDControllerComponent.h"
 #include "Scene3D/Components/Controller/RotationControllerComponent.h"
 #include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
-
-// Application core 
-#include "Core/Core.h"
-#include "Core/ApplicationCore.h"
 
 #include "Job/JobManager.h"
 
@@ -242,5 +238,3 @@
 #include "Notification/LocalNotificationProgress.h"
 #include "Notification/LocalNotificationDelayed.h"
 #include "Notification/LocalNotificationController.h"
-
-#endif // __DAVAENGINE_H__
