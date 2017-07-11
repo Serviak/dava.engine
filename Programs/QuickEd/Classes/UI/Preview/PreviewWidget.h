@@ -88,6 +88,8 @@ private slots:
     void OnResized(DAVA::uint32 width, DAVA::uint32 height);
     void OnRulersGeometryChanged();
 
+    void OnTabBarContextMenuRequested(const QPoint& pos);
+
 private:
     void InitUI();
     void ShowMenu(const QMouseEvent* mouseEvent);
