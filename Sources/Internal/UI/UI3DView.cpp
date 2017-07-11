@@ -1,6 +1,5 @@
 #include "UI/UI3DView.h"
 #include "Scene3D/Scene.h"
-#include "Core/Core.h"
 #include "UI/UIControlSystem.h"
 #include "Render/RenderHelper.h"
 #include "Render/Highlevel/RenderPass.h"

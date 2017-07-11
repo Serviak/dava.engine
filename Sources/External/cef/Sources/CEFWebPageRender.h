@@ -2,9 +2,9 @@
 
 #include <cef/include/cef_render_handler.h>
 
-#include "UI/UIControl.h"
-#include "Render/2D/Sprite.h"
 #include "Functional/Signal.h"
+#include "Render/2D/Sprite.h"
+#include "UI/UIControl.h"
 
 namespace DAVA
 {
@@ -14,11 +14,7 @@ class CEFWebPageRender : public CefRenderHandler
     IMPLEMENT_REFCOUNTING(CEFWebPageRender);
 
 public:
-#if defined(__DAVAENGINE_COREV2__)
     CEFWebPageRender(Window* w, float32 k);
-#else
-    CEFWebPageRender();
-#endif
     ~CEFWebPageRender();
 
     void ClearRenderSurface();
@@ -30,9 +26,7 @@ public:
     void SetViewRect(const Rect& rect);
     void ShutDown();
 
-#if defined(__DAVAENGINE_COREV2__)
     void SetScale(float32 k);
-#endif
 
 private:
     void ConnectToSignals();
@@ -54,9 +48,6 @@ private:
     void AppyTexture();
     void RestoreTexture();
 
-#if !defined(__DAVAENGINE_COREV2__)
-    CefCursorHandle GetDefaultCursor();
-#endif
     void SetCursor(CefCursorHandle cursor);
     void ResetCursor();
 
@@ -69,10 +60,8 @@ private:
     bool isActive = true;
     bool isVisible = true;
     CursorType currentCursorType = CursorType::CT_POINTER;
-#if defined(__DAVAENGINE_COREV2__)
     Window* window = nullptr;
     float32 scale = 1.f;
-#endif
     unsigned webViewID = 0;
 };
 
