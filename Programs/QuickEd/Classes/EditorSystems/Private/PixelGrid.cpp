@@ -52,12 +52,13 @@ void PixelGrid::InitControls()
 
 bool PixelGrid::CanShowGrid() const
 {
-    if (preferences.IsVisible() == false || preferences.GetScaleToDisplay() < 1.0f)
+    DAVA::float32 scaleToDisplay = preferences.GetScaleToDisplay() / 100.0f;
+    if (preferences.IsVisible() == false || scaleToDisplay < 1.0f)
     {
         return false;
     }
 
-    if (canvasDataAdapter.GetScale() < preferences.GetScaleToDisplay())
+    if (canvasDataAdapter.GetScale() < scaleToDisplay)
     {
         return false;
     }
@@ -191,6 +192,5 @@ void PixelGridPreferences::SetScaleToDisplay(DAVA::float32 scale)
 REGISTER_PREFERENCES_ON_START(PixelGridPreferences,
                               PREF_ARG("gridColor", DAVA::Color(0.925f, 0.925f, 0.925f, 0.5f)),
                               PREF_ARG("isVisible", true),
-                              PREF_ARG("scaleToDisplay", 8.0f)
-
+                              PREF_ARG("scaleToDisplay", 800.0f)
                               )
