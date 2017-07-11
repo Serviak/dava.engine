@@ -95,21 +95,21 @@ def main():
                 status = 'FAILED'
 
             configuration_name = None
+            build_configuration_id = None
 
             if args.costum_dependent_build == build['buildTypeId']:
-                if request_configuration_id == None:
-                    configuration_name = configuration_info['config_path']
-                else:
-                    configuration_name = request_configuration_id
-
+                configuration_name = configuration_info['config_path']
+                build_configuration_id = request_configuration_id
             else:
                 configuration_name = configuration_info['name']
 
+            if build_configuration_id == None:
+                build_configuration_id = build_dependencies_status['buildTypeId']
 
-            print 'Update: configuration_name[ {} ] status[ {} ] commit[ {} ]'.format(build_dependencies_status['buildTypeId'], status, commit)
+            print 'Update: commit[ {} ] status[ {} ] configuration_name[ {} ]'.format(build_dependencies_status['buildTypeId'], status, commit)
 
             stash.report_build_status( status,
-                                       build_dependencies_status['buildTypeId'],
+                                       build_configuration_id,
                                        configuration_name,
                                        build_dependencies_status['webUrl'],
                                        commit,
