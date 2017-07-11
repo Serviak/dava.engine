@@ -40,6 +40,8 @@ void PackRequest::CancelCurrentDownloadRequests()
 
     requests.clear();
     requests.shrink_to_fit();
+
+    fileRequestsInitialized = false;
 }
 
 PackRequest::~PackRequest()
