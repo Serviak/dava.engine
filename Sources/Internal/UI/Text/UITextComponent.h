@@ -13,7 +13,7 @@ class UIControl;
 class UITextSystemLink;
 
 /**
-    Text widget component.
+    Text widget component. 
     Display plain text with specified font style and basic layout settings.
 */
 class UITextComponent : public UIComponent

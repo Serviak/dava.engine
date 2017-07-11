@@ -113,8 +113,9 @@ public:
     int32 GetMultilineType() const;
     void SetMultilineType(int32 multilineType);
 
+    TextBlock* GetTextBlock() const;
+
 private:
     RefPtr<UITextComponent> text;
-    TextBlock* GetTextBlock() const;
 };
 };
