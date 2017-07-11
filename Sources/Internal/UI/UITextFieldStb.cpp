@@ -419,7 +419,6 @@ void TextFieldStbImpl::SetRect(const Rect& rect)
 
 void TextFieldStbImpl::SystemDraw(const UIGeometricData& d)
 {
-
     const Vector2& scale = d.scale;
     const Vector2& offset = d.GetUnrotatedRect().GetPosition();
 

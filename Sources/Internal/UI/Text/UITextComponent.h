@@ -169,8 +169,6 @@ public:
     void ApplyDataImmediately() const;
 
 private:
-
-
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
     String fontName;
