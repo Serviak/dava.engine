@@ -4,6 +4,7 @@
 #include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
 #include "TArc/Controls/PropertyPanel/Private/TextComponentValue.h"
 #include "TArc/Controls/ColorPicker/ColorPickerButton.h"
+#include "TArc/Utils/StringFormatingUtils.h"
 
 #include <QtTools/Utils/Utils.h>
 
@@ -41,27 +42,7 @@ FastName boxMaxX = FastName("Max X");
 FastName boxMaxY = FastName("Max Y");
 FastName boxMaxZ = FastName("Max Z");
 
-void ReduceZeros(String& value)
-{
-    int32 zerosCount = 0;
-    for (auto iter = value.rbegin(); iter != value.rend(); ++iter)
-    {
-        if ((*iter) == '.')
-        {
-            zerosCount = std::max(zerosCount - 1, 0);
-            break;
-        }
-        if ((*iter) != '0')
-        {
-            break;
-        }
-        ++zerosCount;
-    }
-
-    value.resize(value.size() - zerosCount);
-}
-
-struct NotReadOnlyTrait
+struct NotReadOnlyTraits
 {
     static bool IsReadOnly()
     {
@@ -69,7 +50,7 @@ struct NotReadOnlyTrait
     }
 };
 
-struct ColorTraits : public NotReadOnlyTrait
+struct ColorTraits : public NotReadOnlyTraits
 {
     using Type = Color;
     static int32 GetFieldIndex(const FastName& /*name*/)
@@ -79,14 +60,11 @@ struct ColorTraits : public NotReadOnlyTrait
 
     static String ToString(const Color& c, int32 /*fieldIndex*/, const Reflection& /*ref*/)
     {
-        String r = Format("%.3f", c.r);
-        String g = Format("%.3f", c.g);
-        String b = Format("%.3f", c.b);
-        String a = Format("%.3f", c.a);
-        ReduceZeros(r);
-        ReduceZeros(g);
-        ReduceZeros(b);
-        ReduceZeros(a);
+        String r, g, b, a;
+        FloatToString(c.r, 3, r);
+        FloatToString(c.g, 3, g);
+        FloatToString(c.b, 3, b);
+        FloatToString(c.a, 3, a);
         return Format("[ %s, %s, %s, %s]", r.c_str(), g.c_str(), b.c_str(), a.c_str());
     }
 
@@ -128,7 +106,7 @@ struct ColorTraits : public NotReadOnlyTrait
         return "Incorrect color format. Color format [ r; g; b; a]";
     }
 };
-struct Vector2Traits : public NotReadOnlyTrait
+struct Vector2Traits : public NotReadOnlyTraits
 {
     using Type = Vector2;
     static int32 GetFieldIndex(const FastName& /*name*/)
@@ -145,11 +123,10 @@ struct Vector2Traits : public NotReadOnlyTrait
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String x = Format(formatString.c_str(), v.x);
-        String y = Format(formatString.c_str(), v.y);
-        ReduceZeros(x);
-        ReduceZeros(y);
+        String x, y;
+        FloatToString(v.x, accuracy, x);
+        FloatToString(v.y, accuracy, y);
+
         return Format("[ %s, %s]", x.c_str(), y.c_str());
     }
 
@@ -187,7 +164,7 @@ struct Vector2Traits : public NotReadOnlyTrait
         return "Incorrect vector2 format. Vector2 format [ x; y]";
     }
 };
-struct Vector3Traits : public NotReadOnlyTrait
+struct Vector3Traits : public NotReadOnlyTraits
 {
     using Type = Vector3;
     static int32 GetFieldIndex(const FastName& /*name*/)
@@ -209,13 +186,10 @@ struct Vector3Traits : public NotReadOnlyTrait
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String x = Format(formatString.c_str(), v.x);
-        String y = Format(formatString.c_str(), v.y);
-        String z = Format(formatString.c_str(), v.z);
-        ReduceZeros(x);
-        ReduceZeros(y);
-        ReduceZeros(z);
+        String x, y, z;
+        FloatToString(v.x, accuracy, x);
+        FloatToString(v.y, accuracy, y);
+        FloatToString(v.z, accuracy, z);
         return Format("[ %s, %s, %s]", x.c_str(), y.c_str(), z.c_str());
     }
 
@@ -256,7 +230,7 @@ struct Vector3Traits : public NotReadOnlyTrait
         return "Incorrect vector3 format. Vector3 format [ x; y; z]";
     }
 };
-struct Vector4Traits : public NotReadOnlyTrait
+struct Vector4Traits : public NotReadOnlyTraits
 {
     using Type = Vector4;
     static int32 GetFieldIndex(const FastName& /*name*/)
@@ -278,15 +252,12 @@ struct Vector4Traits : public NotReadOnlyTrait
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String x = Format(formatString.c_str(), v.x);
-        String y = Format(formatString.c_str(), v.y);
-        String z = Format(formatString.c_str(), v.z);
-        String w = Format(formatString.c_str(), v.w);
-        ReduceZeros(x);
-        ReduceZeros(y);
-        ReduceZeros(z);
-        ReduceZeros(w);
+        String x, y, z, w;
+        FloatToString(v.x, accuracy, x);
+        FloatToString(v.y, accuracy, y);
+        FloatToString(v.z, accuracy, z);
+        FloatToString(v.w, accuracy, w);
+
         return Format("[ %s, %s, %s, %s]", x.c_str(), y.c_str(), z.c_str(), w.c_str());
     }
 
@@ -305,9 +276,9 @@ struct Vector4Traits : public NotReadOnlyTrait
         if (componentCount > 1)
             vec.y = values[1];
         if (componentCount > 2)
-            vec.y = values[2];
+            vec.z = values[2];
         if (componentCount > 3)
-            vec.y = values[3];
+            vec.w = values[3];
 
         return vec;
     }
@@ -346,15 +317,11 @@ struct RectTraits
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String x = Format(formatString.c_str(), v.x);
-        String y = Format(formatString.c_str(), v.y);
-        String w = Format(formatString.c_str(), v.dx);
-        String h = Format(formatString.c_str(), v.dy);
-        ReduceZeros(x);
-        ReduceZeros(y);
-        ReduceZeros(w);
-        ReduceZeros(h);
+        String x, y, w, h;
+        FloatToString(v.x, accuracy, x);
+        FloatToString(v.y, accuracy, y);
+        FloatToString(v.dx, accuracy, w);
+        FloatToString(v.dy, accuracy, h);
         return Format("[ %s, %s, %s, %s]", x.c_str(), y.c_str(), w.c_str(), h.c_str());
     }
 
@@ -404,19 +371,14 @@ struct AABBox3Traits
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String minX = Format(formatString.c_str(), v.min.x);
-        String minY = Format(formatString.c_str(), v.min.y);
-        String minZ = Format(formatString.c_str(), v.min.z);
-        String maxX = Format(formatString.c_str(), v.max.x);
-        String maxY = Format(formatString.c_str(), v.max.y);
-        String maxZ = Format(formatString.c_str(), v.max.z);
-        ReduceZeros(minX);
-        ReduceZeros(minY);
-        ReduceZeros(minZ);
-        ReduceZeros(maxX);
-        ReduceZeros(maxY);
-        ReduceZeros(maxZ);
+        String minX, minY, minZ, maxX, maxY, maxZ;
+        FloatToString(v.min.x, accuracy, minX);
+        FloatToString(v.min.y, accuracy, minY);
+        FloatToString(v.min.z, accuracy, minZ);
+        FloatToString(v.max.x, accuracy, maxX);
+        FloatToString(v.max.y, accuracy, maxY);
+        FloatToString(v.max.z, accuracy, maxZ);
+
         return Format("[ %s, %s, %s,\n %s, %s, %s]", minX.c_str(), minY.c_str(), minZ.c_str(), maxX.c_str(), maxY.c_str(), maxZ.c_str());
     }
 
@@ -450,7 +412,7 @@ struct AABBox3Traits
     }
 };
 
-struct ColorChannelTraits : public NotReadOnlyTrait
+struct ColorChannelTraits : public NotReadOnlyTraits
 {
 public:
     using Type = Color;
@@ -470,9 +432,8 @@ public:
 
     static String ToString(const Color& value, int32 fieldIndex, const Reflection& ref)
     {
-        String result = Format("%.3f", value.color[fieldIndex]);
-        ReduceZeros(result);
-
+        String result;
+        FloatToString(value.color[fieldIndex], 3, result);
         return result;
     }
     static uint32 GetMaxComponentCount()
@@ -502,7 +463,7 @@ public:
         return "Incorrect color channel format. Value should be float";
     }
 };
-struct Vector2ChannelTraits : public NotReadOnlyTrait
+struct Vector2ChannelTraits : public NotReadOnlyTraits
 {
 public:
     using Type = Vector2;
@@ -525,9 +486,8 @@ public:
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String result = Format(formatString.c_str(), value.data[fieldIndex]);
-        ReduceZeros(result);
+        String result;
+        FloatToString(value.data[fieldIndex], accuracy, result);
 
         return result;
     }
@@ -558,7 +518,7 @@ public:
         return "Incorrect vector component format. Value should be float";
     }
 };
-struct Vector3ChannelTraits : public NotReadOnlyTrait
+struct Vector3ChannelTraits : public NotReadOnlyTraits
 {
 public:
     using Type = Vector3;
@@ -583,9 +543,8 @@ public:
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String result = Format(formatString.c_str(), value.data[fieldIndex]);
-        ReduceZeros(result);
+        String result;
+        FloatToString(value.data[fieldIndex], accuracy, result);
 
         return result;
     }
@@ -616,7 +575,7 @@ public:
         return "Incorrect vector component format. Value should be float";
     }
 };
-struct Vector4ChannelTraits : public NotReadOnlyTrait
+struct Vector4ChannelTraits : public NotReadOnlyTraits
 {
 public:
     using Type = Vector4;
@@ -643,9 +602,8 @@ public:
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String result = Format(formatString.c_str(), value.data[fieldIndex]);
-        ReduceZeros(result);
+        String result;
+        FloatToString(value.data[fieldIndex], accuracy, result);
 
         return result;
     }
@@ -677,7 +635,7 @@ public:
     }
 };
 
-struct RectChannelTraits : public NotReadOnlyTrait
+struct RectChannelTraits : public NotReadOnlyTraits
 {
 public:
     using Type = Rect;
@@ -703,10 +661,8 @@ public:
         {
             accuracy = accuracyMeta->accuracy;
         }
-
-        String formatString = Format("%%.%df", accuracy);
-        String result = Format(formatString.c_str(), *GetComponentPointer<const Rect, const float32>(value, fieldIndex));
-        ReduceZeros(result);
+        String result;
+        FloatToString(*GetComponentPointer<const Rect, const float32>(value, fieldIndex), accuracy, result);
 
         return result;
     }
@@ -760,7 +716,7 @@ private:
     }
 };
 
-struct AABBox3ChannelTraits : public NotReadOnlyTrait
+struct AABBox3ChannelTraits : public NotReadOnlyTraits
 {
 public:
     using Type = AABBox3;
@@ -791,10 +747,8 @@ public:
             accuracy = accuracyMeta->accuracy;
         }
 
-        String formatString = Format("%%.%df", accuracy);
-        String result = Format(formatString.c_str(), *GetComponentPointer<const AABBox3, const float32>(value, fieldIndex));
-        ReduceZeros(result);
-
+        String result;
+        FloatToString(*GetComponentPointer<const AABBox3, const float32>(value, fieldIndex), accuracy, result);
         return result;
     }
     static uint32 GetMaxComponentCount()
