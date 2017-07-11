@@ -51,9 +51,14 @@ def main():
 
             build_dependencies_status = None
             build_id = None
+            request_configuration_id = None
 
             if args.costum_dependent_build == build['buildTypeId']:
                 costum_build_properties = teamcity.get_build_properties( build['id'] )
+
+                if 'request_configuration' in costum_build_properties:
+                    request_configuration_id = costum_build_properties['request_configuration']
+
                 if 'env.run_build_id' in costum_build_properties:
                     build_id = costum_build_properties['env.run_build_id']
                 else:
@@ -92,7 +97,10 @@ def main():
             configuration_name = None
 
             if args.costum_dependent_build == build['buildTypeId']:
-                configuration_name = configuration_info['config_path']
+                if request_configuration_id == None:
+                    configuration_name = configuration_info['config_path']
+                else:
+                    configuration_name = request_configuration_id
 
             else:
                 configuration_name = configuration_info['name']
