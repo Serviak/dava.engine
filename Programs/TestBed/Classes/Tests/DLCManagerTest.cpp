@@ -7,7 +7,7 @@
 #include <DLCManager/DLCManager.h>
 #include <UI/Focus/UIFocusComponent.h>
 #include <UI/Render/UIDebugRenderComponent.h>
-#include <EmbeddedWebServer.h>
+#include <EmbeddedWebServer/EmbeddedWebServer.h>
 #include <DLCManager/DLCDownloader.h>
 
 DLCManagerTest::DLCManagerTest(TestBed& app)
