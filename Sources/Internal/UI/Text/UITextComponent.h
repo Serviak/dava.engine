@@ -4,13 +4,13 @@
 #include "Render/2D/TextBlock.h"
 #include "UI/Components/UIComponent.h"
 #include "UI/UIControlBackground.h"
+#include "UI/Text/Private/UITextSystemLink.h"
 
 struct UITextSystemTest;
 
 namespace DAVA
 {
 class UIControl;
-class UITextSystemLink;
 
 /**
     Text widget component. 
@@ -142,6 +142,8 @@ public:
     void SetFont(Font* font);
     Font* GetFont();
 
+    /** Set modification marker. */
+    void SetModified(bool value);
     /** Check modification marker.*/
     bool IsModified() const;
 
@@ -167,8 +169,6 @@ public:
     void ApplyDataImmediately() const;
 
 private:
-    /** Set modification marker. */
-    void SetModified(bool value);
 
 
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
@@ -189,10 +189,6 @@ private:
 
     bool modified = true;
 
-    mutable RefPtr<UITextSystemLink> link;
-
-    // Friends
-    friend class UITextSystem;
-    friend class UITextSystemLink;
+    mutable UITextSystemLink link;
 };
 }
