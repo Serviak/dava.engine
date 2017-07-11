@@ -66,6 +66,8 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     case rhi::RHI_NULL_RENDERER:
         api = "NULL";
         break;
+    default:
+        break; // to shut up goddamn warning
     }
 
     DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit] | %s", DAVAENGINE_VERSION,
