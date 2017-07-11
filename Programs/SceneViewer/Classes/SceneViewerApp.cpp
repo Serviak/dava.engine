@@ -66,7 +66,7 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     case rhi::RHI_NULL_RENDERER:
         api = "NULL";
         break;
-    default:
+    case rhi::RHI_API_COUNT:
         break; // to shut up goddamn warning
     }
 
