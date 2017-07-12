@@ -68,9 +68,8 @@ void UIWebView::OpenFile(const FilePath& path)
     String data;
     if (file && file->ReadString(data) > 0)
     {
-        // Example: "~res:/license.htm" dir is: "~res:/" resolved to -> "/full/path/last_added_search_path"
-        // but if you do first absolute path:
-        // "file:///android_asset/Data/license.htm" -> "file:///android_asset/Data/"
+        // First we should resolve full path to the file and only then get
+        // directory path from resolved path
         String fullPath = path.GetAbsolutePathname();
         FilePath dir(fullPath);
         dir = dir.GetDirectory();
