@@ -45,7 +45,10 @@ def main():
                 if commit != None:
                     break
 
-        assert( commit != None )
+        if commit == None or commit == '0':
+            pull_requests_number = common_tool.get_pull_requests_number(build_status['branchName'])
+            commit_list = stash.get_commits( pull_requests_number )
+            commit = commit_list['values'][0]['id']
 
         for build in build_status['build_dependencies']:
 
