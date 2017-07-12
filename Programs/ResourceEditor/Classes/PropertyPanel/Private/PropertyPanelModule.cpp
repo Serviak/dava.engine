@@ -96,6 +96,7 @@ public:
 
     std::shared_ptr<DAVA::TArc::PropertiesView::Updater> updater;
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    QPointer<DAVA::TArc::PropertiesView> view;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(PropertyPanelData, DAVA::TArc::DataNode)
     {
@@ -138,6 +139,7 @@ void PropertyPanelModule::PostInit()
 #endif
 
     PropertiesView* view = new PropertiesView(params);
+    data->view = view;
 
     view->RegisterExtension(std::make_shared<REModifyPropertyExtension>(accessor));
     view->RegisterExtension(std::make_shared<EntityChildCreator>());
@@ -147,6 +149,34 @@ void PropertyPanelModule::PostInit()
     view->RegisterExtension(std::make_shared<KeyedArchiveChildCreator>());
     view->RegisterExtension(std::make_shared<KeyedArchiveEditorCreator>(accessor));
     ui->AddView(DAVA::TArc::mainWindowKey, PanelKey(panelInfo.title, panelInfo), view);
+
+    RegisterInterface(static_cast<PropertyPanelInterface*>(this));
+}
+
+void PropertyPanelModule::RegisterExtension(const std::shared_ptr<DAVA::TArc::ExtensionChain>& extension)
+{
+    using namespace DAVA::TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* ctx = accessor->GetGlobalContext();
+    PropertyPanelModuleDetail::PropertyPanelData* data = ctx->GetData<PropertyPanelModuleDetail::PropertyPanelData>();
+    if (data->view.isNull() == false)
+    {
+        data->view->RegisterExtension(extension);
+    }
+}
+
+void PropertyPanelModule::UnregisterExtension(const std::shared_ptr<DAVA::TArc::ExtensionChain>& extension)
+{
+    using namespace DAVA::TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* ctx = accessor->GetGlobalContext();
+    PropertyPanelModuleDetail::PropertyPanelData* data = ctx->GetData<PropertyPanelModuleDetail::PropertyPanelData>();
+    if (data->view.isNull() == false)
+    {
+        data->view->UnregisterExtension(extension);
+    }
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PropertyPanelModule)

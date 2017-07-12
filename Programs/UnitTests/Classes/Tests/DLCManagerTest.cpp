@@ -5,7 +5,7 @@
 #include <Concurrency/Thread.h>
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
-#include <EmbeddedWebServer.h>
+#include <EmbeddedWebServer/EmbeddedWebServer.h>
 
 #include "UnitTests/UnitTests.h"
 
@@ -144,4 +144,4 @@ DAVA_TESTCLASS (DLCManagerTest)
     }
 };
 
-#endif // __DAVAENGINE_WIN_UAP__
+#endif // !__DAVAENGINE_WIN_UAP__

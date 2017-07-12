@@ -2,8 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
+#include "Concurrency/Dispatcher.h"
 #include "Functional/Function.h"
-#include "Engine/Dispatcher.h"
 
 #include "Network/Base/IOLoop.h"
 #include "Network/Base/IfAddress.h"
@@ -132,13 +132,7 @@ public:
     };
 
 public:
-#if defined(__DAVAENGINE_COREV2__)
-
     NetCore(Engine* e);
-    Engine* engine = nullptr;
-#else
-    NetCore();
-#endif
     ~NetCore();
 
     IOLoop* Loop() const;
@@ -153,6 +147,7 @@ public:
     TrackId CreateAnnouncer(const Endpoint& endpoint, uint32 sendPeriod, Function<size_t(size_t, void*)> needDataCallback, const Endpoint& tcpEndpoint = Endpoint(DEFAULT_TCP_ANNOUNCE_PORT));
     TrackId CreateDiscoverer(const Endpoint& endpoint, Function<void(size_t, const void*, const Endpoint&)> dataReadyCallback);
 
+    /** destroy controller with given `id` and invoke `callback` on destroy. Callback may be invoked synchronously*/
     void DestroyController(TrackId id, Function<void()> callback = nullptr);
     DAVA_DEPRECATED(void DestroyControllerBlocked(TrackId id)); // blocked functions are deprecated for use
     void DestroyAllControllers(Function<void()> callback);
@@ -163,11 +158,7 @@ public:
     size_t ControllersCount() const;
 
     int32 Run();
-#if defined(__DAVAENGINE_COREV2__)
     void Poll(float32 frameDelta = 0.0f);
-#else
-    int32 Poll();
-#endif
     void Finish(bool runOutLoop = false);
 
     bool TryDiscoverDevice(const Endpoint& endpoint);
@@ -183,34 +174,45 @@ public:
 private:
     void ProcessPendingEvents();
 
+    TrackId StartController(std::unique_ptr<IController> controller);
+
     void NetThreadHandler();
     void DoStart(IController* ctrl);
     void DoRestart();
 
     bool PostAllToDestroy();
     void WaitForAllDestroyed();
-    void WaitForDestroyed(IController*);
+    void WaitForDestroyed(TrackId);
     void DoDestroy(IController* ctrl);
     void AllDestroyed();
-    IController* GetTrackedObject(TrackId id);
+
     void TrackedObjectStopped(IController* obj);
 
     TrackId ObjectToTrackId(const IController* obj) const;
     IController* TrackIdToObject(TrackId id) const;
 
 private:
+    Engine* engine = nullptr;
     IOLoop* loop = nullptr; // Heart of NetCore and network library - event loop
     bool useSeparateThread = false;
 
-    mutable Mutex trackedObjectsMutex;
-    Set<IController*> trackedObjects; // Running objects
+    struct ControllerContext
+    {
+        enum Status
+        {
+            STARTING,
+            RUNNING,
+            DESTROYING
+        } status = STARTING;
+        std::unique_ptr<IController> ctrl;
+        Function<void()> controllerStoppedCallback;
+    };
 
-    mutable Mutex dyingObjectsMutex;
-    Set<IController*> dyingObjects;
+    mutable Mutex controllersMutex;
+    UnorderedMap<TrackId, ControllerContext> controllers;
 
     ServiceRegistrar registrar; //-V730_NOINIT
     Function<void()> allControllersStoppedCallback;
-    UnorderedMap<IController*, Function<void()>> controllerStoppedCallback;
 
     enum State
     {
@@ -265,17 +267,10 @@ inline int32 NetCore::Run()
     return loop->Run(IOLoop::RUN_DEFAULT);
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 inline void NetCore::Poll(float32 /*frameDelta*/)
 {
     loop->Run(IOLoop::RUN_NOWAIT);
 }
-#else
-inline int32 NetCore::Poll()
-{
-    return loop->Run(IOLoop::RUN_NOWAIT);
-}
-#endif
 
 inline bool NetCore::IsNetworkEnabled()
 {

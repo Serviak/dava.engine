@@ -1,6 +1,3 @@
-// #include "Notification/Private/Ios/DVELocalNotificationListener.h"
-
-#if defined(__DAVAENGINE_COREV2__)
 #if defined(__DAVAENGINE_IPHONE__)
 
 #import <Foundation/Foundation.h>
@@ -9,11 +6,10 @@
 #import <UIKit/UIApplication.h>
 #import <UIKit/UIUserNotificationSettings.h>
 
-#import "Notification/Private/Ios/DVELocalNotificationListener.h"
-#import "Notification/LocalNotificationController.h"
-
 #include "Engine/Engine.h"
 #include "Logger/Logger.h"
+#include "Notification/LocalNotificationController.h"
+#include "Notification/Private/Ios/DVELocalNotificationListener.h"
 #include "Utils/NSStringUtils.h"
 
 @implementation DVELocalNotificationListener
@@ -84,4 +80,3 @@
 @end
 
 #endif // defined(__DAVAENGINE_IPHONE__)
-#endif // defined(__DAVAENGINE_COREV2__)
