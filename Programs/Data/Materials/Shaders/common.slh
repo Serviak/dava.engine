@@ -108,6 +108,8 @@
 #ensuredefined VIEW_SPECULAR 0
 #ensuredefined VIEW_ALBEDO 0
 
+#ensuredefined HEATMAP 0
+
 #if !defined PARTICLES_FLOWMAP
     #define PARTICLES_FLOWMAP 0
 #endif
