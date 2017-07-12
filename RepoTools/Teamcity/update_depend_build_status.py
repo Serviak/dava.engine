@@ -106,7 +106,7 @@ def main():
             if build_configuration_id == None:
                 build_configuration_id = build_dependencies_status['buildTypeId']
 
-            print 'Update: commit[ {} ] status[ {} ] configuration_name[ {} ]'.format(build_dependencies_status['buildTypeId'], status, commit)
+            print 'Update: commit[ {} ] status[ {} ] configuration_name[ {} ]'.format(commit, status,  build_dependencies_status['buildTypeId'] )
 
             stash.report_build_status( status,
                                        build_configuration_id,
