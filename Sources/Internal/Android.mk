@@ -1,5 +1,5 @@
 #-----------------------------
-# Framework lib 
+# Framework lib
 
 # set local path for lib
 LOCAL_PATH := $(call my-dir)
@@ -10,23 +10,13 @@ LOCAL_MODULES_PATH := $(LOCAL_PATH)/../../Modules
 # if we don't do it, linker can take symbols from wrong shared lib (unwind_backtrace from fmod, for example)
 ifeq ($(APP_STL), c++_shared)
 # Yet another hack - we don't need gcc lib, so unset variable with option -lgcc
-TARGET_LIBGCC := 
+TARGET_LIBGCC :=
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := cxx-shared-prebuild
 LOCAL_SRC_FILES := $(NDK_ROOT)/sources/cxx-stl/llvm-libc++/$(LLVM_VERSION)/libs/$(TARGET_ARCH_ABI)/libc++_shared.so
 include $(PREBUILT_SHARED_LIBRARY)
 endif
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := fmodex-prebuild
-LOCAL_SRC_FILES := ../../Modules/Sound/Libs/Android/$(TARGET_ARCH_ABI)/libfmodex.so
-include $(PREBUILT_SHARED_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := fmodevent-prebuild
-LOCAL_SRC_FILES := ../../Modules/Sound/Libs/Android/$(TARGET_ARCH_ABI)/libfmodevent.so
-include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := xml
@@ -113,6 +103,22 @@ LOCAL_MODULE := sqlite3
 LOCAL_SRC_FILES := ../../Libs/lib_CMake/android/$(TARGET_ARCH_ABI)/libsqlite3.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Modules libraries
+include $(CLEAR_VARS)
+LOCAL_MODULE := fmodex-prebuild
+LOCAL_SRC_FILES := ../../Modules/Sound/Libs/Android/$(TARGET_ARCH_ABI)/libfmodex.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := fmodevent-prebuild
+LOCAL_SRC_FILES := ../../Modules/Sound/Libs/Android/$(TARGET_ARCH_ABI)/libfmodevent.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := spine
+LOCAL_SRC_FILES := ../../Modules/Spine/Libs/Android/$(TARGET_ARCH_ABI)/spine.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 DAVA_ROOT := $(LOCAL_PATH)
 
 # set path for includes
@@ -122,8 +128,11 @@ DV_LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/include
 DV_LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/lua/include
 DV_LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/icucommon/source/common
 DV_LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/openssl/include/android
+# Modules includes
 DV_LOCAL_C_INCLUDES += $(LOCAL_MODULES_PATH)/Sound/Libs/Include
 DV_LOCAL_C_INCLUDES += $(LOCAL_MODULES_PATH)/Sound/Sources
+DV_LOCAL_C_INCLUDES += $(LOCAL_MODULES_PATH)/Spine/Libs/Include
+DV_LOCAL_C_INCLUDES += $(LOCAL_MODULES_PATH)/Spine/Sources
 
 # set exported includes
 DV_LOCAL_EXPORT_C_INCLUDES := $(DV_LOCAL_C_INCLUDES)
@@ -138,6 +147,7 @@ DV_LOCAL_CPPFLAGS += -frtti -DGL_GLEXT_PROTOTYPES=1
 DV_LOCAL_CPPFLAGS += -std=c++14
 
 DV_LOCAL_CFLAGS += -D__DAVAENGINE_ANDROID__
+DV_LOCAL_CFLAGS += -D__DAVAENGINE_POSIX__
 
 # remove warnings about unused arguments to compiler
 DV_LOCAL_CFLAGS += -Qunused-arguments
@@ -246,6 +256,7 @@ DV_LOCAL_CFLAGS += -fno-standalone-debug
 # set exported build flags
 DV_LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) -fno-standalone-debug
 DV_LOCAL_EXPORT_CFLAGS += -D__DAVAENGINE_ANDROID__
+DV_LOCAL_EXPORT_CFLAGS += -D__DAVAENGINE_POSIX__
 
 # set exported used libs
 DV_LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
@@ -291,17 +302,20 @@ DV_LOCAL_STATIC_LIBRARIES += webp
 DV_LOCAL_STATIC_LIBRARIES += cpufeatures
 DV_LOCAL_STATIC_LIBRARIES += sqlite3
 
+# Modules libraries
+DV_LOCAL_STATIC_LIBRARIES += spine
+
 DV_LOCAL_EXPORT_LDLIBS := -lGLESv1_CM -llog -lEGL -latomic -landroid -lz
 
 ifeq ($(APP_PLATFORM), android-14)
 	DV_LOCAL_EXPORT_LDLIBS += -lGLESv2
-else 
+else
 ifeq ($(APP_PLATFORM), android-15)
 	DV_LOCAL_EXPORT_LDLIBS += -lGLESv2
-else 
+else
 ifeq ($(APP_PLATFORM), android-16)
 	DV_LOCAL_EXPORT_LDLIBS += -lGLESv2
-else 
+else
 ifeq ($(APP_PLATFORM), android-17)
 	DV_LOCAL_EXPORT_LDLIBS += -lGLESv2
 else
@@ -311,15 +325,45 @@ endif
 endif
 endif
 
+# Modules libpart
+# clear all variables
+include $(CLEAR_VARS)
+# set module name
+LOCAL_MODULE := libModules
+
+LOCAL_C_INCLUDES := $(DV_LOCAL_C_INCLUDES)
+LOCAL_EXPORT_C_INCLUDES := $(DV_LOCAL_EXPORT_C_INCLUDES)
+LOCAL_ARM_NEON := $(DV_LOCAL_ARM_NEON)
+LOCAL_ARM_MODE := $(DV_LOCAL_ARM_MODE)
+LOCAL_NEON_CFLAGS := $(DV_LOCAL_NEON_CFLAGS)
+LOCAL_CPPFLAGS := $(DV_LOCAL_CPPFLAGS)
+LOCAL_CFLAGS := $(DV_LOCAL_CFLAGS)
+LOCAL_CPP_FEATURES := $(DV_LOCAL_CPP_FEATURES)
+LOCAL_EXPORT_CFLAGS := $(DV_LOCAL_EXPORT_CFLAGS)
+LOCAL_EXPORT_LDLIBS := $(DV_LOCAL_EXPORT_LDLIBS)
+LOCAL_EXPORT_LDFLAGS := $(DV_LOCAL_EXPORT_LDFLAGS)
+LOCAL_STATIC_LIBRARIES := $(DV_LOCAL_STATIC_LIBRARIES)
+LOCAL_SHARED_LIBRARIES := $(DV_LOCAL_SHARED_LIBRARIES)
+
+LOCAL_SRC_FILES := \
+                     $(subst $(LOCAL_PATH)/,, \
+                     $(wildcard $(LOCAL_MODULES_PATH)/Sound/Sources/Private/*.cpp) \
+                     $(wildcard $(LOCAL_MODULES_PATH)/Spine/Sources/*.cpp) \
+                     $(wildcard $(LOCAL_MODULES_PATH)/Spine/Sources/UI/*.cpp) \
+                     $(wildcard $(LOCAL_MODULES_PATH)/Spine/Sources/UI/Spine/*.cpp) \
+                     $(wildcard $(LOCAL_MODULES_PATH)/Spine/Sources/UI/Spine/Private/*.cpp))
+
+include $(BUILD_STATIC_LIBRARY)
+
 # clear all variables
 include $(CLEAR_VARS)
 
 # set module name
 LOCAL_MODULE := libInternalPart1
 
-# On arm architectures add sysroot option to be able to use 
+# On arm architectures add sysroot option to be able to use
 # _Unwind_Backtrace and _Unwind_GetIP for collecting backtraces
-# TODO: review checking arm arch and $(ANDROID_NDK_ROOT) 
+# TODO: review checking arm arch and $(ANDROID_NDK_ROOT)
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
        DV_LOCAL_CFLAGS += --sysroot=$(ANDROID_NDK_ROOT)/platforms/$(APP_PLATFORM)/arch-arm
 endif
@@ -338,7 +382,7 @@ LOCAL_EXPORT_LDFLAGS := $(DV_LOCAL_EXPORT_LDFLAGS)
 LOCAL_STATIC_LIBRARIES := $(DV_LOCAL_STATIC_LIBRARIES)
 LOCAL_SHARED_LIBRARIES := $(DV_LOCAL_SHARED_LIBRARIES)
 
-# set source files 
+# set source files
 LOCAL_SRC_FILES := \
                      $(subst $(LOCAL_PATH)/,, \
                      $(wildcard $(LOCAL_PATH)/*.cpp) \
@@ -365,8 +409,6 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Engine/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Engine/Private/Dispatcher/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Engine/Private/Android/*.cpp) \
-                     $(wildcard $(LOCAL_PATH)/Engine/Private/Android/JNI/*.cpp) \
-                     $(wildcard $(LOCAL_PATH)/Engine/Private/Android/Window/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Entity/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Entity/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/FileSystem/*.cpp) \
@@ -395,7 +437,7 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Reflection/Private/Wrappers/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/ReflectionDeclaration/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/ReflectionDeclaration/Private/*.cpp))
-                     
+
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -417,7 +459,7 @@ LOCAL_EXPORT_LDFLAGS := $(DV_LOCAL_EXPORT_LDFLAGS)
 LOCAL_STATIC_LIBRARIES := $(DV_LOCAL_STATIC_LIBRARIES)
 LOCAL_SHARED_LIBRARIES := $(DV_LOCAL_SHARED_LIBRARIES)
 
-LOCAL_WHOLE_STATIC_LIBRARIES := libInternalPart1
+LOCAL_WHOLE_STATIC_LIBRARIES := libInternalPart1 libModules
 
 LOCAL_SRC_FILES := \
                      $(subst $(LOCAL_PATH)/,, \
@@ -445,12 +487,12 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Scene3D/Converters/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/SceneFile/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/Systems/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Scene3D/Systems/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/Systems/Controller/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/Lod/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/Lod/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scripting/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Sound/Private/SoundSystem.cpp) \
-                     $(wildcard $(LOCAL_MODULES_PATH)/Sound/Sources/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Time/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Time/Private/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Concurrency/*.cpp) \
