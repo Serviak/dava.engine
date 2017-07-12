@@ -40,7 +40,6 @@ void Discoverer::Stop(Function<void(IController*)> callback)
 {
     DVASSERT(false == isTerminating);
     DVASSERT(callback != nullptr);
-    isTerminating = true;
     stopCallback = callback;
     loop->Post(MakeFunction(this, &Discoverer::DoStop));
 }
@@ -89,6 +88,7 @@ void Discoverer::DoStart()
 
 void Discoverer::DoStop()
 {
+    isTerminating = true;
     status = NOT_STARTED;
 
     if (socket.IsOpen() && !socket.IsClosing())
