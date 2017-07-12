@@ -15,10 +15,8 @@
 
 BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::StandardButtons buttons)
     : QDialog(parent)
-    ,
-    entity(NULL)
-    ,
-    ui(new Ui::BaseAddEntityDialog)
+    , entity(NULL)
+    , ui(new Ui::BaseAddEntityDialog)
 {
     ui->setupUi(this);
     setAcceptDrops(false);
@@ -38,7 +36,7 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::Stan
 
     ui->buttonBox->setStandardButtons(buttons);
 
-    connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const DAVA::Command*, bool)), this, SLOT(CommandExecuted(SceneEditor2*, const DAVA::Command*, bool)));
+    connect(SceneSignals::Instance(), &SceneSignals::CommandExecuted, this, &BaseAddEntityDialog::CommandExecuted);
 }
 
 BaseAddEntityDialog::~BaseAddEntityDialog()
@@ -191,7 +189,7 @@ void BaseAddEntityDialog::OnItemEdited(const QModelIndex& index)
     curScene->Exec(std::move(command));
 }
 
-void BaseAddEntityDialog::CommandExecuted(SceneEditor2* scene, const DAVA::Command* command, bool redo)
+void BaseAddEntityDialog::CommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification)
 {
     if (propEditor)
     {
