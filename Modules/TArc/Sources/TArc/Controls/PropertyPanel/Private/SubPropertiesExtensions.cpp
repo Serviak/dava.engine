@@ -1041,7 +1041,7 @@ void SubPropertyValueChildCreator::ExposeChildren(const std::shared_ptr<Property
             ExposeVectorChildren<Vector3>(parent, children);
             isOurType = true;
         }
-        else if (valueType == Type::Instance<Vector3>())
+        else if (valueType == Type::Instance<Vector4>())
         {
             ExposeVectorChildren<Vector4>(parent, children);
             isOurType = true;
@@ -1177,7 +1177,7 @@ void SubPropertyValueChildCreator::ExposeVectorChildren(const std::shared_ptr<Pr
     if (vecType == vec4Type)
     {
         DAVA::Reflection::Field field = parent->field;
-        field.key = colorA;
+        field.key = vectorW;
         children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<DAVA::int32>(children.size()), PropertyNode::VirtualProperty));
     }
 }
