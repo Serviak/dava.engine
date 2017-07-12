@@ -5,7 +5,6 @@
 #include "Utils/PackageListenerProxy.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
-#include <UI/Layouts/UILayoutSystemListener.h>
 #include <Base/BaseTypes.h>
 
 class EditorSystemsManager;
@@ -21,7 +20,7 @@ class FieldBinder;
 }
 }
 
-class EditorControlsView final : public BaseEditorSystem, PackageListener, DAVA::UILayoutSystemListener
+class EditorControlsView final : public BaseEditorSystem, PackageListener
 {
 public:
     EditorControlsView(DAVA::UIControl* canvasParent, EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
@@ -39,10 +38,9 @@ private:
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
 
-    void RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control);
+    void BeforeRelayoutedControlRendering(UIControl* control);
 
-    // UILayoutSystemListener
-    void OnControlLayouted(DAVA::UIControl* control) override;
+    void RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control);
 
     BackgroundController* CreateControlBackground(PackageBaseNode* node);
     void AddBackgroundControllerToCanvas(BackgroundController* backgroundController, size_t pos);
@@ -57,5 +55,5 @@ private:
 
     PackageListenerProxy packageListenerProxy;
 
-    QtDelayedExecutor delayedExecutor;
+    DAVA::Token relayoutSignalToken;
 };
