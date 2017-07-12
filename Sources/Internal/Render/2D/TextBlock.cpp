@@ -142,10 +142,8 @@ TextBlock::TextBlock(const TextBlock& src)
     , needPrepareInternal(src.needPrepareInternal)
     , forceBiDiSupport(src.forceBiDiSupport)
     , needMeasureLines(src.needMeasureLines)
-#if defined(LOCALIZATION_DEBUG)
     , fittingTypeUsed(src.fittingTypeUsed)
     , visualTextCroped(src.visualTextCroped)
-#endif //LOCALIZATION_DEBUG
 {
     //SetFont without Prepare
     if (nullptr != src.font)
@@ -345,7 +343,6 @@ int32 TextBlock::GetVisualAlign()
     return visualAlign;
 }
 
-#if defined(LOCALIZATION_DEBUG)
 int32 TextBlock::GetFittingOptionUsed()
 {
     CalculateCacheParamsIfNeed();
@@ -357,7 +354,6 @@ bool TextBlock::IsVisualTextCroped()
     CalculateCacheParamsIfNeed();
     return visualTextCroped;
 }
-#endif
 
 Vector2 TextBlock::GetPreferredSizeForWidth(float32 width)
 {
@@ -430,10 +426,8 @@ void TextBlock::CalculateCacheParams()
     stringSizes.clear();
     multilineStrings.clear();
 
-#if defined(LOCALIZATION_DEBUG)
     fittingTypeUsed = 0;
     visualTextCroped = false;
-#endif
 
     if (logicalText.empty() || font == nullptr)
     {
@@ -542,9 +536,7 @@ void TextBlock::CalculateCacheParams()
             {
                 if (fullWidth <= drawSize.x)
                 {
-#if defined(LOCALIZATION_DEBUG)
                     fittingTypeUsed = FITTING_POINTS;
-#endif
                     pointsStr.append(visualText, 0, i);
                     pointsStr += L"...";
                     break;
@@ -692,7 +684,6 @@ void TextBlock::CalculateCacheParams()
                 {
                     finalSize *= yMul;
                 }
-#if defined(LOCALIZATION_DEBUG)
                 {
                     float mult = DAVA::Min(xMul, yMul);
                     if (mult > 1.0f)
@@ -700,7 +691,6 @@ void TextBlock::CalculateCacheParams()
                     else if (mult < 1.0f)
                         fittingTypeUsed |= FITTING_REDUCE;
                 }
-#endif
                 renderSize = finalSize;
                 font->SetSize(renderSize);
                 textMetrics = font->GetStringMetrics(visualText);
@@ -711,9 +701,7 @@ void TextBlock::CalculateCacheParams()
         {
             visualText = pointsStr;
             textMetrics = font->GetStringMetrics(visualText);
-#if defined(LOCALIZATION_DEBUG)
             visualTextCroped = true;
-#endif
         }
 
         if (needMeasureLines)
@@ -761,9 +749,7 @@ void TextBlock::CalculateCacheParams()
                 uint32 logicalTextEnd = lastDrawableLine.start + i;
                 if (fullWidth <= drawSize.x && !StringUtils::IsWhitespace(logicalText[logicalTextEnd - 1]))
                 {
-#if defined(LOCALIZATION_DEBUG)
                     fittingTypeUsed = FITTING_POINTS;
-#endif
                     pointsStr.assign(logicalText, 0, logicalTextEnd);
                     break;
                 }
@@ -783,9 +769,7 @@ void TextBlock::CalculateCacheParams()
             textMetrics.height = fontHeight * textBox->GetLinesCount() - yOffset;
             textMetrics.drawRect.dy = int32(std::ceil(textMetrics.height));
 
-#if defined(LOCALIZATION_DEBUG)
             visualTextCroped = true;
-#endif
         }
         else if (fittingType && (requestedSize.dy >= 0 /* || requestedSize.dx >= 0*/) && visualText.size() > 3)
         {
@@ -855,7 +839,6 @@ void TextBlock::CalculateCacheParams()
                 isChanged = true;
                 finalSize *= yMul;
 
-#if defined(LOCALIZATION_DEBUG)
                 if (yMul > 1.0f)
                 {
                     fittingTypeUsed |= FITTING_ENLARGE;
@@ -864,7 +847,6 @@ void TextBlock::CalculateCacheParams()
                 {
                     fittingTypeUsed |= FITTING_REDUCE;
                 }
-#endif
 
                 renderSize = finalSize;
                 font->SetSize(renderSize);
@@ -933,12 +915,10 @@ void TextBlock::CalculateCacheParams()
                 textMetrics.drawRect.y = stringSize.drawRect.y;
             }
 
-#if defined(LOCALIZATION_DEBUG)
             if (textMetrics.width < stringSize.width)
             {
                 visualTextCroped = true;
             }
-#endif
         }
 
         if (needMeasureLines)

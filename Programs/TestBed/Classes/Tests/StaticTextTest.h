@@ -25,8 +25,10 @@ private:
     void OnFittingButtonClick(BaseObject* sender, void* data, void* callerData);
     void OnRequireTextSizeButtonClick(BaseObject* sender, void* data, void* callerData);
     void OnMultilineButtonClick(BaseObject* sender, void* data, void* callerData);
+    void UpdateDebugLabel();
 
     DAVA::UIStaticText* previewText = nullptr;
+    DAVA::UIStaticText* debugLabel = nullptr;
     DAVA::UITextField* inputText = nullptr;
     DAVA::UITextFieldDelegate* inputDelegate = nullptr;
     DAVA::UIButton* requireTextSizeButton = nullptr;

@@ -108,12 +108,10 @@ public:
     void CopyDataFrom(TextBlock* block);
 
     const Vector<float32>& GetStringSizes();
-        
 
-#if defined(LOCALIZATION_DEBUG)
+    /** Calculated fitting */
     int32 GetFittingOptionUsed();
     bool IsVisualTextCroped();
-#endif
 
     TextBlockRender* GetRenderer()
     {
@@ -180,10 +178,8 @@ private:
     int32 cacheOy;
 
     int32 fittingType = 0;
-#if defined(LOCALIZATION_DEBUG)
     int32 fittingTypeUsed = 0;
     bool visualTextCroped = false;
-#endif //LOCALIZATION_DEBUG
     int32 align;
     eUseRtlAlign useRtlAlign;
     int32 visualAlign;
