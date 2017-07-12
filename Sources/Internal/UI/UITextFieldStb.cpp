@@ -35,7 +35,7 @@ TextFieldStbImpl::TextFieldStbImpl(Window* w, UITextField* control)
     UIControlBackground* bg = staticText->GetOrCreateComponent<UIControlBackground>();
     bg->SetAlign(ALIGN_LEFT | ALIGN_BOTTOM);
     staticText->SetName("TextFieldStaticText");
-    staticText->SetMeasureEnable(true);
+    staticText->GetTextBlock()->SetMeasureEnable(true);
     staticText->SetForceBiDiSupportEnabled(true);
 
     control->GetOrCreateComponent<UIClipContentComponent>();
@@ -510,7 +510,7 @@ uint32 TextFieldStbImpl::DeleteText(uint32 position, uint32 length)
 
 const TextBox* TextFieldStbImpl::GetTextBox() const
 {
-    return staticText->GetTextBox();
+    return staticText->GetTextBlock()->GetTextBox();
 }
 
 uint32 TextFieldStbImpl::GetTextLength() const

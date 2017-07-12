@@ -91,15 +91,12 @@ public:
     const Color& GetShadowColor() const;
     const Vector2& GetShadowOffset() const;
 
-    TextBox* GetTextBox();
-
     // Animation methods for Text Color and Shadow Color.
     virtual Animation* TextColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     virtual Animation* ShadowColorAnimation(const Color& finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 1);
 
     inline bool IsForceBiDiSupportEnabled() const;
     void SetForceBiDiSupportEnabled(bool value);
-    void SetMeasureEnable(bool value);
 
     String GetFontPresetName() const;
     void SetFontByPresetName(const String& presetName);
