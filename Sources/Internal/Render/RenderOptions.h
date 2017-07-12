@@ -54,6 +54,7 @@ public:
 #endif
         DRAW_NONDEF_GLYPH,
         HIGHLIGHT_HARD_CONTROLS,
+        DEBUG_DRAW_RICH_ITEMS,
 
         DEBUG_DRAW_PARTICLES,
 
