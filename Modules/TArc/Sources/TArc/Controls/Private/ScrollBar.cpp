@@ -60,6 +60,9 @@ void ScrollBar::UpdateControl(const ControlDescriptor& changedFields)
         setSizePolicy(orientation == Qt::Horizontal ? QSizePolicy::Expanding : QSizePolicy::Maximum,
                       orientation == Qt::Horizontal ? QSizePolicy::Maximum : QSizePolicy::Expanding);
         setOrientation(orientation);
+
+        setMinimumSize(QSize(orientation == Qt::Horizontal ? 0 : sizeHint().width(),
+                             orientation == Qt::Horizontal ? sizeHint().height() : 0));
     }
 
     if (changedFields.IsChanged(Fields::Visible))
