@@ -128,6 +128,14 @@ inline T Clamp(T val, T a, T b)
 #define Snprintf snprintf
 #endif
 
+
+#if defined(__DAVAENGINE_WINDOWS__)
+#define strnicmp _strnicmp 
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#define strnicmp strncasecmp 
+#else
+#endif
+
 template <class TYPE>
 void SafeDelete(TYPE*& d)
 {
