@@ -38,7 +38,7 @@ private:
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
 
-    void BeforeRelayoutedControlRendering(UIControl* control);
+    void BeforeRelayoutedControlRendering();
 
     void RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control);
 
