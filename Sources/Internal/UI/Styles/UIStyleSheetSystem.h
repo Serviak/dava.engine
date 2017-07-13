@@ -51,7 +51,6 @@ public:
     ~UIStyleSheetSystem() override;
 
     void SetCurrentScreen(const RefPtr<UIScreen>& screen);
-    void SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition);
     void SetPopupContainer(const RefPtr<UIControl>& popupContainer);
     void SetListener(UIStyleSheetSystemListener* listener);
 
@@ -95,7 +94,6 @@ private:
     bool needUpdate = false;
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIControl> popupContainer;
-    RefPtr<UIScreenTransition> currentScreenTransition;
 
     UIStyleSheetSystemListener* listener = nullptr;
 };

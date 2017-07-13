@@ -54,6 +54,7 @@ public:
     bool IsIntegral() const;
     bool IsFloatingPoint() const;
     bool IsEnum() const;
+    bool IsAbstract() const;
 
     const Type* Decay() const;
     const Type* Deref() const;
@@ -74,7 +75,8 @@ private:
         isTrivial,
         isIntegral,
         isFloatingPoint,
-        isEnum
+        isEnum,
+        isAbstract
     };
 
     size_t size = 0;
