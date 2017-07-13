@@ -106,7 +106,8 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
     int32 firstIndex = data.GetFirstChildIndex();
 
     bool newLineBeforeNext = false;
-    int32 childrenInLine = 0;
+    bool stickItemBeforeNext = false;
+    int32 stickChildrenInLine = 0;
     float32 usedSize = 0.0f;
 
     for (int32 index = data.GetFirstChildIndex(); index <= data.GetLastChildIndex(); index++)
@@ -135,56 +136,90 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
 
         bool newLineBeforeThis = newLineBeforeNext;
         newLineBeforeNext = false;
+        bool stickItemBeforeThis = stickItemBeforeNext;
+        stickItemBeforeNext = false;
+
         UIFlowLayoutHintComponent* hint = childData.GetControl()->GetComponent<UIFlowLayoutHintComponent>();
         if (hint != nullptr)
         {
             newLineBeforeThis |= hint->IsNewLineBeforeThis();
             newLineBeforeNext = hint->IsNewLineAfterThis();
+            stickItemBeforeThis |= hint->IsStickItemBeforeThis();
+            stickItemBeforeNext = hint->IsStickItemAfterThis();
+        }
+        if (stickItemBeforeThis)
+        {
+            childData.SetFlag(ControlLayoutData::FLAG_STICK_THIS);
         }
 
         if (newLineBeforeThis && index > firstIndex)
         {
-            if (childrenInLine > 0)
+            if (stickChildrenInLine > 0)
             {
-                lines.emplace_back(LineInfo(firstIndex, index - 1, childrenInLine, usedSize));
+                lines.emplace_back(LineInfo(firstIndex, index - 1, stickChildrenInLine, usedSize));
             }
             firstIndex = index;
-            childrenInLine = 0;
+            stickChildrenInLine = 0;
             usedSize = 0.0f;
         }
 
         float32 restSize = data.GetWidth() - usedSize;
-        restSize -= horizontalPadding * 2.0f + horizontalSpacing * childrenInLine + childSize;
+        restSize -= horizontalPadding * 2.0f + horizontalSpacing * (stickChildrenInLine - 1) + childSize;
+        if (!stickItemBeforeThis)
+        {
+            restSize -= horizontalSpacing;
+        }
+
         if (restSize < -LayoutHelpers::EPSILON)
         {
+            if (stickItemBeforeThis && index > firstIndex)
+            {
+                int32 i = index - 1;
+                while (i > firstIndex)
+                {
+                    usedSize -= layoutData[i].GetWidth();
+                    if (!layoutData[i].HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+                    {
+                        break;
+                    }
+                    i--;
+                }
+                stickChildrenInLine--;
+                index = i;
+                childSize = layoutData[index].GetWidth();
+            }
+
             if (index > firstIndex)
             {
-                if (childrenInLine > 0)
+                if (stickChildrenInLine > 0)
                 {
-                    lines.emplace_back(LineInfo(firstIndex, index - 1, childrenInLine, usedSize));
+                    lines.emplace_back(LineInfo(firstIndex, index - 1, stickChildrenInLine, usedSize));
                 }
                 firstIndex = index;
-                childrenInLine = 1;
+                stickChildrenInLine = 1;
                 usedSize = childSize;
             }
             else
             {
                 lines.emplace_back(LineInfo(firstIndex, index, 1, childSize));
                 firstIndex = index + 1;
-                childrenInLine = 0;
+                stickChildrenInLine = 0;
                 usedSize = 0.0f;
             }
         }
         else
         {
-            childrenInLine++;
+            if (!stickItemBeforeThis || index == firstIndex)
+            {
+                stickChildrenInLine++;
+            }
             usedSize += childSize;
         }
     }
 
-    if (firstIndex <= data.GetLastChildIndex() && childrenInLine > 0)
+    if (firstIndex <= data.GetLastChildIndex() && stickChildrenInLine > 0)
     {
-        lines.emplace_back(LineInfo(firstIndex, data.GetLastChildIndex(), childrenInLine, usedSize));
+        lines.emplace_back(LineInfo(firstIndex, data.GetLastChildIndex(), stickChildrenInLine, usedSize));
     }
 }
 
@@ -227,19 +262,35 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
     SortLineItemsByContentDirection(firstIndex, lastIndex, order, realLastIndex);
 
     // Layout controls in correct order
+    bool first = true;
     for (uint32 i : order)
     {
         ControlLayoutData& childData = layoutData[i];
+        bool stickThis = childData.HasFlag(ControlLayoutData::FLAG_STICK_THIS);
+
+        if (!first && !stickThis)
+        {
+            if (inverse)
+            {
+                position -= spacing;
+            }
+            else
+            {
+                position += spacing;
+            }
+        }
+        first = false;
+
         float32 size = childData.GetWidth();
         childData.SetPosition(Vector2::AXIS_X, inverse ? position - size : position);
 
         if (inverse)
         {
-            position -= size + spacing;
+            position -= size;
         }
         else
         {
-            position += size + spacing;
+            position += size;
         }
     }
 
