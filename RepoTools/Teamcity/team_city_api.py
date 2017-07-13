@@ -2,6 +2,7 @@
 import sys
 import requests
 import xml.etree.ElementTree as ET
+import argparse
 
 __TeamCity = None
 
@@ -62,6 +63,22 @@ class TeamCityRequest:
 
         return root.attrib
 
+
+    def get_build_properties(self, build_id ):
+        response = self.__request("builds/id:{}/resulting-properties/".format(build_id))
+        root = ET.fromstring(response.content)
+
+        properties = root.findall('property')
+
+        properties_dict = {}
+
+        for property in properties:
+            if 'name' in property.attrib and 'value' in property.attrib:
+                properties_dict.update( { property.attrib['name'] : property.attrib['value'] } )
+
+        return properties_dict
+
+
     def get_build_status(self, build_id ):
         response = self.__request("builds/id:{}/".format(build_id))
         root = ET.fromstring(response.content)
@@ -84,8 +101,17 @@ class TeamCityRequest:
 
         root.attrib['statusText'] = statusText
 
-        build_type = root.find( 'buildType' )
+        dependencies = root.find('snapshot-dependencies')
 
+        if dependencies != None:
+            build_dependencies = []
+
+            for build in dependencies.findall('build'):
+                build_dependencies += [build.attrib]
+
+            root.attrib['build_dependencies'] = build_dependencies
+
+        build_type = root.find( 'buildType' )
 
         root.attrib['project_id' ] = build_type.attrib[ 'projectId' ]
         root.attrib['config_name'] = build_type.attrib[ 'name' ]
@@ -108,11 +134,25 @@ class TeamCityRequest:
         return root.attrib
 
 
+def argparse_add_argument( arg_parser ):
+    arg_parser.add_argument('--teamcity_url', required=True)
+    arg_parser.add_argument('--teamcity_login', required=True)
+    arg_parser.add_argument('--teamcity_password', required=True)
+
+
 def init( teamcity_url, login, password ):
     global __TeamCity
     __TeamCity = TeamCityRequest( teamcity_url,
                                   login,
                                   password )
+    return __TeamCity
+
+def init_args( args ):
+    global __TeamCity
+    __TeamCity = TeamCityRequest( args.teamcity_url,
+                                  args.teamcity_login,
+                                  args.teamcity_password )
+    return __TeamCity
 
 def ptr():
     return __TeamCity
