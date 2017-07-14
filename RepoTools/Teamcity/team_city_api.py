@@ -149,8 +149,6 @@ class TeamCityRequest:
     def agent_info_by_name(self, agent_name ):
         response = self.__request("agents/name:{}/".format( agent_name ))
         root = ET.fromstring( response.content )
-
-
         return root.attrib
 
 
