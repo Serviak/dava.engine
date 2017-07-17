@@ -51,7 +51,9 @@ def main():
     if args.agent_name:
         agent_id = teamcity.agent_info_by_name( args.agent_name )['id']
 
-    teamcity.run_build( args.configuration_name, args.branch, properties, triggering_options, agent_id )
+    run_build_result = teamcity.run_build( args.configuration_name, args.branch, properties, triggering_options, agent_id )
+
+    print run_build_result
 
 if __name__ == '__main__':
     main()

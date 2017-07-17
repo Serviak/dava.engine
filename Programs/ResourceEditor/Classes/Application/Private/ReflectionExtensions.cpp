@@ -54,50 +54,68 @@ void RegisterFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
     EmplaceFieldMeta<SlotComponent>(DAVA::FastName("configPath"), CreateExistsFile());
 }
 
-void RegisterComponentsExtensions()
+void RegisterComponentExtensions(const TypeInheritance::Info& type)
 {
     const Type* transformComponent = Type::Instance<TransformComponent>();
     const Type* actionComponent = Type::Instance<ActionComponent>();
     const Type* soundComponent = Type::Instance<SoundComponent>();
     const Type* waveComponent = Type::Instance<WaveComponent>();
     const Type* componentType = Type::Instance<Component>();
+
+    const Vector<TypeInheritance::Info> derivedTypes = type.type->GetInheritance()->GetDerivedTypes();
+    for (const TypeInheritance::Info& derived : derivedTypes)
+    {
+        RegisterComponentExtensions(derived);
+    }
+
+    if (type.type == transformComponent)
+    {
+        return;
+    }
+
+    if (type.type->IsAbstract())
+    {
+        return;
+    }
+
+    ReflectedType* refType = const_cast<ReflectedType*>(ReflectedTypeDB::GetByType(type.type));
+    if (refType == nullptr)
+    {
+        DVASSERT(false, "We have a component that derived from DAVA::Component, but without created ReflectedType");
+    }
+
+    const ReflectedStructure* structure = refType->GetStructure();
+    DVASSERT(structure != nullptr, "Somebody has forgotten to declare reflected structure for component");
+
+    M::CommandProducerHolder holder;
+    if (structure->meta == nullptr || structure->meta->GetMeta<M::CantBeDeletedManualyComponent>() == nullptr)
+    {
+        holder.AddCommandProducer(CreateRemoveComponentProducer());
+    }
+
+    if (type.type == actionComponent)
+    {
+        holder.AddCommandProducer(CreateActionsEditProducer());
+    }
+    else if (type.type == soundComponent)
+    {
+        holder.AddCommandProducer(CreateSoundsEditProducer());
+    }
+    else if (type.type == waveComponent)
+    {
+        holder.AddCommandProducer(CreateWaveTriggerProducer());
+    }
+
+    EmplaceTypeMeta(refType, std::move(holder));
+}
+
+void RegisterComponentsExtensions()
+{
+    const Type* componentType = Type::Instance<Component>();
     const Vector<TypeInheritance::Info> derivedTypes = componentType->GetInheritance()->GetDerivedTypes();
     for (const TypeInheritance::Info& derived : derivedTypes)
     {
-        if (derived.type == transformComponent)
-        {
-            continue;
-        }
-
-        ReflectedType* refType = const_cast<ReflectedType*>(ReflectedTypeDB::GetByType(derived.type));
-        if (refType == nullptr)
-        {
-            DVASSERT(false, "We has component that derived from DAVA::Component, but without created ReflectedType");
-        }
-
-        const ReflectedStructure* structure = refType->GetStructure();
-        DVASSERT(structure != nullptr, "Somebody has forgotten to declare reflected structure for component");
-
-        M::CommandProducerHolder holder;
-        if (structure->meta == nullptr || structure->meta->GetMeta<M::CantBeDeletedManualyComponent>() == nullptr)
-        {
-            holder.AddCommandProducer(CreateRemoveComponentProducer());
-        }
-
-        if (derived.type == actionComponent)
-        {
-            holder.AddCommandProducer(CreateActionsEditProducer());
-        }
-        else if (derived.type == soundComponent)
-        {
-            holder.AddCommandProducer(CreateSoundsEditProducer());
-        }
-        else if (derived.type == waveComponent)
-        {
-            holder.AddCommandProducer(CreateWaveTriggerProducer());
-        }
-
-        EmplaceTypeMeta(refType, std::move(holder));
+        RegisterComponentExtensions(derived);
     }
 }
 
