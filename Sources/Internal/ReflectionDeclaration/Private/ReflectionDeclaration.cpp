@@ -96,7 +96,6 @@
 #include "UI/Update/UIUpdateComponent.h"
 #include "UI/Update/UICustomUpdateDeltaComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
-#include "UI/Text/UITextComponent.h"
 #include "UI/RichContent/UIRichContentObjectComponent.h"
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/Scroll/UIScrollComponent.h"
