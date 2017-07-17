@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PARTICLE_LAYER_H__
-#define __DAVAENGINE_PARTICLE_LAYER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
@@ -37,7 +36,6 @@ struct ParticleLayer : public BaseObject
     float32 stripeVScrollSpeed = -0.01f;
     float32 stripeFadeDistanceFromTop = 0.0f;
     RefPtr<PropertyLine<Color>> stripeColorOverLife;
-    bool stripeInheritPositionForBase = false;
     bool usePerspectiveMapping = false;
 
     float32 maxStripeOverLife = 0.0f;
@@ -127,7 +125,6 @@ struct ParticleLayer : public BaseObject
     eBlending blending;
     bool enableFog;
     bool enableFrameBlend;
-    bool inheritPosition; //for super emitter - if true the whole emitter would be moved, otherwise just emission point
 
     bool isDisabled;
 
@@ -218,6 +215,12 @@ struct ParticleLayer : public BaseObject
     ParticleEmitter* innerEmitter = nullptr;
     FilePath innerEmitterPath;
 
+    bool GetInheritPosition() const;
+    void SetInheritPosition(bool inheritPosition_);
+
+    bool GetInheritPositionForStripeBase() const;
+    void SetInheritPositionForStripeBase(bool inheritPositionForBase_);
+
 private:
     struct LayerTypeNamesInfo
     {
@@ -228,6 +231,9 @@ private:
 
     void FillSizeOverlifeXY(RefPtr<PropertyLine<float32>> sizeOverLife);
     void UpdateSizeLine(PropertyLine<Vector2>* line, bool rescaleSize, bool swapXY); //conversion from old format
+
+    bool stripeInheritPositionForBase = false; // For stripe particles. Move only base vertex when in stripe.
+    bool inheritPosition; //for super emitter - if true the whole emitter would be moved, otherwise just emission point
 
 public:
     INTROSPECTION_EXTEND(ParticleLayer, BaseObject, nullptr);
@@ -251,6 +257,30 @@ inline float32 ParticleLayer::CalculateMaxStripeSizeOverLife()
     maxStripeOverLife = (*max).value;
     return maxStripeOverLife;
 }
+
+inline bool ParticleLayer::GetInheritPosition() const
+{
+    return inheritPosition;
 }
 
-#endif // __DAVAENGINE_PARTICLE_LAYER_H__
+inline void ParticleLayer::SetInheritPosition(bool inheritPosition_)
+{
+    if (inheritPosition_)
+        stripeInheritPositionForBase = false;
+
+    inheritPosition = inheritPosition_;
+}
+
+inline bool ParticleLayer::GetInheritPositionForStripeBase() const
+{
+    return stripeInheritPositionForBase;
+}
+
+inline void ParticleLayer::SetInheritPositionForStripeBase(bool inheritPositionForBase_)
+{
+    if (inheritPositionForBase_)
+        inheritPosition = false;
+
+    stripeInheritPositionForBase = inheritPositionForBase_;
+}
+}
