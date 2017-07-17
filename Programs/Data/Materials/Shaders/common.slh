@@ -46,6 +46,7 @@
 #ensuredefined VERTEX_COLOR 0
 
 #ensuredefined FLATCOLOR 0
+#ensuredefined FLATALBEDO 0
 
 #ensuredefined VERTEX_FOG 0
 
