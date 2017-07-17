@@ -110,34 +110,13 @@
 #ensuredefined VIEW_ALBEDO 0
 
 #ensuredefined HEATMAP 0
-
-#if !defined PARTICLES_FLOWMAP
-    #define PARTICLES_FLOWMAP 0
-#endif
-
-#if !defined PARTICLES_NOISE
-    #define PARTICLES_NOISE 0
-#endif
-
-#if !defined PARTICLES_NOISE_AFFECT_FLOW
-    #define PARTICLES_NOISE_AFFECT_FLOW 0
-#endif
-
-#if !defined PARTICLES_FRES_TO_ALPHA
-    #define PARTICLES_FRES_TO_ALPHA 0
-#endif
-
-#if !defined PARTICLES_FLOWMAP_ANIMATION
-    #define PARTICLES_FLOWMAP_ANIMATION 0
-#endif
-
-#if !defined PARTICLES_APHA_REMAP
-    #define PARTICLES_APHA_REMAP 0
-#endif
-
-#if !defined PARTICLES_PERSPECTIVE_MAPPING
-    #define PARTICLES_PERSPECTIVE_MAPPING 0
-#endif
+#ensuredefined PARTICLES_FLOWMAP 0
+#ensuredefined PARTICLES_NOISE 0
+#ensuredefined PARTICLES_NOISE_AFFECT_FLOW 0
+#ensuredefined PARTICLES_FRES_TO_ALPHA 0
+#ensuredefined PARTICLES_FLOWMAP_ANIMATION 0
+#ensuredefined PARTICLES_APHA_REMAP 0
+#ensuredefined PARTICLES_PERSPECTIVE_MAPPING 0
 
 #ensuredefined FLOWMAP_SKY 0
 #if FLOWMAP_SKY
