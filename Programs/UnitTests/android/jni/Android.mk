@@ -17,6 +17,8 @@ LOCAL_MODULE := UnitTests
 LOCAL_C_INCLUDES := $(DV_PROJECT_ROOT)/Classes
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Sources/Tools
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/SampleModule
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/Spine/Sources
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/Spine/Libs/include
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/EmbeddedWebServer
 
 # set exported includes
@@ -32,7 +34,8 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(DAVA_ROOT)/Sources/Tools/TeamcityOutput/*.cpp) \
 	$(wildcard $(DAVA_ROOT)/Sources/Tools/CommandLine/CommandLineParser.cpp) \
 	$(wildcard $(DAVA_ROOT)/Modules/SampleModule/Private/*.cpp) \
-	$(wildcard $(DAVA_ROOT)/Modules/EmbeddedWebServer/Private/EmbeddedWebServer.cpp))
+	$(wildcard $(DAVA_ROOT)/Modules/EmbeddedWebServer/Private/EmbeddedWebServer.cpp) \
+	$(wildcard $(DAVA_ROOT)/Modules/Spine/UnitTests/*.cpp))
 
 LOCAL_CPPFLAGS += -std=c++14
 
