@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PARTICLE_H__
-#define __DAVAENGINE_PARTICLE_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
@@ -24,9 +23,7 @@ struct StripeNode
     {
     }
 
-    StripeNode()
-    {
-    }
+    StripeNode() = default;
 };
 
 struct StripeData
@@ -85,5 +82,3 @@ struct Particle
     StripeData stripe = {};
 };
 }
-
-#endif // __DAVAENGINE_PARTICLE_H__
