@@ -247,7 +247,7 @@ inline float32 ParticleLayer::CalculateMaxStripeSizeOverLife()
         return 1.0f;
 
     isMaxStripeOverLifeDirty = false;
-    auto& keys = stripeSizeOverLifeProp->GetValues();
+    Vector<PropertyLine<float32>::PropertyKey>& keys = stripeSizeOverLifeProp->GetValues();
     auto max = std::max_element(keys.begin(), keys.end(),
                                 [](PropertyLine<float32>::PropertyKey& a, PropertyLine<float32>::PropertyKey& b)
                                 {
