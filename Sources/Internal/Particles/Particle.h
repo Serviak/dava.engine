@@ -35,7 +35,6 @@ struct StripeData
     bool isActive = true;
     float32 uvOffset = 0.0f;
     float32 prevBaseLen = 0.0f;
-    float32 prevBaseDelta = 0.0f;
 };
 
 struct Particle
