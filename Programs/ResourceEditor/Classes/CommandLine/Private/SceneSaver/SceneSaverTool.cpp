@@ -1,9 +1,11 @@
 #include "CommandLine/SceneSaverTool.h"
 #include "CommandLine/Private/OptionName.h"
 #include "CommandLine/Private/SceneConsoleHelper.h"
+#include "Classes/Project/ProjectManagerData.h"
 #include "Utils/SceneSaver/SceneSaver.h"
-#include "Logger/Logger.h"
-#include "TArc/Utils/ModuleCollection.h"
+
+#include <Logger/Logger.h>
+#include <TArc/Utils/ModuleCollection.h>
 
 SceneSaverTool::SceneSaverTool(const DAVA::Vector<DAVA::String>& commandLine)
     : CommandLineModule(commandLine, "-scenesaver")
@@ -31,6 +33,13 @@ bool SceneSaverTool::PostInitInternal()
         return false;
     }
     inFolder.MakeDirectoryPathname();
+
+    dataSourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
+    if (dataSourceFolder.IsEmpty())
+    {
+        DAVA::Logger::Error("DataSource folder was not found");
+        return false;
+    }
 
     outFolder = options.GetOption(OptionName::OutDir).AsString();
     filename = options.GetOption(OptionName::ProcessFile).AsString();
@@ -88,6 +97,7 @@ bool SceneSaverTool::PostInitInternal()
 
 DAVA::TArc::ConsoleModule::eFrameResult SceneSaverTool::OnFrameInternal()
 {
+    DAVA::FilePath::AddResourcesFolder(dataSourceFolder);
     switch (commandAction)
     {
     case SceneSaverTool::eAction::ACTION_SAVE:
@@ -118,6 +128,7 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneSaverTool::OnFrameInternal()
         DAVA::Logger::Error("Unhandled action!");
         break;
     }
+    DAVA::FilePath::RemoveResourcesFolder(dataSourceFolder);
 
     return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
 }

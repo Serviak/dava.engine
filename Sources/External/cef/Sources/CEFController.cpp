@@ -4,7 +4,6 @@
 
 #include "Base/TypeHolders.h"
 #include "Concurrency/Thread.h"
-#include "Core/Core.h"
 #include "Engine/Engine.h"
 #include "FileSystem/FileSystem.h"
 #include "Functional/Signal.h"
@@ -93,15 +92,10 @@ CEFControllerImpl::CEFControllerImpl()
     {
         auto onShutdown = [] { cefControllerGlobal = nullptr; };
         auto onUpdate = [this](float32) { Update(); };
-#if defined(__DAVAENGINE_COREV2__)
+
         Engine* e = Engine::Instance();
         e->update.Connect(this, onUpdate);
         e->gameLoopStopped.Connect(this, onShutdown);
-#else
-        Core* core = Core::Instance();
-        core->systemAppFinished.Connect(this, onShutdown);
-        core->updated.Connect(this, onUpdate);
-#endif
     }
     else
     {
@@ -116,15 +110,9 @@ CEFControllerImpl::~CEFControllerImpl()
     {
         if (schemeRegistered)
         {
-#if defined(__DAVAENGINE_COREV2__)
             Engine* e = Engine::Instance();
             e->update.Disconnect(this);
             e->gameLoopStopped.Disconnect(this);
-#else
-            Core* core = Core::Instance();
-            core->systemAppFinished.Disconnect(this);
-            core->updated.Disconnect(this);
-#endif
         }
 
         do

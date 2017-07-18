@@ -24,17 +24,11 @@ static Vector2 TransformInputPoint(const Vector2& inputPoint, const Vector2& con
     return (inputPoint - controlAbsPosition) / controlScale;
 }
 
-#if defined(__DAVAENGINE_COREV2__)
 TextFieldStbImpl::TextFieldStbImpl(Window* w, UITextField* control)
-#else
-TextFieldStbImpl::TextFieldStbImpl(UITextField* control)
-#endif
     : staticText(new UIStaticText(Rect(Vector2::Zero, control->GetSize())))
     , control(control)
     , stb(new StbTextEditBridge(this))
-#if defined(__DAVAENGINE_COREV2__)
     , window(w)
-#endif
 {
     stb->SetSingleLineMode(true); // Set default because UITextField is single line by default
     UIControlBackground* bg = staticText->GetOrCreateComponent<UIControlBackground>();
@@ -53,21 +47,17 @@ TextFieldStbImpl::~TextFieldStbImpl()
 
 void TextFieldStbImpl::Initialize()
 {
-#if defined(__DAVAENGINE_COREV2__)
     window->sizeChanged.Connect(this, &TextFieldStbImpl::OnWindowSizeChanged);
     Engine::Instance()->windowDestroyed.Connect(this, &TextFieldStbImpl::OnWindowDestroyed);
-#endif
 }
 
 void TextFieldStbImpl::OwnerIsDying()
 {
-#if defined(__DAVAENGINE_COREV2__)
     if (window != nullptr)
     {
         window->sizeChanged.Disconnect(this);
         Engine::Instance()->windowDestroyed.Disconnect(this);
     }
-#endif
 }
 
 void TextFieldStbImpl::OnWindowSizeChanged(Window* w, Size2f windowSize, Size2f surfaceSize)
@@ -85,9 +75,7 @@ void TextFieldStbImpl::OnWindowSizeChanged(Window* w, Size2f windowSize, Size2f 
 void TextFieldStbImpl::OnWindowDestroyed(Window* w)
 {
     OwnerIsDying();
-#if defined(__DAVAENGINE_COREV2__)
     window = nullptr;
-#endif
 }
 
 void TextFieldStbImpl::SetDelegate(UITextFieldDelegate* d)
@@ -621,14 +609,12 @@ void TextFieldStbImpl::UpdateCursor(uint32 cursorPos, bool insertMode)
     Rect r;
     r.dx = DEFAULT_CURSOR_WIDTH;
 
-#if defined(__DAVAENGINE_COREV2__)
     // Ensure cursor width is not less than 1 physical pixel for properly
     // drawing when window is very small
     VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
     r.dx = vcs->ConvertVirtualToPhysicalX(r.dx);
     r.dx = std::max(r.dx, 1.f);
     r.dx = vcs->ConvertPhysicalToVirtualX(r.dx);
-#endif
 
     int32 charsCount = tb->GetCharactersCount();
     if (charsCount > 0)
@@ -734,13 +720,8 @@ void TextFieldStbImpl::Input(UIEvent* currentInput)
     bool textCanChanged = false;
     WideString prevText(text);
 
-#if defined(__DAVAENGINE_COREV2__)
     eModifierKeys modifiers = currentInput->modifiers;
     bool isAlt = (modifiers & eModifierKeys::ALT) == eModifierKeys::ALT;
-#else
-    uint32 modifiers = currentInput->modifiers;
-    bool isAlt = (modifiers & UIEvent::Modifier::ALT_DOWN) == UIEvent::Modifier::ALT_DOWN;
-#endif
 
     if (currentInput->phase == UIEvent::Phase::KEY_DOWN ||
         currentInput->phase == UIEvent::Phase::KEY_DOWN_REPEAT)
