@@ -28,8 +28,8 @@ struct ParticleLayer : public BaseObject
     float32 stripeLifetime = 20.0f;
     float32 stripeRate = 0.5f;
     float32 stripeStartSize = 1.0f;
-    RefPtr<PropertyLine<float32>> stripeSizeOverLifeProp;
-    RefPtr<PropertyLine<float32>> stripeTextureTile;
+    RefPtr<PropertyLine<float32>> stripeSizeOverLife;
+    RefPtr<PropertyLine<float32>> stripeTextureTileOverLife;
     RefPtr<PropertyLine<float32>> stripeNoiseUScrollSpeedOverLife;
     RefPtr<PropertyLine<float32>> stripeNoiseVScrollSpeedOverLife;
     float32 stripeUScrollSpeed = 0.0f;
@@ -243,11 +243,11 @@ inline float32 ParticleLayer::CalculateMaxStripeSizeOverLife()
 {
     if (!isMaxStripeOverLifeDirty)
         return maxStripeOverLife;
-    if (stripeSizeOverLifeProp.Get() == nullptr)
+    if (stripeSizeOverLife.Get() == nullptr)
         return 1.0f;
 
     isMaxStripeOverLifeDirty = false;
-    Vector<PropertyLine<float32>::PropertyKey>& keys = stripeSizeOverLifeProp->GetValues();
+    Vector<PropertyLine<float32>::PropertyKey>& keys = stripeSizeOverLife->GetValues();
     auto max = std::max_element(keys.begin(), keys.end(),
                                 [](PropertyLine<float32>::PropertyKey& a, PropertyLine<float32>::PropertyKey& b)
                                 {
