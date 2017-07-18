@@ -107,6 +107,7 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
 
     bool newLineBeforeNext = false;
     bool stickItemBeforeNext = false;
+    bool stickHardBeforeNext = false;
     BiDiHelper::Direction prevDirection = BiDiHelper::NEUTRAL;
     int32 stickChildrenInLine = 0;
     float32 usedSize = 0.0f;
@@ -139,6 +140,8 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
         newLineBeforeNext = false;
         bool stickItemBeforeThis = stickItemBeforeNext;
         stickItemBeforeNext = false;
+        bool stickHardBeforeThis = stickHardBeforeNext;
+        stickHardBeforeNext = false;
         BiDiHelper::Direction direction = inverse ? BiDiHelper::RTL : BiDiHelper::LTR;
 
         UIFlowLayoutHintComponent* hint = childData.GetControl()->GetComponent<UIFlowLayoutHintComponent>();
@@ -148,6 +151,8 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
             newLineBeforeNext = hint->IsNewLineAfterThis();
             stickItemBeforeThis |= hint->IsStickItemBeforeThis();
             stickItemBeforeNext = hint->IsStickItemAfterThis();
+            stickHardBeforeThis |= hint->IsStickHardBeforeThis();
+            stickHardBeforeNext = hint->IsStickHardAfterThis();
             direction = hint->GetContentDirection();
         }
 
@@ -155,12 +160,17 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
         {
             // Skip sticking if previous control's direction is different
             stickItemBeforeThis = false;
+            stickHardBeforeThis = false;
         }
         prevDirection = direction;
 
         if (stickItemBeforeThis)
         {
             childData.SetFlag(ControlLayoutData::FLAG_STICK_THIS);
+            if (stickHardBeforeThis)
+            {
+                childData.SetFlag(ControlLayoutData::FLAG_STICK_HARD);
+            }
         }
 
         if (direction == BiDiHelper::Direction::LTR)
@@ -192,13 +202,14 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
 
         if (restSize < -LayoutHelpers::EPSILON)
         {
-            if (stickItemBeforeThis && index > firstIndex)
+            if (stickItemBeforeThis && stickHardBeforeThis && index > firstIndex)
             {
                 int32 i = index - 1;
                 while (i > firstIndex)
                 {
-                    usedSize -= layoutData[i].GetWidth();
-                    if (!layoutData[i].HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+                    ControlLayoutData& ld = layoutData[i];
+                    usedSize -= ld.GetWidth();
+                    if (!ld.HasFlag(ControlLayoutData::FLAG_STICK_HARD))
                     {
                         break;
                     }
@@ -320,12 +331,9 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
                 if (stickNext && pairedDirection)
                 {
                     // Skip space
-                    stickNext = false;
                 }
                 else
                 {
-                    stickNext = stickThis && !sameDirection;
-
                     if (inverse)
                     {
                         position -= spacing;
@@ -335,6 +343,7 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
                         position += spacing;
                     }
                 }
+                stickNext = stickThis && !sameDirection;
             }
         }
 
