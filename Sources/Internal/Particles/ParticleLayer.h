@@ -108,7 +108,7 @@ struct ParticleLayer : public BaseObject
     ScopedPtr<Sprite> noise;
     bool enableNoise = false;
     bool enableNoiseScroll = false;
-    void SetNoise(const FilePath& noisePath);
+    void SetNoise(const FilePath& spritePath_);
 
     //////////////////////////////////////////////////////////////////////////
     float32 alphaRemapLoopCount = 1.0f;
