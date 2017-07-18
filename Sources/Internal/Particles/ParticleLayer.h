@@ -113,14 +113,13 @@ struct ParticleLayer : public BaseObject
     bool enableNoiseScroll = false;
     void SetNoise(const FilePath& spritePath_);
 
-    //////////////////////////////////////////////////////////////////////////
+    // Alpha remap settings.
     float32 alphaRemapLoopCount = 1.0f;
     FilePath alphaRemapPath;
     ScopedPtr<Sprite> alphaRemapSprite;
     bool enableAlphaRemap = false;
     void SetAlphaRemap(const FilePath& spritePath_);
     RefPtr<PropertyLine<float32>> alphaRemapOverLife;
-    //////////////////////////////////////////////////////////////////////////
 
     bool isLooped;
     bool isLong;
