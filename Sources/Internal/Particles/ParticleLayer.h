@@ -232,7 +232,7 @@ private:
     void FillSizeOverlifeXY(RefPtr<PropertyLine<float32>> sizeOverLife);
     void UpdateSizeLine(PropertyLine<Vector2>* line, bool rescaleSize, bool swapXY); //conversion from old format
 
-    bool stripeInheritPositionForBase = false; // For stripe particles. Move only base vertex when in stripe.
+    bool stripeInheritPositionOnlyForBaseVertex = false; // For stripe particles. Move only base vertex when in stripe.
     bool inheritPosition; //for super emitter - if true the whole emitter would be moved, otherwise just emission point
 
 public:
@@ -266,21 +266,21 @@ inline bool ParticleLayer::GetInheritPosition() const
 inline void ParticleLayer::SetInheritPosition(bool inheritPosition_)
 {
     if (inheritPosition_)
-        stripeInheritPositionForBase = false;
+        stripeInheritPositionOnlyForBaseVertex = false;
 
     inheritPosition = inheritPosition_;
 }
 
 inline bool ParticleLayer::GetInheritPositionForStripeBase() const
 {
-    return stripeInheritPositionForBase;
+    return stripeInheritPositionOnlyForBaseVertex;
 }
 
-inline void ParticleLayer::SetInheritPositionForStripeBase(bool inheritPositionForBase_)
+inline void ParticleLayer::SetInheritPositionForStripeBase(bool inheritPositionOnlyForBaseVertex_)
 {
-    if (inheritPositionForBase_)
+    if (inheritPositionOnlyForBaseVertex_)
         inheritPosition = false;
 
-    stripeInheritPositionForBase = inheritPositionForBase_;
+    stripeInheritPositionOnlyForBaseVertex = inheritPositionOnlyForBaseVertex_;
 }
 }
