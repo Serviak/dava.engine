@@ -67,9 +67,6 @@ struct Particle
     float32 baseNoiseVScrollSpeed = 0.0f;
     float32 currNoiseVOffset = 0.0f;
 
-    float32 fresnelToAlphaPower = 0.0f;
-    float32 fresnelToAlphaBias = 0.0f;
-
     float32 currRadius = 0.0f; //for bbox computation
     float32 alphaRemap = 0.0f;
     Vector2 baseSize = {}, currSize = {};
