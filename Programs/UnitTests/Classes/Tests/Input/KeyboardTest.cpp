@@ -165,6 +165,8 @@ DAVA_TESTCLASS (KeyboardTestClass)
 #if defined(__DAVAENGINE_WINDOWS__)
                 while (currentElement == eInputElements::KB_LCMD ||
                        currentElement == eInputElements::KB_RCMD ||
+                       currentElement == eInputElements::KB_UNUSED1 ||
+                       currentElement == eInputElements::KB_UNUSED2 ||
                        // TODO: these are just not implemented yet for this platform
                        currentElement == eInputElements::KB_MEDIA_PREVIOUS ||
                        currentElement == eInputElements::KB_MEDIA_NEXT ||
@@ -174,7 +176,14 @@ DAVA_TESTCLASS (KeyboardTestClass)
                        currentElement == eInputElements::KB_VOLUME_UP ||
                        currentElement == eInputElements::KB_VOLUME_DOWN ||
                        currentElement == eInputElements::KB_VOLUME_MUTE ||
-                       currentElement == eInputElements::KB_FUNCTION)
+                       currentElement == eInputElements::KB_FUNCTION ||
+                       currentElement == eInputElements::KB_F13 ||
+                       currentElement == eInputElements::KB_F14 ||
+                       currentElement == eInputElements::KB_F15 ||
+                       currentElement == eInputElements::KB_F16 ||
+                       currentElement == eInputElements::KB_F17 ||
+                       currentElement == eInputElements::KB_F18 ||
+                       currentElement == eInputElements::KB_F19)
                 {
                     currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
                 }
@@ -183,6 +192,8 @@ DAVA_TESTCLASS (KeyboardTestClass)
                        currentElement == eInputElements::KB_RWIN ||
                        currentElement == eInputElements::KB_SCROLLLOCK ||
                        currentElement == eInputElements::KB_PAUSE ||
+                       currentElement == eInputElements::KB_UNUSED1 ||
+                       currentElement == eInputElements::KB_UNUSED2 ||
                        // TODO: these are just not implemented yet for this platform
                        currentElement == eInputElements::KB_MEDIA_PREVIOUS ||
                        currentElement == eInputElements::KB_MEDIA_NEXT ||
@@ -192,19 +203,36 @@ DAVA_TESTCLASS (KeyboardTestClass)
                        currentElement == eInputElements::KB_VOLUME_UP ||
                        currentElement == eInputElements::KB_VOLUME_DOWN ||
                        currentElement == eInputElements::KB_VOLUME_MUTE ||
-                       currentElement == eInputElements::KB_FUNCTION)
-                {
-                    currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
-                }
+                       currentElement == eInputElements::KB_FUNCTION ||
+                       currentElement == eInputElements::KB_F13 ||
+                       currentElement == eInputElements::KB_F14 ||
+                       currentElement == eInputElements::KB_F15 ||
+                       currentElement == eInputElements::KB_F16 ||
+                       currentElement == eInputElements::KB_F17 ||
+                       currentElement == eInputElements::KB_F18 ||
+                       currentElement == eInputElements::KB_F19))
+                    {
+                        currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
+                    }
 #elif defined(__DAVAENGINE_ANDROID__)
                 while (currentElement == eInputElements::KB_NONUSBACKSLASH ||
                        currentElement == eInputElements::KB_LCMD ||
                        currentElement == eInputElements::KB_RCMD ||
                        currentElement == eInputElements::KB_LWIN ||
-                       currentElement == eInputElements::KB_RWIN)
-                {
-                    currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
-                }
+                       currentElement == eInputElements::KB_RWIN ||
+                       currentElement == eInputElements::KB_UNUSED1 ||
+                       currentElement == eInputElements::KB_UNUSED2 ||
+                       // TODO: these are just not implemented yet for this platform
+                       currentElement == eInputElements::KB_F13 ||
+                       currentElement == eInputElements::KB_F14 ||
+                       currentElement == eInputElements::KB_F15 ||
+                       currentElement == eInputElements::KB_F16 ||
+                       currentElement == eInputElements::KB_F17 ||
+                       currentElement == eInputElements::KB_F18 ||
+                       currentElement == eInputElements::KB_F19))
+                    {
+                        currentElement = static_cast<eInputElements>(static_cast<uint32>(currentElement) + 1);
+                    }
 #endif
 
                 if (currentElement > eInputElements::KB_LAST)
