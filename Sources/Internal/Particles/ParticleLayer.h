@@ -72,6 +72,9 @@ struct ParticleLayer : public BaseObject
 
     void LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition);
     void SaveToYamlNode(const FilePath& configPath, YamlNode* parentNode, int32 layerIndex);
+
+    void SaveSpritePath(FilePath& path, const FilePath& configPath, YamlNode* layerNode, std::string name);
+
     void SaveForcesToYamlNode(YamlNode* layerNode);
 
     void AddForce(ParticleForce* force);
