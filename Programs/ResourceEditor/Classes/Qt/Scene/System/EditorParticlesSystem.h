@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity/SceneSystem.h"
+#include "Scene/SceneSignals.h"
 #include "UI/UIEvent.h"
 
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
@@ -9,7 +10,7 @@ class RECommandNotificationObject;
 class EditorParticlesSystem : public DAVA::SceneSystem, public EditorSceneSystem
 {
     friend class SceneEditor2;
-
+    
 public:
     EditorParticlesSystem(DAVA::Scene* scene);
 
