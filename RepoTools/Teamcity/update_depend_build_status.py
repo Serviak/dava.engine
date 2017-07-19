@@ -109,9 +109,26 @@ def main():
             if build_configuration_id == None:
                 build_configuration_id = build_dependencies_status['buildTypeId']
 
-            print 'Update: commit[ {} ] status[ {} ] configuration_name[ {} ]'.format(commit, status,  build_dependencies_status['buildTypeId'] )
+            configuration_history = teamcity.configuration_history( build['buildTypeId'], build['branchName'] )
 
-            stash.report_build_status( status,
+            is_requesting = True
+
+            if status == 'FAILED':
+                if configuration_history != None and len( configuration_history ):
+
+                    last_build = configuration_history[0]
+                    for build_in_history in configuration_history:
+                        if build_in_history['number'] > last_build['number']:
+                            last_build = build_in_history['number']
+
+                    if build['number'] < last_build['number']:
+                        is_requesting =  ('status' in last_build and last_build['status'] != 'SUCCESS')
+
+            if is_requesting == True:
+
+                print 'Update: commit[ {} ] status[ {} ] configuration_name[ {} ]'.format(commit, status,  build_dependencies_status['buildTypeId'] )
+
+                stash.report_build_status( status,
                                        build_configuration_id,
                                        configuration_name,
                                        build_dependencies_status['webUrl'],
