@@ -4,6 +4,7 @@
 #include "Scene/SceneSignals.h"
 #include "UI/UIEvent.h"
 
+#include "Classes/Qt/Scene/SceneSignals.h"
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
 
 class RECommandNotificationObject;
