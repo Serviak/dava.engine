@@ -275,9 +275,9 @@ void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest
         << strerror(errVal) << " file: " << pathname
         << " extended_message: " << extMsg << std::endl;
 
-    size_t counter = packManagerImpl->CountError(errVal);
-    const DLCManager::Hints& hints = packManagerImpl->GetHints();
-    if (counter >= hints.maxSameErrorCounter)
+    bool fireSignal = packManagerImpl->CountError(errVal);
+
+    if (fireSignal)
     {
         log << " disable DLCManager requesting" << std::endl;
         packManagerImpl->SetRequestingEnabled(false);
