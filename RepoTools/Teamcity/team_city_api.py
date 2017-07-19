@@ -128,6 +128,24 @@ class TeamCityRequest:
         root.attrib['config_path'] = '{}::{}'.format( root.attrib['config_path'] , root.attrib['name'] )
         return root.attrib
 
+    def configuration_history(self, configuration_name, branch = None ):
+
+        locator = ''
+        if branch == None:
+            locator = 'locator=branch:default:any'
+        else:
+            locator = 'locator=branch:{}'.format( branch )
+
+        response = self.__request("buildTypes/id:{}/builds?{}".format( configuration_name, locator ))
+        root = ET.fromstring(response.content)
+
+        history = []
+
+        for build in root.findall('build'):
+            history += [build.attrib]
+
+        return history
+
     def agent_info_by_name(self, agent_name ):
         response = self.__request("agents/name:{}/".format( agent_name ))
         root = ET.fromstring( response.content )
