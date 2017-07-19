@@ -96,6 +96,7 @@ private:
     void CheckPath(const QString& text);
     void FillLayerTypes();
     DAVA::int32 LayerTypeToIndex(DAVA::ParticleLayer::eType layerType);
+    void FillTimeLineWidgetIndentifiers();
 
 private:
     struct LayerTypeMap
@@ -273,6 +274,7 @@ private:
     QWidget* alphaRemapLayoutWidget = nullptr;
 
     bool blockSignals = false;
+    DAVA::Vector<std::pair<std::string, TimeLineWidget*>> timeLineWidgetsIdentifiers;
 };
 
 class WheellIgnorantComboBox : public QComboBox
