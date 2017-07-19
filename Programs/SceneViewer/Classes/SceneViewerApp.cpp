@@ -28,6 +28,8 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
+    DAVA::QualitySettingsSystem::Instance()->Load("~res:/SceneViewer/quality.yaml");
+
     QualityPreferences::LoadFromSettings(data.settings);
     data.scenePath = data.settings.GetLastOpenedScenePath();
 }
