@@ -109,7 +109,6 @@
 #ensuredefined VIEW_SPECULAR 0
 #ensuredefined VIEW_ALBEDO 0
 
-#ensuredefined HEATMAP 0
 #ensuredefined PARTICLES_FLOWMAP 0
 #ensuredefined PARTICLES_NOISE 0
 #ensuredefined PARTICLES_NOISE_AFFECT_FLOW 0
