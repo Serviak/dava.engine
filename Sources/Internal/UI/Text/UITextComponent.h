@@ -150,19 +150,6 @@ public:
     /** Return internal system helper object. */
     UITextSystemLink* GetLink() const;
 
-    /** 
-        Calculate ContentPreferredSize for widget. 
-        Backward compatibility method. 
-        \sa SizeMeasuringAlgorithm 
-    */
-    Vector2 GetContentPreferredSize(const Vector2& constraints);
-    /** 
-        Is widget height depends on width? 
-        Backward compatibility method. 
-        \sa SizeMeasuringAlgorithm  
-    */
-    bool IsHeightDependsOnWidth() const;
-
     /**
         Apply component properties to internal TextBlock
     */
