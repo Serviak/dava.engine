@@ -11,7 +11,7 @@ class RECommandNotificationObject;
 class EditorParticlesSystem : public DAVA::SceneSystem, public EditorSceneSystem
 {
     friend class SceneEditor2;
-    
+
 public:
     EditorParticlesSystem(DAVA::Scene* scene);
 

@@ -101,14 +101,14 @@ private:
     void GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint& leftBorderCrossPoint, QPoint& rightBorderCrossPoint);
 
 private:
-    DAVA::int32 selectedPoint;
-    DAVA::int32 selectedLine;
-    DAVA::int32 drawLine;
-    DAVA::int32 valueDecimalsPrecision;
+    DAVA::int32 selectedPoint = -1;
+    DAVA::int32 selectedLine = -1;
+    DAVA::int32 drawLine = -1;
+    DAVA::int32 valueDecimalsPrecision = 2;
 
-    bool isLockEnable;
-    bool isLocked;
-    bool isInteger;
+    bool isLockEnable = false;
+    bool isLocked = false;
+    bool isInteger = false;
 
     enum eSizeState
     {
@@ -116,10 +116,10 @@ private:
         SIZE_STATE_MINIMIZED,
         SIZE_STATE_DOUBLE
     };
-    eSizeState sizeState;
-    bool updateSizeState;
-    bool aliasLinePoint;
-    bool allowDeleteLine;
+    eSizeState sizeState = SIZE_STATE_NORMAL;
+    bool updateSizeState = true;
+    bool aliasLinePoint = false;
+    bool allowDeleteLine = true;
 
     typedef struct
     {
