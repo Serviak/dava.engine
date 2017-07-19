@@ -27,9 +27,9 @@ PixelGrid::~PixelGrid() = default;
 
 void PixelGrid::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
-    bool startValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
-    bool lastValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::lastValuePropertyName) != fields.end();
-    bool scaleChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
+    bool startValueChanged = find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
+    bool lastValueChanged = find(fields.begin(), fields.end(), CanvasDataAdapter::lastValuePropertyName) != fields.end();
+    bool scaleChanged = find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
 
     if (startValueChanged || lastValueChanged || scaleChanged)
     {
@@ -68,6 +68,7 @@ bool PixelGrid::CanShowGrid() const
 
 void PixelGrid::UpdateGrid()
 {
+    using namespace std;
     using namespace DAVA;
 
     if (CanShowGrid() == false)
@@ -80,7 +81,7 @@ void PixelGrid::UpdateGrid()
     Vector2 startValue = canvasDataAdapter.GetStartValue();
     Vector2 lastValue = canvasDataAdapter.GetLastValue();
     Vector2 viewSize = canvasDataAdapter.GetViewSize();
-    int32 scale = static_cast<int32>(canvasDataAdapter.GetScale());
+    float32 scale = canvasDataAdapter.GetScale();
 
     for (int i = 0; i < Vector2::AXIS_COUNT; ++i)
     {
@@ -89,9 +90,10 @@ void PixelGrid::UpdateGrid()
 
         //synchronize UIControls count and data
         {
-            std::size_t linesCount = static_cast<int32>(std::ceil((lastValue[axis] - startValue[axis]) / scale));
+            float32 distanceInPixels = ceilf((lastValue[axis] - startValue[axis]) / scale);
+            size_t linesCount = static_cast<size_t>(distanceInPixels);
             List<UIControl*> children = container->GetChildren();
-            std::size_t childrenCount = children.size();
+            size_t childrenCount = children.size();
             auto childrenIter = children.begin();
             while (linesCount < childrenCount)
             {
@@ -114,34 +116,27 @@ void PixelGrid::UpdateGrid()
 
         //setup UIControls
         List<UIControl*> children = container->GetChildren();
-        int32 index = 0;
-        int32 offset = static_cast<int32>(startValue[axis]) % scale;
+        float32 value = 0.0f;
+
         for (UIControl* line : children)
         {
             UIControlBackground* background = line->GetOrCreateComponent<UIControlBackground>();
             background->SetColor(preferences.GetGridColor());
-            int32 position = index * scale;
-            if (offset > 0)
-            {
-                position += scale - offset;
-            }
-            else if (offset < 0)
-            {
-                position -= offset;
-            }
+            float32 position = canvasDataAdapter.RelativeValueToPosition(value, axis);
+
             DAVA::Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
             if (axis == Vector2::AXIS_X)
             {
-                line->SetPosition(Vector2(static_cast<float32>(position), 0.0f));
+                line->SetPosition(Vector2(position, 0.0f));
                 line->SetSize(Vector2(1.0f, viewSize[oppositeAxis]));
             }
             else
             {
-                line->SetPosition(Vector2(0.0f, static_cast<float32>(position)));
+                line->SetPosition(Vector2(0.0f, position));
                 line->SetSize(Vector2(viewSize[oppositeAxis], 1.0f));
             }
 
-            index++;
+            value++;
         }
     }
 }
