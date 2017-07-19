@@ -150,11 +150,6 @@ public:
     /** Return internal system helper object. */
     UITextSystemLink* GetLink() const;
 
-    /**
-        Apply component properties to internal TextBlock
-    */
-    void ApplyDataImmediately();
-
 private:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
