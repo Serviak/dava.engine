@@ -155,7 +155,7 @@ public:
         Backward compatibility method. 
         \sa SizeMeasuringAlgorithm 
     */
-    Vector2 GetContentPreferredSize(const Vector2& constraints) const;
+    Vector2 GetContentPreferredSize(const Vector2& constraints);
     /** 
         Is widget height depends on width? 
         Backward compatibility method. 
@@ -166,7 +166,7 @@ public:
     /**
         Apply component properties to internal TextBlock
     */
-    void ApplyDataImmediately() const;
+    void ApplyDataImmediately();
 
 private:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
