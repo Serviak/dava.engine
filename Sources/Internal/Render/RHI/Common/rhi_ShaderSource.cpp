@@ -213,6 +213,33 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
 
         if (parser.Parse(ast))
         {
+            // some sanity checks
+            const char* entryName = (progType == PROG_VERTEX) ? "vp_main" : "fp_main";
+            bool hasReturn = false;
+            sl::HLSLFunction* entryFunction = ast->FindFunction(entryName);
+            if (entryFunction)
+            {
+                for (sl::HLSLStatement* s = entryFunction->statement; s; s = s->nextStatement)
+                {
+                    if (s->nodeType == sl::HLSLNodeType_ReturnStatement)
+                    {
+                        hasReturn = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                DAVA::Logger::Error("missing entry-point function '%s'", entryName);
+                return false;
+            }
+
+            if (!hasReturn)
+            {
+                DAVA::Logger::Error("entry-point function '%s' has no return statement", entryName);
+                return false;
+            }
+
             success = ProcessMetaData(ast);
             type = progType;
 
@@ -861,6 +888,7 @@ ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
 
                 if (decl->type.baseType == sl::HLSLBaseType_Sampler2D
                     || decl->type.baseType == sl::HLSLBaseType_SamplerCube
+                    || decl->type.baseType == sl::HLSLBaseType_Sampler2DShadow
                     )
                 {
                     sampler.resize(sampler.size() + 1);
@@ -871,6 +899,7 @@ ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                     switch (decl->type.baseType)
                     {
                     case sl::HLSLBaseType_Sampler2D:
+                    case sl::HLSLBaseType_Sampler2DShadow:
                         s.type = rhi::TEXTURE_TYPE_2D;
                         break;
                     case sl::HLSLBaseType_SamplerCube:
@@ -936,8 +965,16 @@ ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                 const char* attr_name;
             } attr[] =
             {
-              { "POSITION", "position" },
-              { "NORMAL", "normal" },
+              { "POSITION", "position0" },
+              { "POSITION0", "position0" },
+              { "POSITION1", "position1" },
+              { "POSITION2", "position2" },
+              { "POSITION3", "position3" },
+              { "NORMAL", "normal0" },
+              { "NORMAL0", "normal0" },
+              { "NORMAL1", "normal1" },
+              { "NORMAL2", "normal2" },
+              { "NORMAL3", "normal3" },
               { "TEXCOORD", "texcoord0" },
               { "TEXCOORD0", "texcoord0" },
               { "TEXCOORD1", "texcoord1" },
@@ -1317,76 +1354,82 @@ ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
 
     // get blending
 
-    sl::HLSLBlend* blend = ast->GetRoot()->blend;
-
-    if (blend)
+    for (int i = 0; i != MAX_RENDER_TARGET_COUNT; ++i)
     {
-        blending.rtBlend[0].blendEnabled = !(blend->src_op == sl::BLENDOP_ONE && blend->dst_op == sl::BLENDOP_ZERO);
+        sl::HLSLBlend* blend = ast->GetRoot()->blend[i];
 
-        switch (blend->src_op)
+        if (blend)
         {
-        case sl::BLENDOP_ZERO:
-            blending.rtBlend[0].colorSrc = rhi::BLENDOP_ZERO;
-            break;
-        case sl::BLENDOP_ONE:
-            blending.rtBlend[0].colorSrc = rhi::BLENDOP_ONE;
-            break;
-        case sl::BLENDOP_SRC_ALPHA:
-            blending.rtBlend[0].colorSrc = rhi::BLENDOP_SRC_ALPHA;
-            break;
-        case sl::BLENDOP_INV_SRC_ALPHA:
-            blending.rtBlend[0].colorSrc = rhi::BLENDOP_INV_SRC_ALPHA;
-            break;
-        case sl::BLENDOP_SRC_COLOR:
-            blending.rtBlend[0].colorSrc = rhi::BLENDOP_SRC_COLOR;
-            break;
-        case sl::BLENDOP_DST_COLOR:
-            blending.rtBlend[0].colorSrc = rhi::BLENDOP_DST_COLOR;
-            break;
-        }
-        switch (blend->dst_op)
-        {
-        case sl::BLENDOP_ZERO:
-            blending.rtBlend[0].colorDst = rhi::BLENDOP_ZERO;
-            break;
-        case sl::BLENDOP_ONE:
-            blending.rtBlend[0].colorDst = rhi::BLENDOP_ONE;
-            break;
-        case sl::BLENDOP_SRC_ALPHA:
-            blending.rtBlend[0].colorDst = rhi::BLENDOP_SRC_ALPHA;
-            break;
-        case sl::BLENDOP_INV_SRC_ALPHA:
-            blending.rtBlend[0].colorDst = rhi::BLENDOP_INV_SRC_ALPHA;
-            break;
-        case sl::BLENDOP_SRC_COLOR:
-            blending.rtBlend[0].colorDst = rhi::BLENDOP_SRC_COLOR;
-            break;
-        case sl::BLENDOP_DST_COLOR:
-            blending.rtBlend[0].colorDst = rhi::BLENDOP_DST_COLOR;
-            break;
+            blending.rtBlend[i].blendEnabled = !(blend->src_op == sl::BLENDOP_ONE && blend->dst_op == sl::BLENDOP_ZERO);
+
+            switch (blend->src_op)
+            {
+            case sl::BLENDOP_ZERO:
+                blending.rtBlend[i].colorSrc = rhi::BLENDOP_ZERO;
+                break;
+            case sl::BLENDOP_ONE:
+                blending.rtBlend[i].colorSrc = rhi::BLENDOP_ONE;
+                break;
+            case sl::BLENDOP_SRC_ALPHA:
+                blending.rtBlend[i].colorSrc = rhi::BLENDOP_SRC_ALPHA;
+                break;
+            case sl::BLENDOP_INV_SRC_ALPHA:
+                blending.rtBlend[i].colorSrc = rhi::BLENDOP_INV_SRC_ALPHA;
+                break;
+            case sl::BLENDOP_SRC_COLOR:
+                blending.rtBlend[i].colorSrc = rhi::BLENDOP_SRC_COLOR;
+                break;
+            case sl::BLENDOP_DST_COLOR:
+                blending.rtBlend[i].colorSrc = rhi::BLENDOP_DST_COLOR;
+                break;
+            }
+            switch (blend->dst_op)
+            {
+            case sl::BLENDOP_ZERO:
+                blending.rtBlend[i].colorDst = rhi::BLENDOP_ZERO;
+                break;
+            case sl::BLENDOP_ONE:
+                blending.rtBlend[i].colorDst = rhi::BLENDOP_ONE;
+                break;
+            case sl::BLENDOP_SRC_ALPHA:
+                blending.rtBlend[i].colorDst = rhi::BLENDOP_SRC_ALPHA;
+                break;
+            case sl::BLENDOP_INV_SRC_ALPHA:
+                blending.rtBlend[i].colorDst = rhi::BLENDOP_INV_SRC_ALPHA;
+                break;
+            case sl::BLENDOP_SRC_COLOR:
+                blending.rtBlend[i].colorDst = rhi::BLENDOP_SRC_COLOR;
+                break;
+            case sl::BLENDOP_DST_COLOR:
+                blending.rtBlend[i].colorDst = rhi::BLENDOP_DST_COLOR;
+                break;
+            }
         }
     }
 
     // get color write-mask
 
-    sl::HLSLColorMask* mask = ast->GetRoot()->color_mask;
-
-    if (mask)
+    for (int i = 0; i != MAX_RENDER_TARGET_COUNT; ++i)
     {
-        switch (mask->mask)
+        sl::HLSLColorMask* mask = ast->GetRoot()->color_mask[i];
+
+        if (mask)
         {
-        case sl::COLORMASK_NONE:
-            blending.rtBlend[0].writeMask = rhi::COLORMASK_NONE;
-            break;
-        case sl::COLORMASK_ALL:
-            blending.rtBlend[0].writeMask = rhi::COLORMASK_ALL;
-            break;
-        case sl::COLORMASK_RGB:
-            blending.rtBlend[0].writeMask = rhi::COLORMASK_R | rhi::COLORMASK_G | rhi::COLORMASK_B;
-            break;
-        case sl::COLORMASK_A:
-            blending.rtBlend[0].writeMask = rhi::COLORMASK_A;
-            break;
+            switch (mask->mask)
+            {
+            case sl::COLORMASK_NONE:
+                blending.rtBlend[i].writeMask = rhi::COLORMASK_NONE;
+                break;
+            case sl::COLORMASK_ALL:
+                blending.rtBlend[i].writeMask = rhi::COLORMASK_ALL;
+                break;
+            case sl::COLORMASK_RGB:
+                blending.rtBlend[i].writeMask = rhi::COLORMASK_R | rhi::COLORMASK_G | rhi::COLORMASK_B;
+                break;
+            case sl::COLORMASK_A:
+                blending.rtBlend[i].writeMask = rhi::COLORMASK_A;
+                break;
+            }
         }
     }
 
@@ -1555,25 +1598,28 @@ bool ShaderSource::Load(Api api, DAVA::File* in)
         sampler[s].uid = FastName(s0.c_str());
     }
 
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].colorFunc = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].colorSrc = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].colorDst = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].alphaFunc = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].alphaSrc = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].alphaDst = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].writeMask = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].blendEnabled = readUI1;
-    READ_CHECK(ReadUI1(in, &readUI1));
-    blending.rtBlend[0].alphaToCoverage = readUI1;
-    READ_CHECK(in->Seek(3, DAVA::File::SEEK_FROM_CURRENT));
+    for (int i = 0; i != MAX_RENDER_TARGET_COUNT; ++i)
+    {
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].colorFunc = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].colorSrc = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].colorDst = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].alphaFunc = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].alphaSrc = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].alphaDst = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].writeMask = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].blendEnabled = readUI1;
+        READ_CHECK(ReadUI1(in, &readUI1));
+        blending.rtBlend[i].alphaToCoverage = readUI1;
+        READ_CHECK(in->Seek(3, DAVA::File::SEEK_FROM_CURRENT));
+    }
     
 #undef READ_CHECK
 
@@ -1657,18 +1703,21 @@ bool ShaderSource::Save(Api api, DAVA::File* out) const
         WRITE_CHECK(WriteS0(out, sampler[s].uid.c_str()));
     }
 
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].colorFunc));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].colorSrc));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].colorDst));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].alphaFunc));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].alphaSrc));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].alphaDst));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].writeMask));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].blendEnabled));
-    WRITE_CHECK(WriteUI1(out, blending.rtBlend[0].alphaToCoverage));
-    WRITE_CHECK(WriteUI1(out, 0));
-    WRITE_CHECK(WriteUI1(out, 0));
-    WRITE_CHECK(WriteUI1(out, 0));
+    for (int i = 0; i != MAX_RENDER_TARGET_COUNT; ++i)
+    {
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].colorFunc));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].colorSrc));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].colorDst));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].alphaFunc));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].alphaSrc));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].alphaDst));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].writeMask));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].blendEnabled));
+        WRITE_CHECK(WriteUI1(out, blending.rtBlend[i].alphaToCoverage));
+        WRITE_CHECK(WriteUI1(out, 0));
+        WRITE_CHECK(WriteUI1(out, 0));
+        WRITE_CHECK(WriteUI1(out, 0));
+    }
 
 #undef WRITE_CHECK
 
@@ -1969,7 +2018,8 @@ void ShaderSource::Dump() const
 //5 is for new shader language
 //6 is after fixing Add/Update problem
 //7 is after MCPP replaced with in-house pre-processor
-const uint32 ShaderSourceCache::FormatVersion = 7;
+//8 blend-state
+const uint32 ShaderSourceCache::FormatVersion = 8;
 
 Mutex shaderSourceEntryMutex;
 std::vector<ShaderSourceCache::entry_t> ShaderSourceCache::Entry;
