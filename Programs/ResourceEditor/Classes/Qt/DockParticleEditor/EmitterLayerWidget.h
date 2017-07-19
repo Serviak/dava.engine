@@ -21,6 +21,13 @@ class EmitterLayerWidget : public BaseParticleEditorContentWidget
     Q_OBJECT
 
 public:
+    enum class eLayerMode
+    {
+        SUPEREMITTER,
+        STRIPE,
+        REGULAR
+    };
+
     explicit EmitterLayerWidget(QWidget* parent = 0);
 
     void Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter,
@@ -38,7 +45,7 @@ public:
     void RestoreVisualState(DAVA::KeyedArchive* visualStateProps) override;
 
     // Switch from/to SuperEmitter mode.
-    void SetLayerMode(bool isSuperemitter, bool isStripe);
+    void SetLayerMode(eLayerMode layerMode);
 
     // Notify the widget layer value is changed.
     void OnLayerValueChanged();
