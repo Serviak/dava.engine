@@ -153,6 +153,8 @@ public:
 
         void* pointerValue = nullptr;
 
+        KeyedArchive* keyedArchiveValue;
+
         String* stringValue;
         WideString* wideStringValue;
         FilePath* filepathValue;
