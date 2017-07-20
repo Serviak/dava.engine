@@ -29,7 +29,7 @@ struct StripeNode
 struct StripeData
 {
     List<StripeNode> stripeNodes; // List of stripe control points.
-    StripeNode baseNode = {};
+    StripeNode baseNode;
     float32 spawnTimer = 0;
     Vector3 inheritPositionOffset = {};
     bool isActive = true;
@@ -75,6 +75,6 @@ struct Particle
 
     int32 positionTarget = 0; //superemitter particles only
 
-    StripeData stripe = {};
+    StripeData stripe;
 };
 }
