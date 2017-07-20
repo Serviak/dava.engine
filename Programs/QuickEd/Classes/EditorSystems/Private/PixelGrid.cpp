@@ -1,10 +1,12 @@
 #include "EditorSystems/PixelGrid.h"
 
 #include "UI/Preview/Data/CanvasDataAdapter.h"
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include <TArc/Core/ContextAccessor.h>
 
 #include <UI/UIControl.h>
+#include <UI/UIControlSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Logger/Logger.h>
 #include <Preferences/PreferencesStorage.h>
@@ -14,28 +16,13 @@ PixelGrid::PixelGrid(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* 
     : BaseEditorSystem(parent, accessor)
     , canvasDataAdapter(accessor)
 {
-    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
-    canvasDataAdapterWrapper.SetListener(this);
-
-    updater.SetCallback(DAVA::MakeFunction(this, &PixelGrid::UpdateGrid));
+    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    updateSystem->beforeRender.Connect(this, &PixelGrid::UpdateGrid);
 
     InitControls();
-    preferences.settingsChanged.Connect(&updater, &DirtyFrameUpdater::MarkDirty);
 }
 
 PixelGrid::~PixelGrid() = default;
-
-void PixelGrid::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
-{
-    bool startValueChanged = find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
-    bool lastValueChanged = find(fields.begin(), fields.end(), CanvasDataAdapter::lastValuePropertyName) != fields.end();
-    bool scaleChanged = find(fields.begin(), fields.end(), CanvasDataAdapter::scalePropertyName) != fields.end();
-
-    if (startValueChanged || lastValueChanged || scaleChanged)
-    {
-        updater.MarkDirty();
-    }
-}
 
 void PixelGrid::InitControls()
 {
@@ -144,11 +131,6 @@ void PixelGrid::UpdateGrid()
             value++;
         }
     }
-}
-
-void PixelGrid::OnDisplayStateChanged(EditorSystemsManager::eDisplayState /*currentState*/, EditorSystemsManager::eDisplayState /*previousState*/)
-{
-    updater.MarkDirty();
 }
 
 PixelGridPreferences::PixelGridPreferences()
