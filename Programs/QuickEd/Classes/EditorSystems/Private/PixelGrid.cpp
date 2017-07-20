@@ -52,6 +52,11 @@ void PixelGrid::InitControls()
 
 bool PixelGrid::CanShowGrid() const
 {
+    if (systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
+    {
+        return false;
+    }
+
     DAVA::float32 scaleToDisplay = preferences.GetScaleToDisplay() / 100.0f;
     if (preferences.IsVisible() == false || scaleToDisplay < 1.0f)
     {
@@ -139,6 +144,11 @@ void PixelGrid::UpdateGrid()
             value++;
         }
     }
+}
+
+void PixelGrid::OnDisplayStateChanged(EditorSystemsManager::eDisplayState /*currentState*/, EditorSystemsManager::eDisplayState /*previousState*/)
+{
+    updater.MarkDirty();
 }
 
 PixelGridPreferences::PixelGridPreferences()
