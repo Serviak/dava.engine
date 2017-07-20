@@ -121,14 +121,14 @@ struct ParticleLayer : public BaseObject
     void SetAlphaRemap(const FilePath& spritePath_);
     RefPtr<PropertyLine<float32>> alphaRemapOverLife;
 
-    bool isLooped;
-    bool isLong;
+    bool isLooped = false;
+    bool isLong = false;
     bool useFresnelToAlpha = false;
-    eBlending blending;
-    bool enableFog;
-    bool enableFrameBlend;
+    eBlending blending = BLENDING_ALPHABLEND;
+    bool enableFog = true;
+    bool enableFrameBlend = false;
 
-    bool isDisabled;
+    bool isDisabled = false;
 
     Vector<bool> activeLODS;
 
@@ -177,7 +177,7 @@ struct ParticleLayer : public BaseObject
     RefPtr<PropertyLine<float32>> spin; // spin of angle / second
     RefPtr<PropertyLine<float32>> spinVariation;
     RefPtr<PropertyLine<float32>> spinOverLife;
-    bool randomSpinDirection;
+    bool randomSpinDirection = false;
 
     RefPtr<PropertyLine<Color>> colorRandom;
     RefPtr<PropertyLine<float32>> alphaOverLife;
@@ -188,31 +188,31 @@ struct ParticleLayer : public BaseObject
 
     RefPtr<PropertyLine<float32>> animSpeedOverLife;
 
-    float32 startTime;
-    float32 endTime;
+    float32 startTime = 0.0f;
+    float32 endTime = 100.0f;
     // Layer loop paremeters
-    float32 deltaTime;
-    float32 deltaVariation;
-    float32 loopVariation;
-    float32 loopEndTime;
+    float32 deltaTime = 0.0f;
+    float32 deltaVariation = 0.0f;
+    float32 loopVariation = 0.0f;
+    float32 loopEndTime = 0.0f;
 
-    eType type;
+    eType type = TYPE_PARTICLES;
 
-    eDegradeStrategy degradeStrategy;
+    eDegradeStrategy degradeStrategy = DEGRADE_KEEP;
 
-    int32 particleOrientation;
+    int32 particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
 
-    bool frameOverLifeEnabled;
-    float32 frameOverLifeFPS;
-    bool randomFrameOnStart;
-    bool loopSpriteAnimation;
+    bool frameOverLifeEnabled = false;
+    float32 frameOverLifeFPS = 0;
+    bool randomFrameOnStart = false;
+    bool loopSpriteAnimation = true;
 
     //for long particles
-    float32 scaleVelocityBase;
-    float32 scaleVelocityFactor;
+    float32 scaleVelocityBase = 1.0f;
+    float32 scaleVelocityFactor = 0.0f;
 
-    float32 fresnelToAlphaBias;
-    float32 fresnelToAlphaPower;
+    float32 fresnelToAlphaBias = 0.0f;
+    float32 fresnelToAlphaPower = 0.0f;
 
     ParticleEmitter* innerEmitter = nullptr;
     FilePath innerEmitterPath;
@@ -235,7 +235,7 @@ private:
     void UpdateSizeLine(PropertyLine<Vector2>* line, bool rescaleSize, bool swapXY); //conversion from old format
 
     bool stripeInheritPositionOnlyForBaseVertex = false; // For stripe particles. Move only base vertex when in stripe.
-    bool inheritPosition; //for super emitter - if true the whole emitter would be moved, otherwise just emission point
+    bool inheritPosition = false; //for super emitter - if true the whole emitter would be moved, otherwise just emission point
 
 public:
     INTROSPECTION_EXTEND(ParticleLayer, BaseObject, nullptr);
