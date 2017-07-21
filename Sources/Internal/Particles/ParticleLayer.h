@@ -36,10 +36,8 @@ struct ParticleLayer : public BaseObject
     float32 stripeVScrollSpeed = -0.01f;
     float32 stripeFadeDistanceFromTop = 0.0f;
     RefPtr<PropertyLine<Color>> stripeColorOverLife;
-    bool usePerspectiveMapping = false;
 
     float32 maxStripeOverLife = 0.0f;
-    bool isMaxStripeOverLifeDirty = true;
 
     enum eType
     {
@@ -81,6 +79,7 @@ struct ParticleLayer : public BaseObject
     void RemoveForce(ParticleForce* force);
     void RemoveForce(int32 forceIndex);
     void CleanupForces();
+
     float32 CalculateMaxStripeSizeOverLife();
 
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
@@ -94,45 +93,23 @@ struct ParticleLayer : public BaseObject
     bool IsLodActive(int32 lod);
     void SetLodActive(int32 lod, bool active);
 
-    ScopedPtr<Sprite> sprite;
     void SetSprite(const FilePath& spritePath);
-    Vector2 layerPivotPoint;
-    Vector2 layerPivotSizeOffsets; //precached for faster bbox computation
-    void SetPivotPoint(Vector2 pivot);
-    FilePath spritePath;
-
-    FilePath flowmapPath;
-    ScopedPtr<Sprite> flowmap;
-    bool enableFlow = false;
-    bool enableFlowAnimation = false;
     void SetFlowmap(const FilePath& spritePath_);
-
-    FilePath noisePath;
-    ScopedPtr<Sprite> noise;
-    bool enableNoise = false;
-    bool enableNoiseScroll = false;
+    void SetPivotPoint(Vector2 pivot);
     void SetNoise(const FilePath& spritePath_);
-
-    // Alpha remap settings.
-    float32 alphaRemapLoopCount = 1.0f;
-    FilePath alphaRemapPath;
-    ScopedPtr<Sprite> alphaRemapSprite;
-    bool enableAlphaRemap = false;
     void SetAlphaRemap(const FilePath& spritePath_);
-    RefPtr<PropertyLine<float32>> alphaRemapOverLife;
 
-    bool isLooped = false;
-    bool isLong = false;
-    bool useFresnelToAlpha = false;
-    eBlending blending = BLENDING_ALPHABLEND;
-    bool enableFog = true;
-    bool enableFrameBlend = false;
+    bool GetInheritPosition() const;
+    void SetInheritPosition(bool inheritPosition_);
 
-    bool isDisabled = false;
+    bool GetInheritPositionForStripeBase() const;
+    void SetInheritPositionForStripeBase(bool inheritPositionForBase_);
 
-    Vector<bool> activeLODS;
-
-    String layerName;
+    // Sprites
+    ScopedPtr<Sprite> sprite;
+    ScopedPtr<Sprite> flowmap;
+    ScopedPtr<Sprite> noise;
+    ScopedPtr<Sprite> alphaRemapSprite;
 
     /*
      Properties of particle layer that describe particle system logic
@@ -160,6 +137,9 @@ struct ParticleLayer : public BaseObject
     RefPtr<PropertyLine<float32>> noiseVScrollSpeedVariation;
     RefPtr<PropertyLine<float32>> noiseVScrollSpeedOverLife; // Noise texcoord v scrollSpeed;
 
+    // Alpha remap
+    RefPtr<PropertyLine<float32>> alphaRemapOverLife;
+
     // Number
     RefPtr<PropertyLine<float32>> number; // number of particles per second
     RefPtr<PropertyLine<float32>> numberVariation; // variation part of number that added to particle count during generation of the particle
@@ -177,7 +157,6 @@ struct ParticleLayer : public BaseObject
     RefPtr<PropertyLine<float32>> spin; // spin of angle / second
     RefPtr<PropertyLine<float32>> spinVariation;
     RefPtr<PropertyLine<float32>> spinOverLife;
-    bool randomSpinDirection = false;
 
     RefPtr<PropertyLine<Color>> colorRandom;
     RefPtr<PropertyLine<float32>> alphaOverLife;
@@ -188,24 +167,18 @@ struct ParticleLayer : public BaseObject
 
     RefPtr<PropertyLine<float32>> animSpeedOverLife;
 
-    float32 startTime = 0.0f;
-    float32 endTime = 100.0f;
+    ParticleEmitter* innerEmitter = nullptr;
+
+
     // Layer loop paremeters
     float32 deltaTime = 0.0f;
     float32 deltaVariation = 0.0f;
     float32 loopVariation = 0.0f;
     float32 loopEndTime = 0.0f;
+    float32 startTime = 0.0f;
+    float32 endTime = 100.0f;
 
-    eType type = TYPE_PARTICLES;
-
-    eDegradeStrategy degradeStrategy = DEGRADE_KEEP;
-
-    int32 particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
-
-    bool frameOverLifeEnabled = false;
     float32 frameOverLifeFPS = 0;
-    bool randomFrameOnStart = false;
-    bool loopSpriteAnimation = true;
 
     //for long particles
     float32 scaleVelocityBase = 1.0f;
@@ -214,14 +187,45 @@ struct ParticleLayer : public BaseObject
     float32 fresnelToAlphaBias = 0.0f;
     float32 fresnelToAlphaPower = 0.0f;
 
-    ParticleEmitter* innerEmitter = nullptr;
+    float32 alphaRemapLoopCount = 1.0f;
+
+    int32 particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
+    eType type = TYPE_PARTICLES;
+    eBlending blending = BLENDING_ALPHABLEND;
+    eDegradeStrategy degradeStrategy = DEGRADE_KEEP;
+
+    Vector2 layerPivotPoint;
+    Vector2 layerPivotSizeOffsets; //precached for faster bbox computation
+
+    FilePath spritePath;
+    FilePath flowmapPath;
+    FilePath noisePath;
+    FilePath alphaRemapPath;
     FilePath innerEmitterPath;
 
-    bool GetInheritPosition() const;
-    void SetInheritPosition(bool inheritPosition_);
+    Vector<bool> activeLODS;
 
-    bool GetInheritPositionForStripeBase() const;
-    void SetInheritPositionForStripeBase(bool inheritPositionForBase_);
+    String layerName;
+
+    bool isDisabled = false;
+    bool enableFog = true;
+    bool randomSpinDirection = false;
+    bool isLong = false;
+    bool isLooped = false;
+
+    bool loopSpriteAnimation = true;
+    bool randomFrameOnStart = false;
+    bool frameOverLifeEnabled = false;
+    bool enableFrameBlend = false;
+
+    bool useFresnelToAlpha = false;
+    bool enableAlphaRemap = false;
+    bool enableNoiseScroll = false;
+    bool enableNoise = false;
+    bool enableFlow = false;
+    bool enableFlowAnimation = false;
+    bool usePerspectiveMapping = false;
+    bool isMaxStripeOverLifeDirty = true;
 
 private:
     struct LayerTypeNamesInfo
