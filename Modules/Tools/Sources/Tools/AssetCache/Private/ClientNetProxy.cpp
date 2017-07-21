@@ -96,36 +96,12 @@ bool ClientNetProxy::RequestServerStatus()
     return false;
 }
 
-bool ClientNetProxy::RequestAddData(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks)
-{
-    if (openedChannel)
-    {
-        //Logger::FrameworkDebug("Requesting to add data/info");
-        AddRequestPacket packet(key, dataSize, numOfChunks);
-        return packet.SendTo(openedChannel);
-    }
-
-    return false;
-}
-
-bool ClientNetProxy::RequestAddNextChunk(const CacheItemKey& key, uint32 chunkNumber, const Vector<uint8>& chunkData)
+bool ClientNetProxy::RequestAddNextChunk(const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData)
 {
     if (openedChannel)
     {
         //Logger::FrameworkDebug("Requesting to add next chunk");
-        AddChunkRequestPacket packet(key, chunkNumber, chunkData);
-        return packet.SendTo(openedChannel);
-    }
-
-    return false;
-}
-
-bool ClientNetProxy::RequestData(const CacheItemKey& key)
-{
-    //Logger::FrameworkDebug("Requesting data");
-    if (openedChannel)
-    {
-        GetRequestPacket packet(key);
+        AddChunkRequestPacket packet(key, dataSize, numOfChunks, chunkNumber, chunkData);
         return packet.SendTo(openedChannel);
     }
 
@@ -233,20 +209,12 @@ void ClientNetProxy::OnPacketReceived(DAVA::Net::IChannel* channel, const void* 
                     listener->OnAddedToCache(p->key, p->added);
                 return;
             }
-            case PACKET_GET_RESPONSE:
-            {
-                GetResponsePacket* p = static_cast<GetResponsePacket*>(packet.get());
-                Logger::FrameworkDebug("Response is received: data %s found in cache", p->dataSize == 0 ? "is not" : "is");
-                for (ClientNetProxyListener* listener : listeners)
-                    listener->OnReceivedFromCache(p->key, p->dataSize, p->numOfChunks);
-                return;
-            }
             case PACKET_GET_CHUNK_RESPONSE:
             {
                 GetChunkResponsePacket* p = static_cast<GetChunkResponsePacket*>(packet.get());
-                Logger::FrameworkDebug("Chunk %u is received", p->chunkNumber);
+                //Logger::FrameworkDebug("Chunk %u is received", p->chunkNumber);
                 for (ClientNetProxyListener* listener : listeners)
-                    listener->OnReceivedFromCache(p->key, p->chunkNumber, p->chunkData);
+                    listener->OnReceivedFromCache(p->key, p->dataSize, p->numOfChunks, p->chunkNumber, p->chunkData);
                 return;
             }
             case PACKET_STATUS_RESPONSE:
