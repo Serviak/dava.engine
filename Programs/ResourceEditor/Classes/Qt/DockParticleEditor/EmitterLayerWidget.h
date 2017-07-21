@@ -251,7 +251,7 @@ private:
     TimeLineWidget* stripeSizeOverLifeTimeLine = nullptr;
     TimeLineWidget* stripeTextureTileTimeLine = nullptr;
     TimeLineWidget* stripeNoiseScrollSpeedOverLifeTimeLine = nullptr;
-    EventFilterDoubleSpinBox* stripeRateSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeVertexSpawnStepSpin = nullptr;
     EventFilterDoubleSpinBox* stripeLifetimeSpin = nullptr;
     EventFilterDoubleSpinBox* stripeStartSizeSpin = nullptr;
     EventFilterDoubleSpinBox* stripeUScrollSpeedSpin = nullptr;
@@ -259,7 +259,7 @@ private:
     EventFilterDoubleSpinBox* stripeFadeDistanceFromTopSpin = nullptr;
     QLabel* stripeLabel = nullptr;
     QLabel* stripeLifetimeLabel = nullptr;
-    QLabel* stripeRateLabel = nullptr;
+    QLabel* stripeVertexSpawnStepLabel = nullptr;
     QLabel* stripeStartSizeLabel = nullptr;
     QLabel* stripeUScrollSpeedLabel = nullptr;
     QLabel* stripeVScrollSpeedLabel = nullptr;
