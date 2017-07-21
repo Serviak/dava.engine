@@ -26,7 +26,7 @@ class ParticleEmitter;
 struct ParticleLayer : public BaseObject
 {
     float32 stripeLifetime = 20.0f;
-    float32 stripeRate = 0.5f;
+    float32 stripeVertexSpawnStep = 1.0f;
     float32 stripeStartSize = 1.0f;
     RefPtr<PropertyLine<float32>> stripeSizeOverLife;
     RefPtr<PropertyLine<float32>> stripeTextureTileOverLife;
@@ -168,7 +168,6 @@ struct ParticleLayer : public BaseObject
     RefPtr<PropertyLine<float32>> animSpeedOverLife;
 
     ParticleEmitter* innerEmitter = nullptr;
-
 
     // Layer loop paremeters
     float32 deltaTime = 0.0f;
