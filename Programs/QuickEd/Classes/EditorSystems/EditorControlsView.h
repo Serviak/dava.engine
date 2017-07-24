@@ -45,6 +45,8 @@ private:
     BackgroundController* CreateControlBackground(PackageBaseNode* node);
     void AddBackgroundControllerToCanvas(BackgroundController* backgroundController, size_t pos);
 
+    void OnRootControlPosChanged();
+
     DAVA::RefPtr<DAVA::UIControl> controlsCanvas; //to attach or detach from document
     DAVA::List<std::unique_ptr<BackgroundController>> gridControls;
 
@@ -54,4 +56,5 @@ private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
     PackageListenerProxy packageListenerProxy;
+    DAVA::TArc::DataWrapper canvasDataWrapper;
 };
