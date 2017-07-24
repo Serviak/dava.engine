@@ -40,6 +40,8 @@ void PackRequest::CancelCurrentDownloadRequests()
 
     requests.clear();
     requests.shrink_to_fit();
+
+    fileRequestsInitialized = false;
 }
 
 PackRequest::~PackRequest()
@@ -266,13 +268,25 @@ void PackRequest::DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest
 
 void PackRequest::DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const
 {
-    packManagerImpl->GetLog() << "device IO Error:(" << errVal << ") "
-                              << strerror(errVal) << " file: "
-                              << fileRequest.localFile.GetAbsolutePathname()
-                              << " extended_message: " << extMsg
-                              << " disable DLCManager requesting" << std::endl;
-    packManagerImpl->SetRequestingEnabled(false);
-    packManagerImpl->fileErrorOccured.Emit(fileRequest.localFile.GetAbsolutePathname().c_str(), errVal);
+    String pathname = fileRequest.localFile.GetAbsolutePathname();
+
+    std::ostream& log = packManagerImpl->GetLog();
+    log << "device IO Error:(" << errVal << ") "
+        << strerror(errVal) << " file: " << pathname
+        << " extended_message: " << extMsg << std::endl;
+
+    bool fireSignal = packManagerImpl->CountError(errVal);
+
+    if (fireSignal)
+    {
+        log << " disable DLCManager requesting" << std::endl;
+        packManagerImpl->SetRequestingEnabled(false);
+        packManagerImpl->fileErrorOccured.Emit(pathname.c_str(), errVal);
+    }
+    else
+    {
+        DeleteJustDownloadedFileAndStartAgain(fileRequest);
+    }
 }
 
 bool PackRequest::CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest)
@@ -422,17 +436,6 @@ bool PackRequest::CheckHaskState(FileRequest& fileRequest)
             ScopedPtr<File> f(File::Create(fileRequest.localFile, File::WRITE | File::APPEND));
             if (!f)
             {
-                // HACK sometime we can't open for writing just downloaded file, so try to do it on next frame
-                --openRetryCounter;
-                if (openRetryCounter > 0)
-                {
-                    packManagerImpl->GetLog() << "failed to open file for APPEND: "
-                                              << fileRequest.localFile.GetAbsolutePathname()
-                                              << " errno: " << errno << strerror(errno)
-                                              << " openRetryCounter: " << openRetryCounter << std::endl;
-                    return false; // try again on next frame
-                }
-                // not enough space
                 DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_open_local_file_for_append");
                 return false;
             }
