@@ -5,6 +5,8 @@
 #include "Utils/PackageListenerProxy.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
+
+#include <UI/Layouts/UILayoutSystemListener.h>
 #include <Base/BaseTypes.h>
 
 class EditorSystemsManager;
@@ -20,7 +22,7 @@ class FieldBinder;
 }
 }
 
-class EditorControlsView final : public BaseEditorSystem, PackageListener
+class EditorControlsView final : public BaseEditorSystem, PackageListener, DAVA::UILayoutSystemListener
 {
 public:
     EditorControlsView(DAVA::UIControl* canvasParent, EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
@@ -38,12 +40,17 @@ private:
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
 
-    void BeforeRelayoutedControlRendering();
+    // UILayoutSystemListener
+    void OnControlLayouted(DAVA::UIControl* control) override;
+
+    void BeforeRendering();
 
     void RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control);
 
     BackgroundController* CreateControlBackground(PackageBaseNode* node);
     void AddBackgroundControllerToCanvas(BackgroundController* backgroundController, size_t pos);
+
+    void OnRootControlPosChanged();
 
     DAVA::RefPtr<DAVA::UIControl> controlsCanvas; //to attach or detach from document
     DAVA::List<std::unique_ptr<BackgroundController>> gridControls;
@@ -55,5 +62,6 @@ private:
 
     PackageListenerProxy packageListenerProxy;
 
-    DAVA::Token relayoutSignalToken;
+    bool needRecalculateBgrBeforeRender = false;
+    DAVA::TArc::DataWrapper canvasDataWrapper;
 };

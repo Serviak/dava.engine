@@ -28,6 +28,8 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
+    DAVA::QualitySettingsSystem::Instance()->Load("~res:/SceneViewer/quality.yaml");
+
     QualityPreferences::LoadFromSettings(data.settings);
     data.scenePath = data.settings.GetLastOpenedScenePath();
 }
@@ -47,8 +49,31 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
 
     const Size2f windowSize = { 1024.f, 1024.f / data.screenAspect };
 
-    DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit]", DAVAENGINE_VERSION,
-                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8));
+    const char* api = "";
+
+    switch (rhi::HostApi())
+    {
+    case rhi::RHI_GLES2:
+        api = "GLES2";
+        break;
+    case rhi::RHI_DX9:
+        api = "DX9";
+        break;
+    case rhi::RHI_DX11:
+        api = "DX11";
+        break;
+    case rhi::RHI_METAL:
+        api = "Metal";
+        break;
+    case rhi::RHI_NULL_RENDERER:
+        api = "NULL";
+        break;
+    case rhi::RHI_API_COUNT:
+        break; // to shut up goddamn warning
+    }
+
+    DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit] | %s", DAVAENGINE_VERSION,
+                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8), api);
 
     w->SetTitleAsync(title);
 
@@ -85,21 +110,22 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     performanceResultsScreen = new PerformanceResultsScreen(data);
 #endif
 
-    //SetScenePath( "~doc:/GB/Cromwell-test.sc2" );
-    //    SetScenePath("~doc:/effect.sc2");
-    //    SetScenePath("~doc:/karelia/karelia.sc2");
-    //SetScenePath("~res:/3d/Maps/05_amigosville_am/05_amigosville_am.sc2");
-    //    SetScenePath("~doc:/scene_viewer/test_box/box.sc2");
-    //SetScenePath("~res:/amigosville/amigosville.sc2");
-    //      SetScenePath("~doc:/fort/fort.sc2");
-    //      SetScenePath("~doc:/USSR/T-62A_crash.sc2");
-    //      SetScenePath("~doc:/amigosville/amigosville2.sc2");
-    //      SetScenePath("~doc:/amigosville/amigosville5.sc2");
-    //      SetScenePath("~doc:/amigosville/amigosville4.sc2");
-    //      SetScenePath("~doc:/aaaa.sc2");
-    //    SetScenePath("~doc:/karelia/karelia_landscape.sc2");
-    //    SetScenePath("~doc:/karelia/gates_test.sc2");
-    //SetScenePath("~doc:/karelia/objects/k_s01.sc2");
+    //data.scenePath = "~doc:/05_amigosville_am/05_amigosville_am.sc2";
+    //data.scenePath = "~doc:/06_rudniki_rd/06_rudniki_rd.sc2";
+    //data.scenePath = "~doc:/09_savanna_sv/09_savanna_sv.sc2";
+    //data.scenePath = "~doc:/10_asia_as/10_asia_as.sc2";
+    //data.scenePath = "~doc:/12_malinovka_ma/12_malinovka_ma.sc2";
+    //data.scenePath = "~doc:/13_pliego_pl/13_pliego_pl.sc2";
+    //data.scenePath = "~doc:/14_port_pt/14_port_pt.sc2";
+    //data.scenePath = "~doc:/15_ordeal_ord/15_ordeal_ord.sc2";
+    //data.scenePath = "~doc:/18_canal_cn/18_canal_cn.sc2";
+    //data.scenePath = "~doc:/19_himmelsdorf_hm/19_himmelsdorf_hm.sc2";
+    //data.scenePath = "~doc:/20_lake_lk/20_lake_lk.sc2";
+    //data.scenePath = "~doc:/21_mountain_mnt/21_mountain_mnt.sc2";
+    //data.scenePath = "~doc:/23_karieri_kr/23_karieri_kr.sc2";
+    //data.scenePath = "~doc:/24_milibase_mlb/24_milibase_mlb.sc2";
+    //data.scenePath = "~doc:/25_canyon_ca/25_canyon_ca.sc2";
+    //data.scenePath = "~doc:/";
     UIScreenManager::Instance()->SetFirst(viewSceneScreen->GetScreenID());
     //UIScreenManager::Instance()->SetFirst(selectSceneScreen->GetScreenID());
 
@@ -227,7 +253,7 @@ DAVA::KeyedArchive* CreateOptions()
 
 #else
 #if defined(__DAVAENGINE_WIN32__)
-    //appOptions->SetInt32("renderer", rhi::RHI_DX9);
+    //appOptions->SetInt32("renderer", rhi::RHI_DX11);
     //appOptions->SetInt32("renderer", rhi::RHI_DX9);
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
     appOptions->SetInt32("rhi_threaded_frame_count", 2);
@@ -235,7 +261,7 @@ DAVA::KeyedArchive* CreateOptions()
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
 #endif
 
-    //appOptions->SetInt("fullscreen.width",	1280);
+    //appOptions->SetInt("fullscreen.width",    1280);
     //appOptions->SetInt("fullscreen.height", 800);
 
     appOptions->SetInt32("bpp", 32);
