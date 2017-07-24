@@ -10,6 +10,8 @@
 
 namespace DAVA
 {
+const String extPart(".part");
+
 PackRequest::PackRequest(DLCManagerImpl& packManager_, const String& pack_)
     : packManagerImpl(&packManager_)
     , requestedPackName(pack_)
@@ -176,7 +178,7 @@ void PackRequest::InitializeFileRequests()
         uint32 fileIndex = fileIndexes.at(requestIndex);
         const auto& fileInfo = packManagerImpl->GetPack().filesTable.data.files.at(fileIndex);
         String relativePath = packManagerImpl->GetRelativeFilePath(fileIndex);
-        FilePath localPath = packManagerImpl->GetLocalPacksDirectory() + relativePath + extDvpl;
+        FilePath localPath = packManagerImpl->GetLocalPacksDirectory() + relativePath + extDvpl + extPart;
 
         requests.emplace_back(localPath,
                               url,
@@ -295,7 +297,9 @@ bool PackRequest::CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest)
     {
         fileRequest.status = Ready;
         uint64 fileSize = 0;
-        if (fs->GetFileSize(fileRequest.localFile, fileSize))
+        FilePath dvplPath = fileRequest.localFile;
+        dvplPath.ReplaceExtension("");
+        if (fs->GetFileSize(dvplPath, fileSize))
         {
             if (fileSize == fileRequest.sizeOfCompressedFile + sizeof(PackFormat::LitePack::Footer))
             {
@@ -445,6 +449,21 @@ bool PackRequest::CheckHaskState(FileRequest& fileRequest)
             {
                 // not enough space
                 DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_write_footer_to_local_file");
+                return false;
+            }
+        }
+        // rename file from "xxx.dvpl.part" to "xxx.dvpl"
+        {
+            DVASSERT(fileRequest.localFile.GetExtension() == ".part");
+
+            FilePath newPath(fileRequest.localFile);
+            newPath.ReplaceExtension("");
+
+            DVASSERT(newPath.GetExtension() == extDvpl);
+
+            if (!fs->MoveFile(fileRequest.localFile, newPath, true))
+            {
+                DisableRequestingAndFireSignalIOError(fileRequest, errno, "can_t_rename_local_file");
                 return false;
             }
         }
