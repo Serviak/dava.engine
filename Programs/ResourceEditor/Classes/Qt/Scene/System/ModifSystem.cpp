@@ -5,6 +5,7 @@
 #include "Classes/Qt/Scene/System/TextDrawSystem.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Selection/Selection.h"
 
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
@@ -702,7 +703,7 @@ void EntityModificationSystem::CloneBegin()
                 continue;
 
             DAVA::Entity* jEntity = modifEntities[j].object.AsEntity();
-            if ((jEntity != nullptr) && jEntity->IsMyChildRecursive(iEntity))
+            if ((jEntity != nullptr) && SceneHelper::IsEntityChildRecursive(jEntity, iEntity))
             {
                 DAVA::RemoveExchangingWithLast(modifEntities, i);
                 --i;
