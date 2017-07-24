@@ -20,3 +20,4 @@ PropertiesViewTimerUpdaterTests.h
 QtWrapLayoutTests.h
 ReflectedButtonTest.h
 ReflectionPathTreeTests.h
+ScrollBarTest.h
