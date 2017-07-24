@@ -68,7 +68,12 @@ void UIWebView::OpenFile(const FilePath& path)
     String data;
     if (file && file->ReadString(data) > 0)
     {
-        webViewControl->OpenFromBuffer(data, path.GetDirectory());
+        // First we should resolve full path to the file and only then get
+        // directory path from resolved path
+        String fullPath = path.GetAbsolutePathname();
+        FilePath dir(fullPath);
+        dir = dir.GetDirectory();
+        webViewControl->OpenFromBuffer(data, dir);
     }
     else
     {
