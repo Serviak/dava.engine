@@ -28,6 +28,8 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
+    DAVA::QualitySettingsSystem::Instance()->Load("~res:/SceneViewer/quality.yaml");
+
     QualityPreferences::LoadFromSettings(data.settings);
     data.scenePath = data.settings.GetLastOpenedScenePath();
 }
@@ -47,8 +49,31 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
 
     const Size2f windowSize = { 1024.f, 1024.f / data.screenAspect };
 
-    DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit]", DAVAENGINE_VERSION,
-                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8));
+    const char* api = "";
+
+    switch (rhi::HostApi())
+    {
+    case rhi::RHI_GLES2:
+        api = "GLES2";
+        break;
+    case rhi::RHI_DX9:
+        api = "DX9";
+        break;
+    case rhi::RHI_DX11:
+        api = "DX11";
+        break;
+    case rhi::RHI_METAL:
+        api = "Metal";
+        break;
+    case rhi::RHI_NULL_RENDERER:
+        api = "NULL";
+        break;
+    case rhi::RHI_API_COUNT:
+        break; // to shut up goddamn warning
+    }
+
+    DAVA::String title = DAVA::Format("DAVA Engine - Scene Viewer | %s [%u bit] | %s", DAVAENGINE_VERSION,
+                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8), api);
 
     w->SetTitleAsync(title);
 
@@ -228,7 +253,7 @@ DAVA::KeyedArchive* CreateOptions()
 
 #else
 #if defined(__DAVAENGINE_WIN32__)
-    //appOptions->SetInt32("renderer", rhi::RHI_DX9);
+    //appOptions->SetInt32("renderer", rhi::RHI_DX11);
     //appOptions->SetInt32("renderer", rhi::RHI_DX9);
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
     appOptions->SetInt32("rhi_threaded_frame_count", 2);
@@ -236,7 +261,7 @@ DAVA::KeyedArchive* CreateOptions()
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
 #endif
 
-    //appOptions->SetInt("fullscreen.width",	1280);
+    //appOptions->SetInt("fullscreen.width",    1280);
     //appOptions->SetInt("fullscreen.height", 800);
 
     appOptions->SetInt32("bpp", 32);
