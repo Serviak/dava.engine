@@ -98,7 +98,7 @@ public:
     void InitFromGD(const DAVA::UIGeometricData& geometricData) override;
 
 private:
-    void OnUpdate(DAVA::float32);
+    void OnUpdate();
 
     ~HUDContainer() override = default;
     const ControlNode* node = nullptr;
