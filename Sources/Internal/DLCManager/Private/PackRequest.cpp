@@ -299,6 +299,9 @@ bool PackRequest::CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest)
         uint64 fileSize = 0;
         FilePath dvplPath = fileRequest.localFile;
         dvplPath.ReplaceExtension("");
+
+        DVASSERT(dvplPath.GetExtension() == extDvpl);
+
         if (fs->GetFileSize(dvplPath, fileSize))
         {
             if (fileSize == fileRequest.sizeOfCompressedFile + sizeof(PackFormat::LitePack::Footer))
@@ -419,7 +422,7 @@ bool PackRequest::LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest)
     return CheckLoadingStatusOfFileRequest(fileRequest, dm, dstPath);
 }
 
-bool PackRequest::CheckHaskState(FileRequest& fileRequest)
+bool PackRequest::CheckFileHashState(FileRequest& fileRequest)
 {
     FileSystem* fs = GetEngineContext()->fileSystem;
     uint64 fileSize = 0;
@@ -454,7 +457,7 @@ bool PackRequest::CheckHaskState(FileRequest& fileRequest)
         }
         // rename file from "xxx.dvpl.part" to "xxx.dvpl"
         {
-            DVASSERT(fileRequest.localFile.GetExtension() == ".part");
+            DVASSERT(fileRequest.localFile.GetExtension() == extPart);
 
             FilePath newPath(fileRequest.localFile);
             newPath.ReplaceExtension("");
@@ -510,7 +513,7 @@ bool PackRequest::UpdateFileRequests()
         }
         case CheckHash:
         {
-            downloadedMore = CheckHaskState(fileRequest);
+            downloadedMore = CheckFileHashState(fileRequest);
             break;
         }
         case Ready:
