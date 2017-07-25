@@ -1,6 +1,5 @@
 #include "EditorSystems/SelectionSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/KeyboardProxy.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
@@ -9,6 +8,7 @@
 #include "Modules/DocumentsModule/DocumentData.h"
 
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Utils/KeyboardProxy.h>
 
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIEvent.h>
@@ -70,7 +70,7 @@ void SelectionSystem::OnSelectByRect(const Rect& rect)
     using namespace DAVA::TArc;
 
     SelectedNodes newSelection;
-    if (IsKeyPressed(KeyboardProxy::KEY_SHIFT))
+    if (Utils::IsKeyPressed(eModifierKeys::SHIFT))
     {
         newSelection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).Cast<SelectedNodes>(SelectedNodes());
     }
@@ -190,14 +190,14 @@ void SelectionSystem::SelectNode(ControlNode* selectedNode)
 {
     SelectedNodes newSelection;
     SelectedNodes currentSelection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).Cast<SelectedNodes>(SelectedNodes());
-    if (IsKeyPressed(KeyboardProxy::KEY_SHIFT) || IsKeyPressed(KeyboardProxy::KEY_CTRL))
+    if (Utils::IsKeyPressed(eModifierKeys::SHIFT) || Utils::IsKeyPressed(eModifierKeys::CONTROL))
     {
         newSelection = currentSelection;
     }
 
     if (selectedNode != nullptr)
     {
-        if (IsKeyPressed(KeyboardProxy::KEY_CTRL) && currentSelection.find(selectedNode) != currentSelection.end())
+        if (Utils::IsKeyPressed(eModifierKeys::CONTROL) && currentSelection.find(selectedNode) != currentSelection.end())
         {
             newSelection.erase(selectedNode);
         }
