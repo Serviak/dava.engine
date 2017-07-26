@@ -116,6 +116,12 @@ inline T Clamp(T val, T a, T b)
     return Min(b, Max(val, a));
 }
 
+template <class T>
+inline T Saturate(T val)
+{
+    return Clamp(val, static_cast<T>(0), static_cast<T>(1));
+}
+
 #define Memcmp std::memcmp
 #define Memcpy std::memcpy
 #define Memset std::memset
@@ -126,6 +132,14 @@ inline T Clamp(T val, T a, T b)
 #define vsnprintf _vsnprintf
 #else
 #define Snprintf snprintf
+#endif
+
+
+#if defined(__DAVAENGINE_WINDOWS__)
+#define strnicmp _strnicmp 
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#define strnicmp strncasecmp 
+#else
 #endif
 
 template <class TYPE>

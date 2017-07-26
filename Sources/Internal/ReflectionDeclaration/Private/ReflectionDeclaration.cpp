@@ -306,8 +306,7 @@ void RegisterPermanentNames()
 
 #define DELC_UI_COMPONENT(type, string) \
 DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(type, string); \
-GetEngineContext() \
-    ->componentManager->RegisterComponent<type>();
+GetEngineContext()->componentManager->RegisterComponent<type>();
 
     DELC_UI_COMPONENT(UILinearLayoutComponent, "LinearLayout");
     DELC_UI_COMPONENT(UIFlowLayoutComponent, "FlowLayout");
@@ -337,7 +336,7 @@ GetEngineContext() \
     DELC_UI_COMPONENT(UISceneComponent, "SceneComponent");
     DELC_UI_COMPONENT(UIDebugRenderComponent, "DebugRender");
     DELC_UI_COMPONENT(UIClipContentComponent, "ClipContent");
-    
+
 #undef DELC_UI_COMPONENT
 }
 

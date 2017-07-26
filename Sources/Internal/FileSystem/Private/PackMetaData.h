@@ -47,10 +47,11 @@ public:
 
     bool IsChild(uint32 parentPackIndex, uint32 childPackIndex) const;
 
-private:
     using Children = Vector<uint32>;
 
     void CollectDependencies(uint32 packIndex, Children& out) const;
+
+private:
     // fileNames already in DVPK format
     // table 1.
     // fileName -> fileIndex(0-NUM_FILES) -> packIndex(0-NUM_PACKS)
