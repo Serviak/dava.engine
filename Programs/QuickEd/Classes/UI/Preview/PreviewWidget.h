@@ -19,6 +19,7 @@ namespace DAVA
 namespace TArc
 {
 class ContextAccessor;
+class OperationInvoker;
 class UI;
 class DataContext;
 }
@@ -51,7 +52,7 @@ class PreviewWidget : public QFrame, private DAVA::IClientDelegate
 {
     Q_OBJECT
 public:
-    explicit PreviewWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager);
+    explicit PreviewWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::OperationInvoker* invoker, DAVA::TArc::UI* ui, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager);
     ~PreviewWidget();
 
     FindInDocumentWidget* GetFindInDocumentWidget();
@@ -79,6 +80,8 @@ public slots:
 private slots:
     void OnResized(DAVA::uint32 width, DAVA::uint32 height);
 
+    void OnTabBarContextMenuRequested(const QPoint& pos);
+
 private:
     void InitUI();
     void ShowMenu(const QMouseEvent* mouseEvent);
@@ -101,6 +104,7 @@ private:
     void OnKeyPressed(QKeyEvent* event) override;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::OperationInvoker* invoker = nullptr;
     DAVA::TArc::UI* ui = nullptr;
 
     DAVA::RenderWidget* renderWidget = nullptr;
