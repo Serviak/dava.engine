@@ -215,9 +215,13 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
                     }
                     i--;
                 }
-                stickChildrenInLine--;
                 index = i;
-                childSize = layoutData[index].GetWidth();
+                ControlLayoutData& ld = layoutData[index];
+                if (!ld.HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+                {
+                    stickChildrenInLine--;
+                }
+                childSize = ld.GetWidth();
             }
 
             if (index > firstIndex)
