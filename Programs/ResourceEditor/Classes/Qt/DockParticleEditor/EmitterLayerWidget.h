@@ -1,5 +1,4 @@
-#ifndef __ResourceEditorQt__EmitterLayerWidget__
-#define __ResourceEditorQt__EmitterLayerWidget__
+#pragma once
 
 #include <DAVAEngine.h>
 #include "TimeLineWidget.h"
@@ -22,6 +21,13 @@ class EmitterLayerWidget : public BaseParticleEditorContentWidget
     Q_OBJECT
 
 public:
+    enum class eLayerMode
+    {
+        SUPEREMITTER,
+        STRIPE,
+        REGULAR
+    };
+
     explicit EmitterLayerWidget(QWidget* parent = 0);
 
     void Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter,
@@ -39,9 +45,9 @@ public:
     void RestoreVisualState(DAVA::KeyedArchive* visualStateProps) override;
 
     // Switch from/to SuperEmitter mode.
-    void SetSuperemitterMode(bool isSuperemitter);
+    void SetLayerMode(eLayerMode layerMode);
 
-    // Notify yhe widget layer value is changed.
+    // Notify the widget layer value is changed.
     void OnLayerValueChanged();
 
 signals:
@@ -50,22 +56,54 @@ signals:
 protected slots:
     void OnLodsChanged();
     void OnValueChanged();
+    void OnFresnelToAlphaChanged();
     void OnLayerMaterialValueChanged();
+    void OnFlowPropertiesChanged();
+    void OnStripePropertiesChanged();
+    void OnNoisePropertiesChanged();
+    void OnAlphaRemapPropertiesChanged();
     void OnSpriteBtn();
     void OnSpriteFolderBtn();
     void OnSpritePathChanged(const QString& text);
     void OnSpritePathEdited(const QString& text);
+    void OnFlowSpritePathEdited(const QString& text);
+    void OnNoiseSpritePathEdited(const QString& text);
+    void OnAlphaRemapSpritePathEdited(const QString& text);
+
+    void OnFlowSpriteBtn();
+    void OnFlowFolderBtn();
+    void OnFlowTexturePathChanged(const QString& text);
+
+    void OnNoiseSpriteBtn();
+    void OnNoiseFolderBtn();
+    void OnNoiseTexturePathChanged(const QString& text);
+
+    void OnAlphaRemapBtn();
+    void OnAlphaRemapFolderBtn();
+    void OnAlphaRemapTexturePathChanged(const QString& text);
 
     void OnPivotPointReset();
     void OnSpriteUpdateTimerExpired();
 
 private:
     void InitWidget(QWidget*);
-    void UpdateTooltip();
+    void UpdateTooltip(QLineEdit* label);
     void UpdateLayerSprite();
-
+    void UpdateFlowmapSprite();
+    void UpdateNoiseSprite();
+    void UpdateAlphaRemapSprite();
+    void UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack);
+    void CreateFlowmapLayoutWidget();
+    void CreateNoiseLayoutWidget();
+    void CreateStripeLayoutWidget();
+    void CreateAlphaRemapLayoutWidget();
+    QLayout* CreateFresnelToAlphaLayout();
+    void OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc);
+    void OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc);
+    void CheckPath(const QString& text);
     void FillLayerTypes();
     DAVA::int32 LayerTypeToIndex(DAVA::ParticleLayer::eType layerType);
+    void FillTimeLineWidgetIndentifiers();
 
 private:
     struct LayerTypeMap
@@ -88,14 +126,24 @@ private:
 
     QTimer* spriteUpdateTimer = nullptr;
     DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> spriteUpdateTexturesStack;
+    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> flowSpriteUpdateTexturesStack;
+    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> noiseSpriteUpdateTexturesStack;
+    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> alphaRemapSpriteUpdateTexturesStack;
 
     QVBoxLayout* mainBox = nullptr;
     QVBoxLayout* pivotPointLayout = nullptr;
 
     QLabel* scaleVelocityBaseLabel = nullptr;
     QLabel* scaleVelocityFactorLabel = nullptr;
+    QLabel* fresnelBiasLabel = nullptr;
+    QLabel* fresnelPowerLabel = nullptr;
     QLabel* layerTypeLabel = nullptr;
+
     QLabel* spriteLabel = nullptr;
+    QLabel* flowSpriteLabel = nullptr;
+    QLabel* noiseSpriteLabel = nullptr;
+    QLabel* alphaRemapSpriteLabel = nullptr;
+
     QLabel* innerEmitterLabel = nullptr;
     QLabel* pivotPointLabel = nullptr;
     QLabel* pivotPointXSpinBoxLabel = nullptr;
@@ -110,7 +158,13 @@ private:
     QLabel* loopVariationSpinLabel = nullptr;
 
     QCheckBox* enableCheckBox = nullptr;
+    QCheckBox* enableFlowCheckBox = nullptr;
+    QCheckBox* enableFlowAnimationCheckBox = nullptr;
+    QCheckBox* enableNoiseCheckBox = nullptr;
+    QCheckBox* enableAlphaRemapCheckBox = nullptr;
+    QCheckBox* enableNoiseScrollCheckBox = nullptr;
     QCheckBox* isLongCheckBox = nullptr;
+    QCheckBox* fresnelToAlphaCheckbox = nullptr;
     QCheckBox* isLoopedCheckBox = nullptr;
     QCheckBox* inheritPostionCheckBox = nullptr;
     QCheckBox* layerLodsCheckBox[DAVA::LodComponent::MAX_LOD_LAYERS];
@@ -120,6 +174,7 @@ private:
     QCheckBox* yFacingCheckBox = nullptr;
     QCheckBox* zFacingCheckBox = nullptr;
     QCheckBox* worldAlignCheckBox = nullptr;
+    QCheckBox* cameraFacingStripeSphericalCheckBox = nullptr;
     QCheckBox* fogCheckBox = nullptr;
     QCheckBox* frameOverlifeCheckBox = nullptr;
     QCheckBox* randomSpinDirectionCheckBox = nullptr;
@@ -132,11 +187,36 @@ private:
 
     QLineEdit* layerNameLineEdit = nullptr;
     QLineEdit* spritePathLabel = nullptr;
+    QLineEdit* flowSpritePathLabel = nullptr;
+    QLineEdit* noiseSpritePathLabel = nullptr;
+    QLineEdit* alphaRemapSpritePathLabel = nullptr;
     QLineEdit* innerEmitterPathLabel = nullptr;
 
     QPushButton* spriteBtn = nullptr;
     QPushButton* spriteFolderBtn = nullptr;
+    QPushButton* flowTextureBtn = nullptr;
+    QPushButton* flowTextureFolderBtn = nullptr;
+    QPushButton* noiseTextureBtn = nullptr;
+    QPushButton* noiseTextureFolderBtn = nullptr;
+    QPushButton* alphaRemapTextureBtn = nullptr;
+    QPushButton* alphaRemapTextureFolderBtn = nullptr;
+
     QPushButton* pivotPointResetButton = nullptr;
+
+    TimeLineWidget* flowSpeedTimeLine = nullptr;
+    TimeLineWidget* flowSpeedVariationTimeLine = nullptr;
+
+    TimeLineWidget* flowOffsetTimeLine = nullptr;
+    TimeLineWidget* flowOffsetVariationTimeLine = nullptr;
+
+    TimeLineWidget* noiseScaleTimeLine = nullptr;
+    TimeLineWidget* noiseScaleVariationTimeLine = nullptr;
+    TimeLineWidget* noiseScaleOverLifeTimeLine = nullptr;
+    TimeLineWidget* noiseUVScrollSpeedTimeLine = nullptr;
+    TimeLineWidget* noiseUVScrollSpeedVariationTimeLine = nullptr;
+    TimeLineWidget* noiseUVScrollSpeedOverLifeTimeLine = nullptr;
+
+    TimeLineWidget* alphaRemapOverLifeTimeLine = nullptr;
 
     TimeLineWidget* lifeTimeLine = nullptr;
     TimeLineWidget* numberTimeLine = nullptr;
@@ -151,8 +231,8 @@ private:
     TimeLineWidget* animSpeedOverLifeTimeLine = nullptr;
     TimeLineWidget* angleTimeLine = nullptr;
 
-    EventFilterDoubleSpinBox* scaleVelocityBaseSpinBox;
-    EventFilterDoubleSpinBox* scaleVelocityFactorSpinBox;
+    EventFilterDoubleSpinBox* scaleVelocityBaseSpinBox = nullptr;
+    EventFilterDoubleSpinBox* scaleVelocityFactorSpinBox = nullptr;
     EventFilterDoubleSpinBox* pivotPointXSpinBox = nullptr;
     EventFilterDoubleSpinBox* pivotPointYSpinBox = nullptr;
     EventFilterDoubleSpinBox* startTimeSpin = nullptr;
@@ -161,13 +241,53 @@ private:
     EventFilterDoubleSpinBox* loopEndSpin = nullptr;
     EventFilterDoubleSpinBox* deltaVariationSpin = nullptr;
     EventFilterDoubleSpinBox* loopVariationSpin = nullptr;
+    EventFilterDoubleSpinBox* fresnelBiasSpinBox = nullptr;
+    EventFilterDoubleSpinBox* fresnelPowerSpinBox = nullptr;
 
+    EventFilterDoubleSpinBox* alphaRemapLoopCountSpin = nullptr;
+    QLabel* alphaRemapLoopLabel = nullptr;
+
+    //////////////////////////////////////////////////////////////////////////
+    TimeLineWidget* stripeSizeOverLifeTimeLine = nullptr;
+    TimeLineWidget* stripeTextureTileTimeLine = nullptr;
+    TimeLineWidget* stripeNoiseScrollSpeedOverLifeTimeLine = nullptr;
+    EventFilterDoubleSpinBox* stripeVertexSpawnStepSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeLifetimeSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeStartSizeSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeUScrollSpeedSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeVScrollSpeedSpin = nullptr;
+    EventFilterDoubleSpinBox* stripeFadeDistanceFromTopSpin = nullptr;
+    QLabel* stripeLabel = nullptr;
+    QLabel* stripeLifetimeLabel = nullptr;
+    QLabel* stripeVertexSpawnStepLabel = nullptr;
+    QLabel* stripeStartSizeLabel = nullptr;
+    QLabel* stripeUScrollSpeedLabel = nullptr;
+    QLabel* stripeVScrollSpeedLabel = nullptr;
+    QLabel* stripeFadeDistanceFromTopLabel = nullptr;
+    QCheckBox* stripeInheritPositionForBaseCheckBox = nullptr;
+    QCheckBox* stripeUsePerspectiveMappingCheckBox = nullptr;
+    GradientPickerWidget* stripeColorOverLifeGradient = nullptr;
+    //////////////////////////////////////////////////////////////////////////
     QSpinBox* frameOverlifeFPSSpin = nullptr;
 
     GradientPickerWidget* colorRandomGradient = nullptr;
     GradientPickerWidget* colorOverLifeGradient = nullptr;
 
+    QWidget* flowLayoutWidget = nullptr;
+    QWidget* stripeLayoutWidget = nullptr;
+    QWidget* flowSettingsLayoutWidget = nullptr;
+    QWidget* noiseLayoutWidget = nullptr;
+    QWidget* noiseScrollWidget = nullptr;
+    QWidget* alphaRemapLayoutWidget = nullptr;
+
     bool blockSignals = false;
+    DAVA::Vector<std::pair<std::string, TimeLineWidget*>> timeLineWidgetsIdentifiers;
 };
 
-#endif /* defined(__ResourceEditorQt__EmitterLayerWidget__) */
+class WheellIgnorantComboBox : public QComboBox
+{
+public:
+    explicit WheellIgnorantComboBox(QWidget* parent = 0);
+
+    bool event(QEvent* e) override;
+};

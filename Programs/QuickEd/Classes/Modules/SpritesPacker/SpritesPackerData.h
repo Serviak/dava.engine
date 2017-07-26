@@ -14,6 +14,7 @@ public:
 
 private:
     friend class SpritesPackerModule;
+    friend struct SpritesPackerModuleTest;
     SpritesPacker* GetSpritesPacker();
 
     std::unique_ptr<SpritesPacker> spritesPacker;

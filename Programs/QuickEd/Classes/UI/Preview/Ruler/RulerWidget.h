@@ -2,6 +2,7 @@
 
 #include "UI/Preview/Ruler/RulerSettings.h"
 #include "UI/Preview/Guides/IRulerListener.h"
+#include "UI/Preview/Data/CanvasDataAdapter.h"
 
 #include <QWidget>
 #include <QPixmap>
@@ -9,19 +10,24 @@
 
 class LazyUpdater;
 
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+}
+}
+
 class RulerWidget final : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit RulerWidget(IRulerListener* listener, QWidget* parent = 0);
+    explicit RulerWidget(DAVA::TArc::ContextAccessor* accessor, IRulerListener* listener, QWidget* parent = 0);
     ~RulerWidget() = default;
 
     //Set ruler orientation
     void SetRulerOrientation(Qt::Orientation orientation);
-
-signals:
-    void GeometryChanged();
 
 public slots:
     // Ruler Settings are changed.
@@ -39,7 +45,6 @@ private:
     QSize minimumSizeHint() const override;
 
     void resizeEvent(QResizeEvent* resizeEvent) override;
-    void moveEvent(QMoveEvent* moveEvent) override;
 
     // We are using double buffering to avoid flicker and excessive updates.
     void UpdateDoubleBufferImage();
@@ -56,6 +61,8 @@ private:
 
     DAVA::float32 GetMousePos(const QPoint& pos) const;
 
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+
     // Ruler orientation.
     Qt::Orientation orientation = Qt::Horizontal;
 
@@ -71,4 +78,6 @@ private:
     LazyUpdater* lazyUpdater = nullptr;
 
     IRulerListener* listener = nullptr;
+
+    CanvasDataAdapter canvasDataAdapter;
 };
