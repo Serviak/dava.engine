@@ -116,6 +116,12 @@ inline T Clamp(T val, T a, T b)
     return Min(b, Max(val, a));
 }
 
+template <class T>
+inline T Saturate(T val)
+{
+    return Clamp(val, static_cast<T>(0), static_cast<T>(1));
+}
+
 #define Memcmp std::memcmp
 #define Memcpy std::memcpy
 #define Memset std::memset
