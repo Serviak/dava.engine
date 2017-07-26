@@ -253,6 +253,9 @@ Entity* MaterialsTest::CreateSpeedTreeEntity(Entity* entity)
     harmonics[0] = harmonics[1] = harmonics[2] = 1.f / 0.564188f; //fake SH value to make original object color
     spoRenderObject->SetSphericalHarmonics(harmonics);
 
+    if (GetSpeedTreeComponent(spoEntity) == nullptr)
+        spoEntity->AddComponent(new SpeedTreeComponent());
+
     return spoEntity;
 }
 
