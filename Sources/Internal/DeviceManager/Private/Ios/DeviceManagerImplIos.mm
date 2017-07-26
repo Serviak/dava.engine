@@ -46,6 +46,7 @@ float32 DeviceManagerImpl::GetIPhoneMainScreenDpi()
       { 1242, IPHONE_6_PLUS_ZOOM, "" },
       { 1536, IPAD_3_4_AIR_AIR2_PRO, "" },
       { 1536, IPHONE_4_5_6_SE_IPAD_MINI2_MINI3, "mini" },
+      { 1668, IPAD_3_4_AIR_AIR2_PRO, "" },
       { 2048, IPAD_3_4_AIR_AIR2_PRO, "" }
     };
 

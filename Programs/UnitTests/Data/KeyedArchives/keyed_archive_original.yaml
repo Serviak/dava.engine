@@ -35,3 +35,13 @@ keyedArchive:
                 bool: true
             map_INNER_ARCH_Name2bool:
                 bool: true
+    mapNameInt8: 
+        int8: -8
+    mapNameUInt8: 
+        uint8: 8
+    mapNameInt16: 
+        int16: -16
+    mapNameUInt16: 
+        uint16: 16
+    mapNameColor: 
+        Color: [124.000000, 100.000000, 75.000000, 255.000000]

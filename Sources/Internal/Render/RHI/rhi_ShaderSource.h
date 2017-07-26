@@ -89,6 +89,7 @@ public:
     ShaderProp::Source ConstBufferSource(uint32 bufIndex) const;
     BlendState Blending() const;
 
+    static void AddIncludeDirectory(const char* dir);
     void Dump() const;
 
 private:
