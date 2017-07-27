@@ -14,6 +14,7 @@ class ParticleEffectComponent;
 class ParticleEmitter;
 class ParticleEmitterInstance;
 class NMaterial;
+class Sprite;
 class SlotComponent;
 }
 
@@ -42,6 +43,8 @@ private:
     void DumpEffect(DAVA::ParticleEffectComponent* effect, DAVA::Set<DAVA::FilePath>& links) const;
     void DumpEmitter(DAVA::ParticleEmitterInstance* emitter, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& gfxFolders) const;
     void DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& redumpScenes) const;
+
+    void ProcessSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& gfxFolders) const;
 
     DAVA::Scene* scene = nullptr;
     DAVA::FilePath scenePathname;
