@@ -1,3 +1,5 @@
+#ensuredefined TEXTURED 0
+
 vertex_in
 {
     float4  pos : POSITION;

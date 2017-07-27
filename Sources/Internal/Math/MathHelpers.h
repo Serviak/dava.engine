@@ -3,14 +3,15 @@
 #include <cmath>
 #include "Math/Math2D.h"
 #include "Math/Vector.h"
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/MathConstants.h"
 
 namespace DAVA
 {
 /*
-	Radians to degrees and back conversion functions and constants
-	*/
+    Radians to degrees and back conversion functions and constants
+    */
 
 static const float32 RAD_TO_DEG = 180.0f / 3.14159265358979323846f;
 static const float32 DEG_TO_RAD = 3.14159265358979323846f / 180.0f;
@@ -62,7 +63,7 @@ inline float32 InvSqrtFast(float32 number) //only for IEEE 754 floating point fo
 }
 
 /*
-	Function to conver euler angles to normalized axial vectors
+    Function to conver euler angles to normalized axial vectors
 */
 void AnglesToVectors(const Vector3& _angles, Vector3& _vx, Vector3& _vy, Vector3& _vz);
 
@@ -121,11 +122,17 @@ inline T Sign(T val)
     return T(val > 0 ? 1 : -1);
 }
 
+template <typename T>
+inline T Lerp(T a, T b, float w)
+{
+    return a + w * (b - a);
+}
+
 /*
-	Function to get intersection point of 
-	vector (start + dir) 
-	with plane (plane normal + plane point)
-	*/
+    Function to get intersection point of 
+    vector (start + dir) 
+    with plane (plane normal + plane point)
+    */
 DAVA_DEPRECATED(inline bool GetIntersectionVectorWithPlane(const Vector3& start, const Vector3& dir, const Vector3& planeN, const Vector3& planePoint, Vector3& result));
 inline bool GetIntersectionVectorWithPlane(const Vector3& start, const Vector3& dir, const Vector3& planeN, const Vector3& planePoint, Vector3& result)
 {
@@ -154,10 +161,10 @@ inline bool GetIntersectionVectorWithPlane(const Vector3& start, const Vector3& 
 }
 
 /*
-	================
-	SquareRootFloat
-	================
-	*/
+    ================
+    SquareRootFloat
+    ================
+    */
 inline float32 SquareRootFloat(float32 number)
 {
     int32 i;
@@ -203,5 +210,15 @@ inline Vector3 Polar(DAVA::float32 angle, DAVA::float32 distance)
 {
     return DAVA::Vector3(std::cos(angle) * distance, std::sin(angle) * distance, 0.0f);
 };
+
+inline Matrix4 Convert2DTransformTo3DTransform(const Matrix3& m2d)
+{
+    return Matrix4(
+    m2d._00, m2d._01, 0.f, 0.f,
+    m2d._10, m2d._11, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    m2d._20, m2d._21, 0.f, 1.f
+    );
+}
 
 } // end of namespace DAVA
