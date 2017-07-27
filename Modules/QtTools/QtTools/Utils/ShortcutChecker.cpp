@@ -3,7 +3,7 @@
 #include "QtTools/Utils/DavaQtKeyboard.h"
 
 #include <Logger/Logger.h>
-#include <Engine/PlatformApi.h>
+#include <Engine/PlatformApiQt.h>
 
 #include <QObject>
 #include <QKeyEvent>
@@ -97,9 +97,14 @@ bool CheckContext(QShortcut* shortcut)
     {
         return CheckWidgetWithChildrenPolicy(QList<QWidget*>() << shortcut->parentWidget());
     }
-    if (context == Qt::WidgetShortcut)
+    else if (context == Qt::WidgetShortcut)
     {
         return shortcut->parentWidget()->hasFocus();
+    }
+    else if (context == Qt::WindowShortcut)
+    {
+        QWidget* w = shortcut->parentWidget();
+        return w->nativeParentWidget() == DAVA::PlatformApi::Qt::GetApplication()->activeWindow();
     }
     return true;
 }
@@ -111,11 +116,22 @@ bool CheckContext(QAction* action)
     {
         return CheckWidgetWithChildrenPolicy(action->associatedWidgets());
     }
-    if (context == Qt::WidgetShortcut)
+    else if (context == Qt::WidgetShortcut)
     {
         QList<QWidget*> associatedWidgets = action->associatedWidgets();
         auto iter = qFind(associatedWidgets.begin(), associatedWidgets.end(), DAVA::PlatformApi::Qt::GetApplication()->focusWidget());
         return iter != associatedWidgets.end();
+    }
+    else if (context == Qt::WindowShortcut)
+    {
+        QList<QWidget*> associatedWidgets = action->associatedWidgets();
+        QSet<QWidget*> topLevelWindows;
+        foreach (QWidget* w, associatedWidgets)
+        {
+            topLevelWindows.insert(w->nativeParentWidget());
+        }
+        auto iter = qFind(topLevelWindows.begin(), topLevelWindows.end(), DAVA::PlatformApi::Qt::GetApplication()->activeWindow());
+        return iter != topLevelWindows.end();
     }
     return true;
 }

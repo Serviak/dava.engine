@@ -10,7 +10,6 @@
 #include "Render/RHI/rhi_Public.h"
 #include "Render/RHI/rhi_ShaderCache.h"
 #include "Render/RHI/rhi_ShaderSource.h"
-#include "Render/RHI/Common/PreProcess.h"
 #include "Render/DynamicBufferAllocator.h"
 #include "Time/SystemTimer.h"
 #include "Debug/DVAssert.h"
@@ -304,8 +303,6 @@ void Initialize()
     rhi::ShaderSource vp_pc;
     rhi::ShaderSource fp_pc;
 
-    ShaderPreprocessScope preprocessScope;
-
     if (vp_pc.Construct(rhi::PROG_VERTEX, ImGuiImplDetails::vprogPC) && fp_pc.Construct(rhi::PROG_FRAGMENT, ImGuiImplDetails::fprogPC))
     {
         rhi::PipelineState::Descriptor ps_desc;
@@ -347,14 +344,12 @@ void Initialize()
         ImGuiImplDetails::pipelineStatePTC = rhi::AcquireRenderPipelineState(ps_desc);
         rhi::CreateVertexConstBuffers(ImGuiImplDetails::pipelineStatePTC, 1, &ImGuiImplDetails::constBufferPTC);
     }
-    
-#if defined(__DAVAENGINE_COREV2__)
+
     ImGuiImplDetails::trackedObject = new DAVA::TrackedObject();
     DAVA::Engine::Instance()->beginFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameBegin);
     DAVA::Engine::Instance()->endFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameEnd);
 
     ImGuiImplDetails::inputHandlerToken = DAVA::InputSystem::Instance()->AddHandler(eInputDevices::TOUCH_SURFACE | eInputDevices::MOUSE | eInputDevices::KEYBOARD, &OnInput);
-#endif
 
     ImGuiImplDetails::initialized = true;
 }
@@ -512,12 +507,10 @@ void Uninitialize()
 
         ImGui::Shutdown();
 
-#if defined(__DAVAENGINE_COREV2__)
         DAVA::InputSystem::Instance()->RemoveHandler(ImGuiImplDetails::inputHandlerToken);
         ImGuiImplDetails::inputHandlerToken = 0;
 
         SafeDelete(ImGuiImplDetails::trackedObject);
-#endif
 
         ImGuiImplDetails::initialized = false;
     }

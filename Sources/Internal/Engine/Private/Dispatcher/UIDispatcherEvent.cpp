@@ -1,7 +1,5 @@
 #include "Engine/Private/Dispatcher/UIDispatcherEvent.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 namespace DAVA
 {
 namespace Private
@@ -76,5 +74,3 @@ UIDispatcherEvent UIDispatcherEvent::CreateSetSurfaceScaleEvent(const float32 sc
 
 } // namespace Private
 } // namespace DAVA
-
-#endif // __DAVAENGINE_COREV2__

@@ -2,8 +2,6 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_COREV2__)
-
 namespace DAVA
 {
 class Logger;
@@ -36,6 +34,11 @@ class EngineSettings;
 class DeviceManager;
 
 class AutotestingSystem;
+class ComponentManager;
+
+class TypeDB;
+class FastNameDB;
+class ReflectedTypeDB;
 
 namespace Net
 {
@@ -90,8 +93,23 @@ public:
     DeviceManager* deviceManager = nullptr;
 
     AutotestingSystem* autotestingSystem = nullptr;
+    ComponentManager* componentManager = nullptr;
+
+    TypeDB* typeDB = nullptr;
+    FastNameDB* fastNameDB = nullptr;
+    ReflectedTypeDB* reflectedTypeDB = nullptr;
 };
 
-} // namespace DAVA
+// TODO: this is temporary solution
+// we are going to think on how to add functions like CurlGlobalInit()
+// into engine context, to be able to call them in such way:
+//   DAVA::Context::CurlGlobalInit()
+//   DAVA::Context::GetKeyboard()
+//   etc.
+namespace Context
+{
+void CurlGlobalInit();
+void CurlGlobalDeinit();
+}
 
-#endif // __DAVAENGINE_COREV2__
+} // namespace DAVA
