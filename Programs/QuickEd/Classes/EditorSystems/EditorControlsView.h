@@ -5,6 +5,7 @@
 #include "Utils/PackageListenerProxy.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
+
 #include <UI/Layouts/UILayoutSystemListener.h>
 #include <Base/BaseTypes.h>
 
@@ -42,8 +43,14 @@ private:
     // UILayoutSystemListener
     void OnControlLayouted(DAVA::UIControl* control) override;
 
+    void BeforeRendering();
+
+    void RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control);
+
     BackgroundController* CreateControlBackground(PackageBaseNode* node);
     void AddBackgroundControllerToCanvas(BackgroundController* backgroundController, size_t pos);
+
+    void OnRootControlPosChanged();
 
     DAVA::RefPtr<DAVA::UIControl> controlsCanvas; //to attach or detach from document
     DAVA::List<std::unique_ptr<BackgroundController>> gridControls;
@@ -54,4 +61,7 @@ private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
     PackageListenerProxy packageListenerProxy;
+
+    bool needRecalculateBgrBeforeRender = false;
+    DAVA::TArc::DataWrapper canvasDataWrapper;
 };

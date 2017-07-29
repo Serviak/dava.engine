@@ -41,11 +41,10 @@ QAction* TestHelpers::FindActionInMenus(QWidget* window, const QString& menuName
     QMainWindow* mainWnd = qobject_cast<QMainWindow*>(window);
     TEST_VERIFY(mainWnd != nullptr);
 
-    QMenuBar* menu = mainWnd->menuBar();
-    QMenu* fileMenu = menu->findChild<QMenu*>(menuName);
+    QMenuBar* menuBar = mainWnd->menuBar();
+    QMenu* menu = menuBar->findChild<QMenu*>(menuName);
 
-    QAction* closeProjectAction = nullptr;
-    QList<QAction*> actions = fileMenu->actions();
+    QList<QAction*> actions = menu->actions();
     foreach (QAction* action, actions)
     {
         if (action->objectName() == actionNname)

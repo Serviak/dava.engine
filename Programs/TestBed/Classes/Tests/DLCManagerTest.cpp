@@ -375,13 +375,10 @@ void DLCManagerTest::OnIOErrorClicked(BaseObject*, void*, void*)
 {
     using namespace DAVA;
     DebugFS::IOErrorTypes ioErr;
-    ioErr.closeFailed = true;
-    ioErr.openOrCreateFailed = true;
-    ioErr.seekFailed = true;
-    ioErr.truncateFailed = true;
-    ioErr.readFailed = true;
-    ioErr.writeFailed = true;
-    ioErr.ioErrorCode = ENOSPC; // no space on device
+
+    ioErr.moveFailed = true;
+    ioErr.ioErrorCode = EACCES;
+
     GenerateIOErrorOnNextOperation(ioErr);
 }
 
