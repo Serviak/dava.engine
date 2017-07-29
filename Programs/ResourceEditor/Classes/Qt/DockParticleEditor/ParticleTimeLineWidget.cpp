@@ -6,7 +6,7 @@
 #include "Classes/SceneManager/SceneData.h"
 
 #include "Commands2/ParticleEditorCommands.h"
-#include "Scene/SceneSignals.h"
+#include "Scene/System/EditorParticlesSystem.h"
 
 #include "TArc/Core/FieldBinder.h"
 

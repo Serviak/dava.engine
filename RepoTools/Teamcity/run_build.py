@@ -11,9 +11,7 @@ import ast
 def __parser_args():
     arg_parser = argparse.ArgumentParser()
 
-    arg_parser.add_argument( '--teamcity_url', required = True )
-    arg_parser.add_argument( '--login', required = True )
-    arg_parser.add_argument( '--password', required = True )
+    team_city_api.argparse_add_argument( arg_parser )
 
     arg_parser.add_argument( '--configuration_name', required = True )
     arg_parser.add_argument( '--branch', required = True )
@@ -29,11 +27,7 @@ def main():
 
     args = __parser_args()
 
-    team_city_api.init( args.teamcity_url,
-                        args.login,
-                        args.password )
-
-    teamcity = team_city_api.ptr()
+    teamcity = team_city_api.init_args(args)
 
     triggering_options = []
 
@@ -51,7 +45,9 @@ def main():
     if args.agent_name:
         agent_id = teamcity.agent_info_by_name( args.agent_name )['id']
 
-    teamcity.run_build( args.configuration_name, args.branch, properties, triggering_options, agent_id )
+    run_build_result = teamcity.run_build( args.configuration_name, args.branch, properties, triggering_options, agent_id )
+
+    print run_build_result
 
 if __name__ == '__main__':
     main()

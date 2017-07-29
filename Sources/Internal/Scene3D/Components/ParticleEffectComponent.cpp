@@ -69,6 +69,7 @@ Component* ParticleEffectComponent::Clone(Entity* toEntity)
     newComponent->effectDuration = effectDuration;
     newComponent->clearOnRestart = clearOnRestart;
     newComponent->startFromTime = startFromTime;
+
     for (const auto& instance : emitterInstances)
     {
         newComponent->AddEmitterInstance(ScopedPtr<ParticleEmitterInstance>(instance->Clone()));
