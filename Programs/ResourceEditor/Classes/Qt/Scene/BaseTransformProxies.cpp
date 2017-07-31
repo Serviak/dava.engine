@@ -1,7 +1,7 @@
 #include "Scene/BaseTransformProxies.h"
 #include "Particles/ParticleEmitterInstance.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
-
+#include "Classes/Qt/Scene/SceneHelper.h"
 /*
  * EntityTransformProxy
  */
@@ -30,7 +30,7 @@ bool EntityTransformProxy::TransformDependsFromObject(Selectable::Object* depend
     DVASSERT(dependant != dependsOn, "[TransformDependsFromObject] One object provided to both parameters");
 
     auto asEntity = Selectable(dependsOn).AsEntity();
-    return (asEntity != nullptr) && asEntity->IsMyChildRecursive(static_cast<DAVA::Entity*>(dependant));
+    return (asEntity != nullptr) && SceneHelper::IsEntityChildRecursive(asEntity, static_cast<DAVA::Entity*>(dependant));
 }
 
 /*
