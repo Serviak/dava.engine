@@ -7,7 +7,7 @@
 #include <DLCManager/DLCManager.h>
 #include <UI/Focus/UIFocusComponent.h>
 #include <UI/Render/UIDebugRenderComponent.h>
-#include <EmbeddedWebServer.h>
+#include <EmbeddedWebServer/EmbeddedWebServer.h>
 #include <DLCManager/DLCDownloader.h>
 
 DLCManagerTest::DLCManagerTest(TestBed& app)
@@ -375,13 +375,10 @@ void DLCManagerTest::OnIOErrorClicked(BaseObject*, void*, void*)
 {
     using namespace DAVA;
     DebugFS::IOErrorTypes ioErr;
-    ioErr.closeFailed = true;
-    ioErr.openOrCreateFailed = true;
-    ioErr.seekFailed = true;
-    ioErr.truncateFailed = true;
-    ioErr.readFailed = true;
-    ioErr.writeFailed = true;
-    ioErr.ioErrorCode = ENOSPC; // no space on device
+
+    ioErr.moveFailed = true;
+    ioErr.ioErrorCode = EACCES;
+
     GenerateIOErrorOnNextOperation(ioErr);
 }
 
