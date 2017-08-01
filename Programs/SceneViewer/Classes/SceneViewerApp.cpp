@@ -3,9 +3,16 @@
 #include "UIScreens/PerformanceResultsScreen.h"
 #include "Quality/QualityPreferences.h"
 
+#include <LoggerService/ServiceInfo.h>
+#include <LoggerService/NetLogger.h>
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+#include <MemoryProfilerService/ServiceInfo.h>
+#include <MemoryProfilerService/MMNetServer.h>
+#endif
+
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
-
+#include <Network/NetCore.h>
 #include <Render/RHI/rhi_Public.h>
 #include <Render/RHI/dbg_Draw.h>
 #include <Render/RHI/Common/dbg_StatSet.h>
@@ -32,6 +39,14 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
 
     QualityPreferences::LoadFromSettings(data.settings);
     data.scenePath = data.settings.GetLastOpenedScenePath();
+
+    servicesProvider.reset(new DAVA::Net::ServicesProvider(engine, "SceneViewer"));
+    netLogger.reset(new DAVA::Net::NetLogger);
+    netLoggerDispatched.reset(new DAVA::Net::ChannelListenerDispatched(std::weak_ptr<DAVA::Net::IChannelListener>(netLogger), engine.GetContext()->netCore->GetNetEventsDispatcher()));
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    memprofServer.reset(new DAVA::Net::MMNetServer);
+    memprofServerDispatched.reset(new DAVA::Net::ChannelListenerDispatched(std::weak_ptr<DAVA::Net::IChannelListener>(memprofServer), engine.GetContext()->netCore->GetNetEventsDispatcher()));
+#endif
 }
 
 void SceneViewerApp::OnAppStarted()
@@ -76,12 +91,18 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
                                       static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8), api);
 
     w->SetTitleAsync(title);
-
     w->SetSizeAsync(windowSize);
     w->SetVirtualSize(windowSize.dx, windowSize.dy);
 
     VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
     vcs->RegisterAvailableResourceSize(static_cast<int32>(windowSize.dx), static_cast<int32>(windowSize.dy), "Gfx");
+
+    servicesProvider->AddService(DAVA::Net::LOG_SERVICE_ID, netLoggerDispatched);
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    servicesProvider->AddService(DAVA::Net::MEMORY_PROFILER_SERVICE_ID, memprofServerDispatched);
+#endif
+
+    servicesProvider->Start();
 
     Renderer::SetDesiredFPS(60);
     HashMap<FastName, int32> flags;
@@ -134,6 +155,12 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
 
 void SceneViewerApp::OnAppFinished()
 {
+    servicesProvider.reset();
+    netLogger.reset();
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    memprofServer.reset();
+#endif
+
     data.scene.reset();
 
     DAVA::DbgDraw::Uninitialize();
@@ -266,6 +293,8 @@ DAVA::KeyedArchive* CreateOptions()
 
     appOptions->SetInt32("bpp", 32);
 #endif
+
+    appOptions->SetBool("separate_net_thread", true);
 
     return appOptions;
 }

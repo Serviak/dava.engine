@@ -16,6 +16,8 @@ LOCAL_MODULE := TestBed
 # set path for includes
 LOCAL_C_INCLUDES := $(DV_PROJECT_ROOT)/Classes
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/EmbeddedWebServer
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/LoggerService/Sources
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/MemoryProfilerService/Sources
 
 # set exported includes
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -25,7 +27,9 @@ LOCAL_SRC_FILES := \
 	$(subst $(LOCAL_PATH)/,, \
 	$(wildcard $(DV_PROJECT_ROOT)/Classes/*/*.cpp) \
 	$(wildcard $(DV_PROJECT_ROOT)/Classes/Tests/OverdrawTest/*.cpp) \
-    $(wildcard $(DAVA_ROOT)/Modules/EmbeddedWebServer/Private/EmbeddedWebServer.cpp))
+    $(wildcard $(DAVA_ROOT)/Modules/EmbeddedWebServer/Private/EmbeddedWebServer.cpp) \
+    $(wildcard $(DAVA_ROOT)/Modules/LoggerService/Sources/LoggerService/Private/*.cpp) \
+    $(wildcard $(DAVA_ROOT)/Modules/MemoryProfilerService/Sources/MemoryProfilerService/Private/*.cpp))
 
 LOCAL_CPPFLAGS += -std=c++14
 
