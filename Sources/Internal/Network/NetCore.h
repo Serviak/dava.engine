@@ -125,25 +125,21 @@ public:
 
     static const char8 defaultAnnounceMulticastGroup[];
 
-    enum eKnownNetworkServices
-    {
-        SERVICE_LOG = 0,
-        SERVICE_MEMPROF
-    };
-
 public:
     NetCore(Engine* e);
     ~NetCore();
 
     IOLoop* Loop() const;
 
-    bool RegisterService(uint32 serviceId, ServiceCreator creator, ServiceDeleter deleter, const char8* serviceName = NULL);
-    bool UnregisterService(uint32 serviceId);
+    bool RegisterService(ServiceID serviceId, ServiceCreator creator, ServiceDeleter deleter, const char8* serviceName = NULL);
+    bool UnregisterService(ServiceID serviceId);
     void UnregisterAllServices();
-    bool IsServiceRegistered(uint32 serviceId) const;
-    const char8* ServiceName(uint32 serviceId) const;
+    bool IsServiceRegistered(ServiceID serviceId) const;
+    const char8* ServiceName(ServiceID serviceId) const;
 
     TrackId CreateController(const NetConfig& config, void* context = nullptr, uint32 readTimeout = DEFAULT_READ_TIMEOUT);
+    IController::Status GetControllerStatus(TrackId) const;
+
     TrackId CreateAnnouncer(const Endpoint& endpoint, uint32 sendPeriod, Function<size_t(size_t, void*)> needDataCallback, const Endpoint& tcpEndpoint = Endpoint(DEFAULT_TCP_ANNOUNCE_PORT));
     TrackId CreateDiscoverer(const Endpoint& endpoint, Function<void(size_t, const void*, const Endpoint&)> dataReadyCallback);
 
@@ -161,7 +157,14 @@ public:
     void Poll(float32 frameDelta = 0.0f);
     void Finish(bool runOutLoop = false);
 
-    bool TryDiscoverDevice(const Endpoint& endpoint);
+    enum DiscoverStartResult
+    {
+        CONTROLLER_NOT_CREATED,
+        CONTROLLER_NOT_STARTED_YET,
+        DISCOVER_STARTED,
+        CLOSING_PREVIOUS_DISCOVER
+    };
+    DiscoverStartResult TryDiscoverDevice(const Endpoint& endpoint);
 
     Vector<IfAddress> InstalledInterfaces() const;
 
@@ -232,12 +235,12 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline bool NetCore::RegisterService(uint32 serviceId, ServiceCreator creator, ServiceDeleter deleter, const char8* serviceName)
+inline bool NetCore::RegisterService(ServiceID serviceId, ServiceCreator creator, ServiceDeleter deleter, const char8* serviceName)
 {
     return registrar.Register(serviceId, creator, deleter, serviceName);
 }
 
-inline bool NetCore::UnregisterService(uint32 serviceId)
+inline bool NetCore::UnregisterService(ServiceID serviceId)
 {
     return registrar.UnRegister(serviceId);
 }
@@ -247,12 +250,12 @@ inline void NetCore::UnregisterAllServices()
     registrar.UnregisterAll();
 }
 
-inline bool NetCore::IsServiceRegistered(uint32 serviceId) const
+inline bool NetCore::IsServiceRegistered(ServiceID serviceId) const
 {
     return registrar.IsRegistered(serviceId);
 }
 
-inline const char8* NetCore::ServiceName(uint32 serviceId) const
+inline const char8* NetCore::ServiceName(ServiceID serviceId) const
 {
     return registrar.Name(serviceId);
 }

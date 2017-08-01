@@ -3,7 +3,7 @@
 #include "Tools/AssetCache/CachedItemValue.h"
 #include "Tools/AssetCache/CachePacket.h"
 
-#include "Tools/NetworkHelpers/ResolverCallbackDispatched.h"
+#include <NetworkHelpers/ResolverCallbackDispatched.h>
 
 #include <FileSystem/KeyedArchive.h>
 #include <Debug/DVAssert.h>
