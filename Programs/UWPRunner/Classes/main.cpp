@@ -1,5 +1,7 @@
 #if defined(__DAVAENGINE_WIN32__)
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include "Debug/DVAssertDefaultHandlers.h"
 #include "Logger/Logger.h"
 #include "Engine/Engine.h"
@@ -41,6 +43,8 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
                          int result = Process(e);
                          e.QuitAsync(result);
                      });
+
+    DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(e.GetContext()->fileSystem, "UWPRunner");
 
     return e.Run();
 }
