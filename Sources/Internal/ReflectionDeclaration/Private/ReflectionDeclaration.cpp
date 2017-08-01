@@ -34,6 +34,7 @@
 #include "Scene3D/Components/WaveComponent.h"
 #include "Scene3D/Components/WindComponent.h"
 #include "Scene3D/Components/SlotComponent.h"
+#include "Scene3D/Components/TextComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Entity/Component.h"
@@ -263,6 +264,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WindComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LodComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SlotComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TextComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ActionComponent::Action);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PolygonGroup);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RenderObject);
