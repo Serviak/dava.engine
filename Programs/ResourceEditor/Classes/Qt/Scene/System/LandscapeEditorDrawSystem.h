@@ -90,8 +90,6 @@ public:
     bool UpdateTilemaskPathname();
     bool InitTilemaskImageCopy();
 
-    void DisableSystem();
-
 protected:
     void Process(DAVA::float32 timeElapsed) override;
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
