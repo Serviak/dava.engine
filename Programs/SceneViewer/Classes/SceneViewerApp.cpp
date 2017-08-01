@@ -3,6 +3,7 @@
 #include "UIScreens/PerformanceResultsScreen.h"
 #include "Quality/QualityPreferences.h"
 
+#include <DocDirSetup/DocDirSetup.h>
 #include <LoggerService/ServiceInfo.h>
 #include <LoggerService/NetLogger.h>
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -30,6 +31,21 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     engine.resumed.Connect(this, &SceneViewerApp::OnResume);
     engine.beginFrame.Connect(this, &SceneViewerApp::BeginFrame);
     engine.endFrame.Connect(this, &SceneViewerApp::EndFrame);
+
+    DAVA::FileSystem* fileSystem = engine.GetContext()->fileSystem;
+    DAVA::FileSystem::eCreateDirectoryResult createResult = DAVA::DocumentsDirectorySetup::CreateApplicationDocDirectory(fileSystem, "SceneViewer");
+
+    if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS) // todo: remove this if-case some versions after
+    {
+        data.settings.Load(); // load from old doc directory
+        DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "SceneViewer");
+        data.settings.Save();
+    }
+    else
+    {
+        DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "SceneViewer");
+        data.settings.Load();
+    }
 
     DAVA::QualitySettingsSystem::Instance()->SetKeepUnusedEntities(true);
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);

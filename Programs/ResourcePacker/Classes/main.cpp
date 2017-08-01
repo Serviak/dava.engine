@@ -1,14 +1,17 @@
 #include <Tools/TexturePacker/ResourcePacker2D.h>
 #include <Tools/TextureCompression/PVRConverter.h>
 
-#include "Engine/Engine.h"
-#include "CommandLine/CommandLineParser.h"
-#include "Render/GPUFamilyDescriptor.h"
-#include "Logger/Logger.h"
-#include "Logger/TeamcityOutput.h"
-#include "Debug/DVAssertDefaultHandlers.h"
-#include "Time/SystemTimer.h"
-#include "Utils/Utils.h"
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <Engine/Engine.h>
+#include <FileSystem/FileSystem.h>
+#include <CommandLine/CommandLineParser.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Logger/Logger.h>
+#include <Logger/TeamcityOutput.h>
+#include <Debug/DVAssertDefaultHandlers.h>
+#include <Time/SystemTimer.h>
+#include <Utils/Utils.h>
 
 using namespace DAVA;
 
@@ -162,7 +165,12 @@ void ProcessRecourcePacker(Engine& e)
 void Process(Engine& e)
 {
     DVASSERT(e.IsConsoleMode() == true);
-    Logger* logger = e.GetContext()->logger;
+
+    const EngineContext* context = e.GetContext();
+
+    DocumentsDirectorySetup::SetApplicationDocDirectory(context->fileSystem, "ResourcePacker");
+
+    Logger* logger = context->logger;
     logger->SetLogLevel(Logger::LEVEL_INFO);
 
     if (CommandLineParser::GetCommandsCount() < 2

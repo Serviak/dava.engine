@@ -722,7 +722,6 @@ void FileSystem::SetDefaultDocumentsDirectory()
     SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
 }
 
-
 #if defined(__DAVAENGINE_WINDOWS__)
 const FilePath FileSystem::GetUserDocumentsPath()
 {

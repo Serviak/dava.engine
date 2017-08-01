@@ -2,12 +2,16 @@
 #include "ServerCore.h"
 #include "Logger/RotationLogger.h"
 
-#include "QtHelpers/RunGuard.h"
-#include "QtHelpers/LauncherListener.h"
+#include <QtHelpers/RunGuard.h>
+#include <QtHelpers/LauncherListener.h>
+
+#include <DocDirSetup/DocDirSetup.h>
+
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Logger/Logger.h>
+#include <FileSystem/FileSystem.h>
 
 #include <QApplication>
 #include <QCryptographicHash>
@@ -40,6 +44,39 @@ int Process(DAVA::Engine& e)
     int argc = static_cast<int>(argv.size());
 
     QApplication a(argc, argv.data());
+
+    DAVA::FileSystem* fs = context->fileSystem;
+
+#ifdef __DAVAENGINE_MACOS__
+    auto copyDocumentsFromOldFolder = [&]
+    {
+        FileSystem::eCreateDirectoryResult createResult = DocumentsDirectorySetup::CreateApplicationDocDirectory(fs, "AssetServer");
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            ApplicationSettings settings;
+            settings.LoadFromOldPath();
+            FilePath cacheContentsPath = settings.GetFolder();
+            cacheContentsPath.MakeDirectoryPathname();
+
+            FilePath documentsFolderOld = fs->GetCurrentDocumentsDirectory();
+            DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "AssetServer");
+            if (cacheContentsPath.StartsWith(documentsFolderOld))
+            {
+                FilePath cacheContentsDefaultPath = settings.GetDefaultFolder();
+                cacheContentsDefaultPath.MakeDirectoryPathname();
+                if (fs->CreateDirectory(cacheContentsDefaultPath, true) == FileSystem::DIRECTORY_CREATED)
+                {
+                    fs->RecursiveCopy(cacheContentsPath, cacheContentsDefaultPath);
+                    settings.SetFolder(cacheContentsDefaultPath);
+                }
+            }
+
+            settings.Save(); // settings are saved in new place
+        }
+    };
+    copyDocumentsFromOldFolder(); // todo: remove some versions after
+#endif
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "AssetServer");
 
     std::unique_ptr<ServerCore> server = std::make_unique<ServerCore>();
     server->SetApplicationPath(QApplication::applicationFilePath().toStdString());
