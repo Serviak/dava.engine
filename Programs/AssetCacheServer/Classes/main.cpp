@@ -45,7 +45,6 @@ int Process(DAVA::Engine& e)
 
     QApplication a(argc, argv.data());
 
-    const EngineContext* context = e.GetContext();
     DAVA::FileSystem* fs = context->fileSystem;
 
 #ifdef __DAVAENGINE_MACOS__
