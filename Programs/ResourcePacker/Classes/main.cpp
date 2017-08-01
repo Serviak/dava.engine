@@ -115,11 +115,11 @@ void ProcessRecourcePacker(Engine& e)
         exportForGPUs.push_back(GPU_ORIGIN);
     }
 
-    AssetCacheClient cacheClient;
-    bool shouldDisconnect = false;
+    std::unique_ptr<AssetCacheClient> cacheClient;
     if (CommandLineParser::CommandIsFound(String("-useCache")))
     {
         Logger::FrameworkDebug("Using asset cache");
+        cacheClient = std::make_unique<AssetCacheClient>();
 
         String ipStr = CommandLineParser::GetCommandParam("-ip");
         String portStr = CommandLineParser::GetCommandParam("-p");
@@ -130,11 +130,10 @@ void ProcessRecourcePacker(Engine& e)
         params.port = (portStr.empty()) ? AssetCache::ASSET_SERVER_PORT : atoi(portStr.c_str());
         params.timeoutms = (timeoutStr.empty() ? 1000 : atoi(timeoutStr.c_str()) * 1000); //in ms
 
-        AssetCache::Error connected = cacheClient.ConnectSynchronously(params);
+        AssetCache::Error connected = cacheClient->ConnectSynchronously(params);
         if (connected == AssetCache::Error::NO_ERRORS)
         {
-            shouldDisconnect = true;
-            resourcePacker.SetCacheClient(&cacheClient, "Resource Packer. Repack Sprites");
+            resourcePacker.SetCacheClient(cacheClient.get(), "Resource Packer. Repack Sprites");
         }
     }
     else
@@ -153,9 +152,10 @@ void ProcessRecourcePacker(Engine& e)
         resourcePacker.PackResources(exportForGPUs);
     }
 
-    if (shouldDisconnect)
+    if (cacheClient)
     {
-        cacheClient.Disconnect();
+        cacheClient->Disconnect();
+        cacheClient.reset();
     }
 
     elapsedTime = SystemTimer::GetMs() - elapsedTime;

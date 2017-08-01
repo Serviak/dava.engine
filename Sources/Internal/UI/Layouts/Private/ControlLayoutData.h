@@ -18,7 +18,10 @@ public:
         FLAG_POSITION_CHANGED = 1 << 1,
         FLAG_SIZE_CALCULATED = 1 << 2,
         FLAG_LAST_IN_LINE = 1 << 3,
-        FLAG_STICK_THIS = 1 << 4
+        FLAG_STICK_THIS = 1 << 4,
+        FLAG_STICK_HARD = 1 << 5,
+        FLAG_LTR = 1 << 6,
+        FLAG_RTL = 1 << 7
     };
 
 public:
