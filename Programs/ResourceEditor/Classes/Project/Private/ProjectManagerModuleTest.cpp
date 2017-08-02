@@ -34,7 +34,7 @@ protected:
         using namespace DAVA;
         using namespace TArc;
 
-        RegisterOperation(REGlobal::CreateNewSceneOperation.ID, this, &SceneManagerMockModule::CreateNewSceneMock);
+        RegisterOperation(REGlobal::CreateFirstSceneOperation.ID, this, &SceneManagerMockModule::CreateNewSceneMock);
         RegisterOperation(REGlobal::CloseAllScenesOperation.ID, this, &SceneManagerMockModule::CloseAllScenesMock);
 
         ContextAccessor* accessor = GetAccessor();
@@ -125,7 +125,7 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
         {
             InSequence sequence;
             EXPECT_CALL(*GetMockInvoker(), Invoke(static_cast<int>(REGlobal::OpenLastProjectOperation.ID)));
-            EXPECT_CALL(*GetMockInvoker(), Invoke(static_cast<int>(REGlobal::CreateNewSceneOperation.ID)));
+            EXPECT_CALL(*GetMockInvoker(), Invoke(static_cast<int>(REGlobal::CreateFirstSceneOperation.ID)));
             EXPECT_CALL(listener, OnDataChanged(_, _))
             .WillOnce(Invoke([this](const DAVA::TArc::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields)
                              {
