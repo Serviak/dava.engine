@@ -22,6 +22,8 @@ private:
     Any GetNumberValue() const;
     void SetNumberValue(const Any& v);
 
+    bool ShowSpinArrows() const;
+
     DAVA_VIRTUAL_REFLECTION(NumberComponentValue<T>, BaseComponentValue);
 };
 } // namespace TArc

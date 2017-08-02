@@ -19,6 +19,7 @@ public:
         String valueRole;
         String readOnlyRole;
         String rangeRole;
+        String showSpinArrowsRole;
         String accuracyRole;
 
         bool operator==(const FieldDescriptor& other) const;

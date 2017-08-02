@@ -1,9 +1,11 @@
-#include "Engine/Engine.h"
-#include "DLC/Patcher/PatchFile.h"
-#include "FileSystem/FileSystem.h"
-#include "FileSystem/VariantType.h"
-#include "CommandLine/ProgramOptions.h"
-#include "Debug/DVAssertDefaultHandlers.h"
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <Engine/Engine.h>
+#include <DLC/Patcher/PatchFile.h>
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/VariantType.h>
+#include <CommandLine/ProgramOptions.h>
+#include <Debug/DVAssertDefaultHandlers.h>
 
 using namespace DAVA;
 
@@ -94,8 +96,8 @@ int Process(Engine& e)
 
     FileSystem* fileSystem = e.GetContext()->fileSystem;
 
-    fileSystem->SetDefaultDocumentsDirectory();
-    fileSystem->CreateDirectory(DAVA::FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "ResourcePatcher");
+
     const Vector<String>& cmdLine = e.GetCommandLine();
 
     bool paramsOk = false;

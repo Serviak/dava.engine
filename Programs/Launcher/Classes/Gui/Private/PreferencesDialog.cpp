@@ -44,7 +44,7 @@ void SavePreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAM
     rootObject[PreferencesDialogDetails::autorefreshTimeoutKey] = refresher->GetTimeout();
 
     QJsonDocument document(rootObject);
-    QString filePath = FileManager::GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
+    QString filePath = fileManager->GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
     QFile settingsFile(filePath);
     if (settingsFile.open(QFile::WriteOnly | QFile::Truncate))
     {
@@ -58,7 +58,7 @@ void SavePreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAM
 
 void LoadPreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAManagerClient* commandListener, ConfigRefresher* refresher)
 {
-    QString filePath = FileManager::GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
+    QString filePath = fileManager->GetDocumentsDirectory() + PreferencesDialogDetails::settingsFileName;
     QFile settingsFile(filePath);
     QJsonDocument document;
     if (settingsFile.exists())
@@ -90,7 +90,15 @@ void LoadPreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAM
     QJsonValue filesDirValue = rootObject[PreferencesDialogDetails::filesDirectoryKey];
     if (filesDirValue.isString())
     {
-        fileManager->SetFilesDirectory(filesDirValue.toString());
+        QString filesDir = filesDirValue.toString();
+        fileManager->SetFilesDirectory(filesDir);
+        
+#ifdef Q_OS_MAC
+        if (filesDir.startsWith(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)))
+        {
+            ErrorMessenger::ShowErrorMessage(ErrorMessenger::ERROR_FILE, QObject::tr("Storage path is located inside of '%1'\nIt's recommended to relocate storage outside of this path").arg(filesDir));
+        }
+#endif
     }
 
     QJsonValue protocolKeyValue = rootObject[PreferencesDialogDetails::launcherProtocolKey];

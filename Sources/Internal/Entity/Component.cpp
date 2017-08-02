@@ -28,6 +28,9 @@
 #include "Scene3D/Components/Controller/RotationControllerComponent.h"
 #include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
 #include "Scene3D/Components/Controller/WASDControllerComponent.h"
+#include "Scene3D/Components/SlotComponent.h"
+#include "Scene3D/Components/TextComponent.h"
+
 
 #include "Base/ObjectFactory.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
@@ -96,6 +99,10 @@ Component* Component::CreateByType(uint32 componentType)
         return new WASDControllerComponent();
     case VISIBILITY_CHECK_COMPONENT:
         return new VisibilityCheckComponent();
+    case SLOT_COMPONENT:
+        return new SlotComponent();
+    case TEXT_COMPONENT:
+        return new TextComponent();
 
     case ANIMATION_COMPONENT:
     case COLLISION_COMPONENT:

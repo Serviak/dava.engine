@@ -1,16 +1,19 @@
 #include "ResaveUtility.h"
-#include "Engine/Engine.h"
-#include "CommandLine/CommandLineParser.h"
-#include "Render/Image/Image.h"
-#include "Render/RenderBase.h"
-#include "Render/Image/ImageSystem.h"
-#include "Render/Image/ImageConvert.h"
-#include "Render/PixelFormatDescriptor.h"
-#include "Render/Texture.h"
 
-#include "Debug/DVAssertDefaultHandlers.h"
-#include "FileSystem/FileList.h"
-#include "Base/BaseTypes.h"
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <Engine/Engine.h>
+#include <CommandLine/CommandLineParser.h>
+#include <Render/Image/Image.h>
+#include <Render/RenderBase.h>
+#include <Render/Image/ImageSystem.h>
+#include <Render/Image/ImageConvert.h>
+#include <Render/PixelFormatDescriptor.h>
+#include <Render/Texture.h>
+
+#include <Debug/DVAssertDefaultHandlers.h>
+#include <FileSystem/FileList.h>
+#include <Base/BaseTypes.h>
 
 using namespace DAVA;
 
@@ -204,7 +207,11 @@ void ProcessImageUnpacker()
 
 void Process(Engine& e)
 {
-    e.GetContext()->logger->SetLogLevel(Logger::LEVEL_INFO);
+    const EngineContext* context = e.GetContext();
+
+    DocumentsDirectorySetup::SetApplicationDocDirectory(context->fileSystem, "AssetCacheClient");
+
+    context->logger->SetLogLevel(Logger::LEVEL_INFO);
     DVASSERT(e.IsConsoleMode() == true);
 
     if (CommandLineParser::GetCommandsCount() < 2
