@@ -41,6 +41,9 @@ TextFieldStbImpl::TextFieldStbImpl(Window* w, UITextField* control)
     control->GetOrCreateComponent<UIClipContentComponent>();
     control->AddControl(staticText);
 
+    // Mark all styled properties as modified
+    staticText->SetLocalPropertySet(~UIStyleSheetPropertySet());
+
     // Ignore staticText parent color because under different platforms
     // we can't mix colors for text fields and parent backgrounds
     staticText->SetTextColorInheritType(UIControlBackground::eColorInheritType::COLOR_IGNORE_PARENT);
