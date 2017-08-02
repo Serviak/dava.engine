@@ -78,7 +78,8 @@ QIcon QColorToQIcon(const Any& value)
 
 String ColorToString(const Any& value)
 {
-    return ColorToQColorAny(value.Get<Color>()).name().toStdString();
+    const Color& c = value.Get<Color>();
+    return Format("%f, %f, %f, %f", c.r, c.g, c.b, c.a);
 }
 
 void RegisterAnyCasts()

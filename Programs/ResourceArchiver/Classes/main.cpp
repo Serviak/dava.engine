@@ -1,6 +1,9 @@
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Base/BaseTypes.h>
 #include <Engine/Engine.h>
 #include <Logger/Logger.h>
+#include <FileSystem/FileSystem.h>
 #include <Debug/DVAssertDefaultHandlers.h>
 
 #include "CommandLineApplication.h"
@@ -29,6 +32,9 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     e.Init(eEngineRunMode::CONSOLE_MODE, modules, nullptr);
 
     const EngineContext* context = e.GetContext();
+
+    DocumentsDirectorySetup::SetApplicationDocDirectory(context->fileSystem, "ResourceArchiver");
+
     context->logger->SetLogLevel(Logger::LEVEL_INFO);
     context->logger->EnableConsoleMode();
 

@@ -2,11 +2,7 @@
 
 #include <Network/NetCore.h>
 #include <Network/PeerDesription.h>
-#include <Network/Services/NetLogger.h>
-
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
-#include <Network/Services/MMNet/MMNetServer.h>
-#endif
+#include <Network/ServicesProvider.h>
 
 namespace DAVA
 {
@@ -64,6 +60,9 @@ private:
     void OnError();
     bool IsNeedSkipTest(const BaseScreen& screen) const;
 
+    // Network support
+    void InitNetwork();
+
     DAVA::Engine& engine;
 
     DAVA::String runOnlyThisTest;
@@ -73,23 +72,13 @@ private:
 
     DAVA::Vector<BaseScreen*> screens;
 
-    // Network support
-    void InitNetwork();
-
-    size_t AnnounceDataSupplier(size_t length, void* buffer);
-
-    DAVA::Net::NetCore::TrackId id_anno = DAVA::Net::NetCore::INVALID_TRACK_ID;
-    DAVA::Net::NetCore::TrackId id_net = DAVA::Net::NetCore::INVALID_TRACK_ID;
-
-    DAVA::Net::NetLogger netLogger;
+    std::shared_ptr<DAVA::Net::IChannelListener> netLogger;
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
-    DAVA::Net::MMNetServer memprofServer;
-    bool memprofInUse = false;
+    std::shared_ptr<DAVA::Net::IChannelListener> memprofServer;
 #endif
-    DAVA::Net::PeerDescription peerDescr;
 
-    bool loggerInUse = false;
-    
+    std::unique_ptr<DAVA::Net::ServicesProvider> servicesProvider;
+
 #if defined(__DAVAENGINE_MACOS__)
 #elif defined(__DAVAENGINE_WIN_UAP__)
     std::unique_ptr<NativeDelegateWin10> nativeDelegate;

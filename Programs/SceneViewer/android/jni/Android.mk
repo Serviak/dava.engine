@@ -17,6 +17,9 @@ LOCAL_MODULE := SceneViewer
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_C_INCLUDES += $(DV_PROJECT_ROOT)/Classes
 LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/ScenePerformanceTests/Sources
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/LoggerService/Sources
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/MemoryProfilerService/Sources
+LOCAL_C_INCLUDES += $(DAVA_ROOT)/Modules/NetworkHelpers/Sources
 
 # set exported includes
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -29,7 +32,10 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(DV_PROJECT_ROOT)/Classes/UIScreens/*.cpp) \
 	$(wildcard $(DV_PROJECT_ROOT)/Classes/Quality/*.cpp) \
 	$(wildcard $(DAVA_ROOT)/Sources/Tools/TeamcityOutput/*.cpp) \
-	$(wildcard $(DAVA_ROOT)/Modules/ScenePerformanceTests/Sources/Private/*.cpp))
+	$(wildcard $(DAVA_ROOT)/Modules/ScenePerformanceTests/Sources/Private/*.cpp) \
+	$(wildcard $(DAVA_ROOT)/Modules/LoggerService/Sources/LoggerService/Private/*.cpp) \
+    $(wildcard $(DAVA_ROOT)/Modules/MemoryProfilerService/Sources/MemoryProfilerService/Private/*.cpp) \
+    $(wildcard $(DAVA_ROOT)/Modules/NetworkHelpers/Sources/NetworkHelpers/Private/*.cpp))
 
 LOCAL_CPPFLAGS += -std=c++14
 

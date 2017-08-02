@@ -240,5 +240,10 @@ public:
     String tooltipFieldName;
 };
 
+/** Indicate that color's components should be edited as int*/
+class IntColor
+{
+};
+
 } // namespace Mates
 } // namespace DAVA

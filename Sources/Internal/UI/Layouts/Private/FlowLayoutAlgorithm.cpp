@@ -107,6 +107,8 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
 
     bool newLineBeforeNext = false;
     bool stickItemBeforeNext = false;
+    bool stickHardBeforeNext = false;
+    BiDiHelper::Direction prevDirection = BiDiHelper::NEUTRAL;
     int32 stickChildrenInLine = 0;
     float32 usedSize = 0.0f;
 
@@ -138,6 +140,9 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
         newLineBeforeNext = false;
         bool stickItemBeforeThis = stickItemBeforeNext;
         stickItemBeforeNext = false;
+        bool stickHardBeforeThis = stickHardBeforeNext;
+        stickHardBeforeNext = false;
+        BiDiHelper::Direction direction = inverse ? BiDiHelper::RTL : BiDiHelper::LTR;
 
         UIFlowLayoutHintComponent* hint = childData.GetControl()->GetComponent<UIFlowLayoutHintComponent>();
         if (hint != nullptr)
@@ -146,10 +151,35 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
             newLineBeforeNext = hint->IsNewLineAfterThis();
             stickItemBeforeThis |= hint->IsStickItemBeforeThis();
             stickItemBeforeNext = hint->IsStickItemAfterThis();
+            stickHardBeforeThis |= hint->IsStickHardBeforeThis();
+            stickHardBeforeNext = hint->IsStickHardAfterThis();
+            direction = hint->GetContentDirection();
         }
+
+        if (direction != BiDiHelper::NEUTRAL && direction != prevDirection)
+        {
+            // Skip sticking if previous control's direction is different
+            stickItemBeforeThis = false;
+            stickHardBeforeThis = false;
+        }
+        prevDirection = direction;
+
         if (stickItemBeforeThis)
         {
             childData.SetFlag(ControlLayoutData::FLAG_STICK_THIS);
+            if (stickHardBeforeThis)
+            {
+                childData.SetFlag(ControlLayoutData::FLAG_STICK_HARD);
+            }
+        }
+
+        if (direction == BiDiHelper::Direction::LTR)
+        {
+            childData.SetFlag(ControlLayoutData::FLAG_LTR);
+        }
+        else if (direction == BiDiHelper::Direction::RTL)
+        {
+            childData.SetFlag(ControlLayoutData::FLAG_RTL);
         }
 
         if (newLineBeforeThis && index > firstIndex)
@@ -172,21 +202,26 @@ void FlowLayoutAlgorithm::CollectLinesInformation(ControlLayoutData& data, Vecto
 
         if (restSize < -LayoutHelpers::EPSILON)
         {
-            if (stickItemBeforeThis && index > firstIndex)
+            if (stickItemBeforeThis && stickHardBeforeThis && index > firstIndex)
             {
                 int32 i = index - 1;
                 while (i > firstIndex)
                 {
-                    usedSize -= layoutData[i].GetWidth();
-                    if (!layoutData[i].HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+                    ControlLayoutData& ld = layoutData[i];
+                    usedSize -= ld.GetWidth();
+                    if (!ld.HasFlag(ControlLayoutData::FLAG_STICK_HARD))
                     {
                         break;
                     }
                     i--;
                 }
-                stickChildrenInLine--;
                 index = i;
-                childSize = layoutData[index].GetWidth();
+                ControlLayoutData& ld = layoutData[index];
+                if (!ld.HasFlag(ControlLayoutData::FLAG_STICK_THIS))
+                {
+                    stickChildrenInLine--;
+                }
+                childSize = ld.GetWidth();
             }
 
             if (index > firstIndex)
@@ -263,23 +298,58 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
 
     // Layout controls in correct order
     bool first = true;
+    bool prevSameDirection = true;
+    bool prevSpace = false;
+    bool stickNext = false;
     for (uint32 i : order)
     {
         ControlLayoutData& childData = layoutData[i];
-        bool stickThis = childData.HasFlag(ControlLayoutData::FLAG_STICK_THIS);
 
-        if (!first && !stickThis)
+        // Current item sticks with previous
+        bool stickThis = childData.HasFlag(ControlLayoutData::FLAG_STICK_THIS);
+        // Curent item's direction same as layout direction
+        bool ltr = childData.HasFlag(ControlLayoutData::FLAG_LTR);
+        bool rtl = childData.HasFlag(ControlLayoutData::FLAG_RTL);
+        bool neutral = !rtl && !ltr;
+        bool sameDirection = neutral || (!inverse && ltr) || (inverse && rtl);
+        // Current item's direction same as previous item's direction
+        bool pairedDirection = sameDirection == prevSameDirection;
+
+        if (first)
         {
-            if (inverse)
+            if (stickThis && !sameDirection)
             {
-                position -= spacing;
+                // Skip space
+                stickNext = true;
+            }
+        }
+        else
+        {
+            if (stickThis && sameDirection)
+            {
+                // Skip space
+                stickNext = false;
             }
             else
             {
-                position += spacing;
+                if (stickNext && pairedDirection)
+                {
+                    // Skip space
+                }
+                else
+                {
+                    if (inverse)
+                    {
+                        position -= spacing;
+                    }
+                    else
+                    {
+                        position += spacing;
+                    }
+                }
+                stickNext = stickThis && !sameDirection;
             }
         }
-        first = false;
 
         float32 size = childData.GetWidth();
         childData.SetPosition(Vector2::AXIS_X, inverse ? position - size : position);
@@ -292,6 +362,9 @@ void FlowLayoutAlgorithm::LayoutLine(ControlLayoutData& data, int32 firstIndex, 
         {
             position += size;
         }
+
+        first = false;
+        prevSameDirection = sameDirection;
     }
 
     DVASSERT(realLastIndex != -1);
@@ -439,12 +512,14 @@ void FlowLayoutAlgorithm::SortLineItemsByContentDirection(int32 firstIndex, int3
             continue;
         }
 
-        UIControl* ctrl = childData.GetControl();
         BiDiHelper::Direction dir = BiDiHelper::Direction::NEUTRAL;
-        UIFlowLayoutHintComponent* hint = ctrl->GetComponent<UIFlowLayoutHintComponent>();
-        if (hint)
+        if (childData.HasFlag(ControlLayoutData::FLAG_LTR))
         {
-            dir = hint->GetContentDirection();
+            dir = BiDiHelper::Direction::LTR;
+        }
+        else if (childData.HasFlag(ControlLayoutData::FLAG_RTL))
+        {
+            dir = BiDiHelper::Direction::RTL;
         }
 
         if (!order.empty() && lastDir == dir)
