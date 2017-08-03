@@ -38,6 +38,7 @@ public:
     bool setData(const QModelIndex& index, const QVariant& value, int role /* = Qt::EditRole */) override;
     QVariant headerData(int section, Qt::Orientation orientation, int role /* = Qt::DisplayRole */) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
+    QModelIndex buddy(const QModelIndex& index) const override;
 
     QModelIndex index(int row, int column, const QModelIndex& parent) const override;
     QModelIndex parent(const QModelIndex& index) const override;
@@ -76,6 +77,7 @@ public:
 
     bool IsEditorSpanned(const QModelIndex& index) const;
 
+    QModelIndex GetRootIndex() const;
     QModelIndex GetRegularRootIndex() const;
     QModelIndex GetFavoriteRootIndex() const;
 
@@ -107,6 +109,17 @@ private:
     void GetExpandedListImpl(QModelIndexList& list, ReflectedPropertyItem* item) const;
 
 private:
+    struct RootItemValue
+    {
+        DAVA_REFLECTION(RootItemValue)
+        {
+            ReflectionRegistrator<RootItemValue>::Begin()
+            .End();
+        }
+    };
+
+    RootItemValue dummyRootValue;
+
     std::unique_ptr<ReflectedPropertyItem> rootItem;
     UnorderedMap<std::shared_ptr<PropertyNode>, ReflectedPropertyItem*> nodeToItem;
     UnorderedMap<std::shared_ptr<PropertyNode>, ReflectedPropertyItem*> nodeToFavorite;

@@ -41,7 +41,9 @@ void ActionUpdateSystem::RemoveEntity(Entity* entity)
 {
     ActionComponent* actionComponent = static_cast<ActionComponent*>(entity->GetComponent(Component::ACTION_COMPONENT));
     if (actionComponent->IsStarted())
-        UnWatch(actionComponent);
+    {
+        actionComponent->StopAll();
+    }
     SceneSystem::RemoveEntity(entity);
 }
 

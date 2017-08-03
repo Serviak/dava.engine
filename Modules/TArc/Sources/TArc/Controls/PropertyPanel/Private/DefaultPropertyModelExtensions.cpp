@@ -167,7 +167,8 @@ std::unique_ptr<BaseComponentValue> DefaultEditorComponentExtension::GetEditor(c
         }
     }
 
-    if (node->propertyType == PropertyNode::FavoritesProperty)
+    if (node->propertyType == PropertyNode::FavoritesProperty ||
+        node->propertyType == PropertyNode::SelfRoot)
     {
         std::unique_ptr<BaseComponentValue> result(new EmptyComponentValue());
         BaseComponentValue::Style style;

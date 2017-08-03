@@ -27,6 +27,10 @@ ServerCore::ServerCore()
     updateTimer = new QTimer(this);
     QObject::connect(updateTimer, &QTimer::timeout, this, &ServerCore::OnRefreshTimer);
 
+    lazyUpdateTimer = new QTimer(this);
+    lazyUpdateTimer->setInterval(LAZY_UPDATE_INTERVAL_MS);
+    QObject::connect(lazyUpdateTimer, &QTimer::timeout, this, &ServerCore::OnLazyUpdateTimer);
+
     connectTimer = new QTimer(this);
     connectTimer->setInterval(CONNECT_TIMEOUT_SEC * 1000);
     connectTimer->setSingleShot(true);
@@ -61,14 +65,18 @@ void ServerCore::Start()
 {
     if (state != State::STARTED)
     {
+        DAVA::Logger::Debug("Server is starting");
+
         StartListening();
 
         ConnectRemote();
 
         updateTimer->start(UPDATE_INTERVAL_MS);
+        lazyUpdateTimer->start(LAZY_UPDATE_INTERVAL_MS);
 
         state = State::STARTED;
         emit ServerStateChanged(this);
+        DAVA::Logger::Info("Server is started");
     }
 }
 
@@ -76,12 +84,16 @@ void ServerCore::Stop()
 {
     if (state != State::STOPPED)
     {
+        DAVA::Logger::Debug("Server is stopping");
+
         updateTimer->stop();
+        lazyUpdateTimer->stop();
 
         StopListening();
         DisconnectRemote();
 
         emit ServerStateChanged(this);
+        DAVA::Logger::Info("Server is stopped");
     }
 }
 
@@ -107,6 +119,7 @@ bool ServerCore::ConnectRemote()
 
     if (!currentRemoteServer.IsEmpty())
     {
+        DAVA::Logger::Debug("Connecting to remote %s:%u", currentRemoteServer.ip.c_str(), DAVA::AssetCache::ASSET_SERVER_PORT);
         clientProxy.Connect(currentRemoteServer.ip, DAVA::AssetCache::ASSET_SERVER_PORT);
         connectTimer->start();
         remoteState = RemoteState::CONNECTING;
@@ -215,6 +228,11 @@ void ServerCore::OnRefreshTimer()
 {
     serverLogics.Update();
     DAVA::Net::NetCore::Instance()->Update();
+}
+
+void ServerCore::OnLazyUpdateTimer()
+{
+    serverLogics.LazyUpdate();
 }
 
 void ServerCore::OnConnectTimeout()
@@ -392,6 +410,7 @@ void ServerCore::OnSharedDataReceived(const DAVA::List<SharedPoolParams>& pools,
 
 void ServerCore::ClearStorage()
 {
+    DAVA::Logger::Info("Manual storage clearing");
     dataBase.ClearStorage();
 }
 

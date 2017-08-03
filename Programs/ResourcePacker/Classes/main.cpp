@@ -1,14 +1,17 @@
 #include <Tools/TexturePacker/ResourcePacker2D.h>
 #include <Tools/TextureCompression/PVRConverter.h>
 
-#include "Engine/Engine.h"
-#include "CommandLine/CommandLineParser.h"
-#include "Render/GPUFamilyDescriptor.h"
-#include "Logger/Logger.h"
-#include "Logger/TeamcityOutput.h"
-#include "Debug/DVAssertDefaultHandlers.h"
-#include "Time/SystemTimer.h"
-#include "Utils/Utils.h"
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <Engine/Engine.h>
+#include <FileSystem/FileSystem.h>
+#include <CommandLine/CommandLineParser.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Logger/Logger.h>
+#include <Logger/TeamcityOutput.h>
+#include <Debug/DVAssertDefaultHandlers.h>
+#include <Time/SystemTimer.h>
+#include <Utils/Utils.h>
 
 using namespace DAVA;
 
@@ -112,11 +115,11 @@ void ProcessRecourcePacker(Engine& e)
         exportForGPUs.push_back(GPU_ORIGIN);
     }
 
-    AssetCacheClient cacheClient;
-    bool shouldDisconnect = false;
+    std::unique_ptr<AssetCacheClient> cacheClient;
     if (CommandLineParser::CommandIsFound(String("-useCache")))
     {
         Logger::FrameworkDebug("Using asset cache");
+        cacheClient = std::make_unique<AssetCacheClient>();
 
         String ipStr = CommandLineParser::GetCommandParam("-ip");
         String portStr = CommandLineParser::GetCommandParam("-p");
@@ -127,11 +130,10 @@ void ProcessRecourcePacker(Engine& e)
         params.port = (portStr.empty()) ? AssetCache::ASSET_SERVER_PORT : atoi(portStr.c_str());
         params.timeoutms = (timeoutStr.empty() ? 1000 : atoi(timeoutStr.c_str()) * 1000); //in ms
 
-        AssetCache::Error connected = cacheClient.ConnectSynchronously(params);
+        AssetCache::Error connected = cacheClient->ConnectSynchronously(params);
         if (connected == AssetCache::Error::NO_ERRORS)
         {
-            shouldDisconnect = true;
-            resourcePacker.SetCacheClient(&cacheClient, "Resource Packer. Repack Sprites");
+            resourcePacker.SetCacheClient(cacheClient.get(), "Resource Packer. Repack Sprites");
         }
     }
     else
@@ -150,9 +152,10 @@ void ProcessRecourcePacker(Engine& e)
         resourcePacker.PackResources(exportForGPUs);
     }
 
-    if (shouldDisconnect)
+    if (cacheClient)
     {
-        cacheClient.Disconnect();
+        cacheClient->Disconnect();
+        cacheClient.reset();
     }
 
     elapsedTime = SystemTimer::GetMs() - elapsedTime;
@@ -162,7 +165,12 @@ void ProcessRecourcePacker(Engine& e)
 void Process(Engine& e)
 {
     DVASSERT(e.IsConsoleMode() == true);
-    Logger* logger = e.GetContext()->logger;
+
+    const EngineContext* context = e.GetContext();
+
+    DocumentsDirectorySetup::SetApplicationDocDirectory(context->fileSystem, "ResourcePacker");
+
+    Logger* logger = context->logger;
     logger->SetLogLevel(Logger::LEVEL_INFO);
 
     if (CommandLineParser::GetCommandsCount() < 2

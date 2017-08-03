@@ -29,8 +29,8 @@ class PropertiesView : public QWidget
 public:
     enum eViewMode
     {
-        VIEW_MODE_NORMAL,
-        VIEW_MODE_FAVORITES_ONLY
+        VIEW_MODE_REGULAR_TREE = 0x1,
+        VIEW_MODE_FAVORITES = 0x2
     };
 
     enum UpdatePolicy
@@ -85,8 +85,11 @@ private:
     void OnCollapsed(const QModelIndex& index);
     void OnFavoritesEditChanged(bool isChecked);
 
-    eViewMode GetViewMode() const;
-    void SetViewMode(eViewMode mode);
+    bool IsRegularTreeShown() const;
+    void SetRegularTreeShown(bool isShown);
+
+    bool IsFavoritesShown() const;
+    void SetFavoritesShown(bool isShown);
 
     bool IsInDeveloperMode() const;
     void SetDeveloperMode(bool isDevMode);
@@ -106,7 +109,7 @@ private:
     Vector<FastName> currentIndexPath;
     bool isModelUpdate = false;
 
-    eViewMode viewMode = VIEW_MODE_NORMAL;
+    int32 viewMode = VIEW_MODE_REGULAR_TREE;
 
     DAVA_REFLECTION(PropertiesView);
 };
