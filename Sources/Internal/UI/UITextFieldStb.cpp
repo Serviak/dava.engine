@@ -8,7 +8,6 @@
 #include "Time/SystemTimer.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
 #include "Utils/UTF8Utils.h"
 #include "Utils/StringUtils.h"
 #include "Utils/TextBox.h"
@@ -726,7 +725,7 @@ void TextFieldStbImpl::Input(UIEvent* currentInput)
     if (currentInput->phase == UIEvent::Phase::KEY_DOWN ||
         currentInput->phase == UIEvent::Phase::KEY_DOWN_REPEAT)
     {
-        if ((currentInput->key == Key::ENTER || currentInput->key == Key::NUMPADENTER) && !isAlt)
+        if ((currentInput->key == eInputElements::KB_ENTER || currentInput->key == eInputElements::KB_NUMPAD_ENTER) && !isAlt)
         {
             if (control->GetDelegate())
             {
@@ -734,7 +733,7 @@ void TextFieldStbImpl::Input(UIEvent* currentInput)
             }
             return;
         }
-        else if (currentInput->key == Key::ESCAPE)
+        else if (currentInput->key == eInputElements::KB_ESCAPE)
         {
             if (control->GetDelegate())
             {

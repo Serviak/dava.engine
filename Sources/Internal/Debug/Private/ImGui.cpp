@@ -6,7 +6,11 @@
 #include "UI/UIEvent.h"
 #include "UI/UIControlSystem.h"
 #include "Input/InputSystem.h"
+#include "Input/InputEvent.h"
+#include "Input/Mouse.h"
+#include "Input/Keyboard.h"
 #include "Debug/Private/ImGui.h"
+#include "DeviceManager/DeviceManager.h"
 #include "Render/RHI/rhi_Public.h"
 #include "Render/RHI/rhi_ShaderCache.h"
 #include "Render/RHI/rhi_ShaderSource.h"
@@ -242,11 +246,11 @@ namespace ImGui
 using DAVA::uint8;
 using DAVA::int32;
 using DAVA::uint32;
-using DAVA::Key;
 using DAVA::UIEvent;
 using DAVA::float32;
 using DAVA::Vector2;
 using DAVA::eInputDevices;
+using DAVA::eInputElements;
 
 void Initialize()
 {
@@ -258,25 +262,25 @@ void Initialize()
     io.IniFilename = nullptr;
     io.LogFilename = nullptr;
 
-    io.KeyMap[ImGuiKey_Tab] = int32(Key::TAB);
-    io.KeyMap[ImGuiKey_LeftArrow] = int32(Key::LEFT);
-    io.KeyMap[ImGuiKey_RightArrow] = int32(Key::RIGHT);
-    io.KeyMap[ImGuiKey_UpArrow] = int32(Key::UP);
-    io.KeyMap[ImGuiKey_DownArrow] = int32(Key::DOWN);
-    io.KeyMap[ImGuiKey_PageUp] = int32(Key::PGUP);
-    io.KeyMap[ImGuiKey_PageDown] = int32(Key::PGDN);
-    io.KeyMap[ImGuiKey_Home] = int32(Key::HOME);
-    io.KeyMap[ImGuiKey_End] = int32(Key::END);
-    io.KeyMap[ImGuiKey_Delete] = int32(Key::DELETE);
-    io.KeyMap[ImGuiKey_Backspace] = int32(Key::BACKSPACE);
-    io.KeyMap[ImGuiKey_Enter] = int32(Key::ENTER);
-    io.KeyMap[ImGuiKey_Escape] = int32(Key::ESCAPE);
-    io.KeyMap[ImGuiKey_A] = int32(Key::KEY_A);
-    io.KeyMap[ImGuiKey_C] = int32(Key::KEY_C);
-    io.KeyMap[ImGuiKey_V] = int32(Key::KEY_V);
-    io.KeyMap[ImGuiKey_X] = int32(Key::KEY_X);
-    io.KeyMap[ImGuiKey_Y] = int32(Key::KEY_Y);
-    io.KeyMap[ImGuiKey_Z] = int32(Key::KEY_Z);
+    io.KeyMap[ImGuiKey_Tab] = int32(eInputElements::KB_TAB);
+    io.KeyMap[ImGuiKey_LeftArrow] = int32(eInputElements::KB_LEFT);
+    io.KeyMap[ImGuiKey_RightArrow] = int32(eInputElements::KB_RIGHT);
+    io.KeyMap[ImGuiKey_UpArrow] = int32(eInputElements::KB_UP);
+    io.KeyMap[ImGuiKey_DownArrow] = int32(eInputElements::KB_DOWN);
+    io.KeyMap[ImGuiKey_PageUp] = int32(eInputElements::KB_PAGEUP);
+    io.KeyMap[ImGuiKey_PageDown] = int32(eInputElements::KB_PAGEDOWN);
+    io.KeyMap[ImGuiKey_Home] = int32(eInputElements::KB_HOME);
+    io.KeyMap[ImGuiKey_End] = int32(eInputElements::KB_END);
+    io.KeyMap[ImGuiKey_Delete] = int32(eInputElements::KB_DELETE);
+    io.KeyMap[ImGuiKey_Backspace] = int32(eInputElements::KB_BACKSPACE);
+    io.KeyMap[ImGuiKey_Enter] = int32(eInputElements::KB_ENTER);
+    io.KeyMap[ImGuiKey_Escape] = int32(eInputElements::KB_ESCAPE);
+    io.KeyMap[ImGuiKey_A] = int32(eInputElements::KB_A);
+    io.KeyMap[ImGuiKey_C] = int32(eInputElements::KB_C);
+    io.KeyMap[ImGuiKey_V] = int32(eInputElements::KB_V);
+    io.KeyMap[ImGuiKey_X] = int32(eInputElements::KB_X);
+    io.KeyMap[ImGuiKey_Y] = int32(eInputElements::KB_Y);
+    io.KeyMap[ImGuiKey_Z] = int32(eInputElements::KB_Z);
 
     //vertex layouts
     rhi::VertexLayout vLayout;
@@ -349,7 +353,9 @@ void Initialize()
     DAVA::Engine::Instance()->beginFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameBegin);
     DAVA::Engine::Instance()->endFrame.Connect(ImGuiImplDetails::trackedObject, &OnFrameEnd);
 
-    ImGuiImplDetails::inputHandlerToken = DAVA::InputSystem::Instance()->AddHandler(eInputDevices::TOUCH_SURFACE | eInputDevices::MOUSE | eInputDevices::KEYBOARD, &OnInput);
+    ImGuiImplDetails::inputHandlerToken = DAVA::InputSystem::Instance()->AddHandler
+                                          (eInputDevices::TOUCH_SURFACE | eInputDevices::MOUSE | eInputDevices::KEYBOARD,
+                                           DAVA::MakeFunction<bool, const DAVA::InputEvent&>(&OnInput));
 
     ImGuiImplDetails::initialized = true;
 }
@@ -436,58 +442,62 @@ void OnFrameEnd()
         ImGui::Render();
 }
 
-bool OnInput(UIEvent* input)
+bool OnInput(const DAVA::InputEvent& input)
 {
+    using namespace DAVA;
+
     if (!ImGuiImplDetails::initialized)
         return false;
 
     ImGuiIO& io = ImGui::GetIO();
 
-    DAVA::VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
-    Vector2 physPoint = vcs->ConvertVirtualToPhysical(vcs->ConvertInputToVirtual(input->physPoint));
-    int32 mouseButton = (input->device == DAVA::eInputDevices::MOUSE) ? (int32(input->mouseButton) - 1) : 0;
-
-    switch (input->phase)
+    if (input.deviceType == eInputDevices::MOUSE)
     {
-    case UIEvent::Phase::MOVE:
-    case UIEvent::Phase::DRAG:
-        io.MousePos.x = physPoint.x;
-        io.MousePos.y = physPoint.y;
-        break;
+        Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
 
-    case UIEvent::Phase::WHEEL:
-        io.MouseWheel += input->wheelDelta.y;
-        break;
+        DAVA::AnalogElementState mousePos = mouse->GetPosition();
+        io.MousePos.x = mousePos.x;
+        io.MousePos.y = mousePos.y;
 
-    case UIEvent::Phase::KEY_DOWN:
-    case UIEvent::Phase::KEY_UP:
+        if (IsMouseButtonInputElement(input.elementId))
+        {
+            uint32 mouseButtonIndex = input.elementId - eInputElements::MOUSE_FIRST_BUTTON;
+            io.MouseDown[mouseButtonIndex] = input.digitalState.IsPressed();
+        }
+        else if (input.elementId == eInputElements::MOUSE_WHEEL)
+        {
+            DAVA::AnalogElementState mouseWheelDelta = mouse->GetWheelDelta();
+            io.MouseWheel = mouseWheelDelta.y;
+        }
+    }
+    else if (input.deviceType == eInputDevices::KEYBOARD)
+    {
+        if (input.keyboardEvent.charCode > 0)
+        {
+            io.AddInputCharacter(ImWchar(input.keyboardEvent.charCode));
+        }
+        else
+        {
+            bool keyIsPressed = input.digitalState.IsPressed();
 
-        io.KeysDown[int32(input->key)] = (input->phase == UIEvent::Phase::KEY_DOWN);
+            io.KeysDown[static_cast<size_t>(input.elementId) - eInputElements::KB_FIRST] = keyIsPressed;
 
-        if (input->key == Key::LCTRL || input->key == Key::RCTRL)
-            io.KeyCtrl = (input->phase == UIEvent::Phase::KEY_DOWN);
-
-        if (input->key == Key::LALT || input->key == Key::RALT)
-            io.KeyAlt = (input->phase == UIEvent::Phase::KEY_DOWN);
-
-        if (input->key == Key::LCMD || input->key == Key::RCMD)
-            io.KeySuper = (input->phase == UIEvent::Phase::KEY_DOWN);
-
-        break;
-
-    case UIEvent::Phase::BEGAN:
-    case UIEvent::Phase::ENDED:
-        io.MousePos.x = physPoint.x;
-        io.MousePos.y = physPoint.y;
-        io.MouseDown[mouseButton] = (input->phase == UIEvent::Phase::BEGAN);
-        break;
-
-    case UIEvent::Phase::CHAR:
-        io.AddInputCharacter(ImWchar(input->keyChar));
-        break;
-
-    default:
-        break;
+            if (IsKeyboardModifierInputElement(input.elementId))
+            {
+                if (input.elementId == eInputElements::KB_LCTRL || input.elementId == eInputElements::KB_RCTRL)
+                {
+                    io.KeyCtrl = keyIsPressed;
+                }
+                else if (input.elementId == eInputElements::KB_LALT || input.elementId == eInputElements::KB_RALT)
+                {
+                    io.KeyAlt = keyIsPressed;
+                }
+                else if (input.elementId == eInputElements::KB_LCMD || input.elementId == eInputElements::KB_RCMD)
+                {
+                    io.KeySuper = keyIsPressed;
+                }
+            }
+        }
     }
 
     return (io.WantCaptureMouse || io.WantCaptureKeyboard || io.WantTextInput);

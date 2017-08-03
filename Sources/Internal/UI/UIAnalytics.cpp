@@ -1,7 +1,5 @@
-#include "UI/UIAnalitycs.h"
+#include "UI/UIAnalytics.h"
 
-#include "Engine/Engine.h"
-#include "Input/KeyboardDevice.h"
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
 
@@ -45,15 +43,15 @@ bool EmitKeyEvent(UIControl* control, UIEvent* uiEvent)
     }
     const char* pressedKey = nullptr;
 
-    if (uiEvent->key == Key::ESCAPE)
+    if (uiEvent->key == eInputElements::KB_ESCAPE)
     {
         pressedKey = ESC_KEY_PRESSED;
     }
-    else if (uiEvent->key == Key::ENTER)
+    else if (uiEvent->key == eInputElements::KB_ENTER)
     {
         pressedKey = ENTER_KEY_PRESSED;
     }
-    else if (uiEvent->key == Key::BACK)
+    else if (uiEvent->key == eInputElements::BACK)
     {
         pressedKey = BACK_KEY_PRESSED;
     }

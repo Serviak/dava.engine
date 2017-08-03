@@ -4,7 +4,7 @@
 
 namespace DAVA
 {
-class UIEvent;
+struct InputEvent;
 }
 
 namespace ImGui
@@ -13,6 +13,6 @@ void Initialize();
 bool IsInitialized();
 void OnFrameBegin();
 void OnFrameEnd();
-bool OnInput(DAVA::UIEvent* input);
+bool OnInput(const DAVA::InputEvent& input);
 void Uninitialize();
 }

@@ -79,6 +79,9 @@ public:
 
     void UpdateDisplayConfig();
 
+    void InstallEventFilter(void* token, const Function<bool(const MainDispatcherEvent&)>& filter);
+    void UninstallEventFilter(void* token);
+
     // Proxy method that calls SystemTimer::Adjust to prevent many friends to SystemTimer
     static void AdjustSystemTimer(int64 adjustMicro);
 
@@ -140,6 +143,13 @@ private:
 
     // Application-supplied functor which is invoked when user is trying to close window or application
     Function<bool(Window*)> closeRequestHandler;
+
+    struct EventFilter
+    {
+        void* token;
+        Function<bool(const MainDispatcherEvent&)> filter;
+    };
+    Vector<EventFilter> eventFilters;
 
     eEngineRunMode runMode = eEngineRunMode::GUI_STANDALONE;
     bool isInitialized = false; // Flag indicating that Init method has been called

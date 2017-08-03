@@ -3,6 +3,8 @@
 
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
+#include "DeviceManager/DeviceManager.h"
+#include "Input/Keyboard.h"
 
 #include "Scene/System/CollisionSystem.h"
 #include "Scene/System/ModifSystem.h"
@@ -70,10 +72,10 @@ void SelectionSystem::UpdateGroupSelectionMode()
     {
         return;
     }
-    const DAVA::KeyboardDevice& keyboard = engineContext->inputSystem->GetKeyboard();
+    DAVA::Keyboard* kb = engineContext->deviceManager->GetKeyboard();
 
-    bool addSelection = keyboard.IsKeyPressed(DAVA::Key::LCTRL) || keyboard.IsKeyPressed(DAVA::Key::RCTRL);
-    bool excludeSelection = keyboard.IsKeyPressed(DAVA::Key::LALT) || keyboard.IsKeyPressed(DAVA::Key::RALT);
+    bool addSelection = kb->GetKeyState(DAVA::eInputElements::KB_LCTRL).IsPressed() || kb->GetKeyState(DAVA::eInputElements::KB_RCTRL).IsPressed();
+    bool excludeSelection = kb->GetKeyState(DAVA::eInputElements::KB_LALT).IsPressed() || kb->GetKeyState(DAVA::eInputElements::KB_RALT).IsPressed();
 
     if (addSelection)
     {
@@ -215,10 +217,10 @@ void SelectionSystem::ProcessSelectedGroup(const SelectableGroup::CollectionType
         }
     }
 
-    const auto& keyboard = DAVA::InputSystem::Instance()->GetKeyboard();
+    DAVA::Keyboard* kb = DAVA::GetEngineContext()->deviceManager->GetKeyboard();
 
-    bool addSelection = keyboard.IsKeyPressed(DAVA::Key::LCTRL) || keyboard.IsKeyPressed(DAVA::Key::RCTRL);
-    bool excludeSelection = keyboard.IsKeyPressed(DAVA::Key::LALT) || keyboard.IsKeyPressed(DAVA::Key::RALT);
+    bool addSelection = kb->GetKeyState(DAVA::eInputElements::KB_LCTRL).IsPressed() || kb->GetKeyState(DAVA::eInputElements::KB_RCTRL).IsPressed();
+    bool excludeSelection = kb->GetKeyState(DAVA::eInputElements::KB_LALT).IsPressed() || kb->GetKeyState(DAVA::eInputElements::KB_RALT).IsPressed();
 
     if (addSelection && (firstEntity != nullptr))
     {

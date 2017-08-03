@@ -13,6 +13,11 @@
 #include "UI/UIEvent.h"
 #include "UI/UIControlSystem.h"
 #include "Input/InputSystem.h"
+#include "Input/Keyboard.h"
+#include "DeviceManager/DeviceManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+
 #include <ostream>
 
 namespace DAVA
@@ -210,56 +215,62 @@ bool ProfilerOverlay::OnInput(UIEvent* input)
 {
     if (inputEnabled)
     {
-        const KeyboardDevice& keyboard = InputSystem::Instance()->GetKeyboard();
-        if (keyboard.IsKeyPressed(Key::LCTRL) && input->phase == UIEvent::Phase::KEY_DOWN && input->key == Key::F12)
+        const Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+
+        if (keyboard != nullptr)
         {
-            SetEnabled(!IsEnabled());
-        }
-        else if (overlayEnabled)
-        {
-            if (keyboard.IsKeyPressed(Key::LCTRL) && input->phase == UIEvent::Phase::KEY_DOWN)
+            const bool lctrlPressed = keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
+
+            if (lctrlPressed && input->phase == UIEvent::Phase::KEY_DOWN && input->key == eInputElements::KB_F12)
             {
-                switch (input->key)
-                {
-                case Key::F9:
-                    OnButtonPressed(BUTTON_DRAW_MARKER_HISTORY);
-                    break;
-
-                case Key::F10:
-                    OnButtonPressed(BUTTON_SCALE);
-                    break;
-
-                case Key::F11:
-                    OnButtonPressed(BUTTON_PROFILERS_START_STOP);
-                    break;
-
-                case Key::LEFT:
-                    OnButtonPressed(BUTTON_HISTORY_PREV);
-                    break;
-
-                case Key::RIGHT:
-                    OnButtonPressed(BUTTON_HISTORY_NEXT);
-                    break;
-
-                case Key::UP:
-                    SelectPreviousMarker();
-                    break;
-
-                case Key::DOWN:
-                    SelectNextMarker();
-                    break;
-
-                case Key::TAB:
-                    SelectTrace((GetSelectedTrace() == ProfilerOverlay::TRACE_CPU) ? ProfilerOverlay::TRACE_GPU : ProfilerOverlay::TRACE_CPU);
-                    break;
-
-                default:
-                    break;
-                }
+                SetEnabled(!IsEnabled());
             }
-            else
+            else if (overlayEnabled)
             {
-                ProcessTouch(input);
+                if (lctrlPressed && input->phase == UIEvent::Phase::KEY_DOWN)
+                {
+                    switch (input->key)
+                    {
+                    case eInputElements::KB_F9:
+                        OnButtonPressed(BUTTON_DRAW_MARKER_HISTORY);
+                        break;
+
+                    case eInputElements::KB_F10:
+                        OnButtonPressed(BUTTON_SCALE);
+                        break;
+
+                    case eInputElements::KB_F11:
+                        OnButtonPressed(BUTTON_PROFILERS_START_STOP);
+                        break;
+
+                    case eInputElements::KB_LEFT:
+                        OnButtonPressed(BUTTON_HISTORY_PREV);
+                        break;
+
+                    case eInputElements::KB_RIGHT:
+                        OnButtonPressed(BUTTON_HISTORY_NEXT);
+                        break;
+
+                    case eInputElements::KB_UP:
+                        SelectPreviousMarker();
+                        break;
+
+                    case eInputElements::KB_DOWN:
+                        SelectNextMarker();
+                        break;
+
+                    case eInputElements::KB_TAB:
+                        SelectTrace((GetSelectedTrace() == ProfilerOverlay::TRACE_CPU) ? ProfilerOverlay::TRACE_GPU : ProfilerOverlay::TRACE_CPU);
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+                else
+                {
+                    ProcessTouch(input);
+                }
             }
         }
     }

@@ -13,6 +13,15 @@ typedef struct timecaps_tag
     UINT wPeriodMax; /* maximum period supported  */
 } TIMECAPS, *PTIMECAPS, NEAR *NPTIMECAPS, FAR *LPTIMECAPS;
 
+// To use with MapVirtualKey
+#if !defined(MAPVK_VK_TO_VSC)
+#define MAPVK_VK_TO_VSC (0)
+#define MAPVK_VSC_TO_VK (1)
+#define MAPVK_VK_TO_CHAR (2)
+#define MAPVK_VSC_TO_VK_EX (3)
+#define MAPVK_VK_TO_VSC_EX (4)
+#endif
+
 namespace DAVA
 {
 namespace Private
@@ -31,6 +40,8 @@ struct DllImport
     static MMRESULT(WINAPI* fnTimeGetDevCaps)(LPTIMECAPS ptc, UINT cbtc);
     static MMRESULT(WINAPI* fnTimeBeginPeriod)(UINT uPeriod);
     static MMRESULT(WINAPI* fnTimeEndPeriod)(UINT uPeriod);
+
+    static UINT(WINAPI* fnMapVirtualKey)(UINT uCode, UINT uMapType);
 };
 
 } // namespace Private

@@ -66,6 +66,9 @@ size_t DeviceManagerImpl::GetDisplays(DisplayInfoRange* range)
             range->begin[i].rawDpiY = dpiY;
         }
     }
+
+    // Make primary display to be the first in list
+    std::sort(range->begin, range->end, [](const DisplayInfo& l, const DisplayInfo& r) { return l.primary > r.primary; });
     return count;
 }
 

@@ -59,6 +59,8 @@ struct MainDispatcherEvent final
         GAMEPAD_REMOVED,
 
         DISPLAY_CONFIG_CHANGED,
+
+        INPUT_LANGUAGE_CHANGED
     };
 
     static bool IsInputEvent(eType type);
@@ -182,7 +184,8 @@ struct MainDispatcherEvent final
     ///     - KEY_CHAR
     struct KeyEvent
     {
-        uint32 key;
+        uint32 keyScancode;
+        uint32 keyVirtual;
         eModifierKeys modifierKeys; // Modifier keys accompanying key event (shift, alt, control)
         bool isRepeated;
     };
@@ -252,7 +255,7 @@ struct MainDispatcherEvent final
     static MainDispatcherEvent CreateWindowCancelInputEvent(Window* window);
     static MainDispatcherEvent CreateWindowVisibleFrameChangedEvent(Window* window, float32 x, float32 y, float32 width, float32 height);
 
-    static MainDispatcherEvent CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 key, eModifierKeys modifierKeys, bool isRepeated);
+    static MainDispatcherEvent CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 keyScancode, uint32 keyVirtual, eModifierKeys modifierKeys, bool isRepeated);
     static MainDispatcherEvent CreateWindowMouseClickEvent(Window* window, eType mouseClickEventType, eMouseButtons button, float32 x, float32 y, uint32 clicks, eModifierKeys modifierKeys, bool isRelative);
     static MainDispatcherEvent CreateWindowMouseMoveEvent(Window* window, float32 x, float32 y, eModifierKeys modifierKeys, bool isRelative);
     static MainDispatcherEvent CreateWindowMouseWheelEvent(Window* window, float32 x, float32 y, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys, bool isRelative);
@@ -261,6 +264,8 @@ struct MainDispatcherEvent final
     static MainDispatcherEvent CreateWindowRotationGestureEvent(Window* window, float32 rotation, eModifierKeys modifierKeys);
     static MainDispatcherEvent CreateWindowSwipeGestureEvent(Window* window, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys);
     static MainDispatcherEvent CreateWindowCaptureLostEvent(Window* window);
+
+    static MainDispatcherEvent CreateInputLanguageChangedEvent();
 };
 
 template <typename F>

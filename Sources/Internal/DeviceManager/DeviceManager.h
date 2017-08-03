@@ -2,9 +2,9 @@
 
 #include "Base/BaseTypes.h"
 #include "DeviceManager/DeviceManagerTypes.h"
-#include "Functional/Signal.h"
-
+#include "Input/TouchScreen.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Functional/Signal.h"
 
 /**
     \defgroup device_manager Device Manager
@@ -12,10 +12,17 @@
 
 namespace DAVA
 {
+class Gamepad;
+class InputDevice;
+class Keyboard;
+class Mouse;
 namespace Private
 {
 struct DeviceManagerImpl;
+struct MainDispatcherEvent;
 }
+
+// TODO: add notifying when input device is added/removed
 
 /**
     \ingroup device_manager
@@ -23,7 +30,7 @@ struct DeviceManagerImpl;
     Class which keeps current device configuration, listens for device addition, removal or devices' properties changes.
     Application can subscribe to appropriate signals to receive notification about configuration changes.
 
-    \todo For now `DeviceManager` observes only display devices and cpu stats, further add other devices (input, storage, maybe network).
+    \todo For now `DeviceManager` observes only display devices, input and cpu stats, further add other devices (storage, maybe network).
 */
 class DeviceManager final
 {
@@ -32,6 +39,8 @@ private:
     ~DeviceManager();
 
 public:
+    // Display methods
+
     /** Get primary display as reported by system */
     const DisplayInfo& GetPrimaryDisplay() const;
 
@@ -41,7 +50,17 @@ public:
     /** Get total display count */
     size_t GetDisplayCount() const;
 
-    Signal<> displayConfigChanged; //<! Emited when display has been added/removed or properties of any display has changed
+    // Input methods
+
+    InputDevice* GetInputDevice(uint32 id);
+    Gamepad* GetGamepad();
+    Keyboard* GetKeyboard();
+    Mouse* GetMouse();
+    TouchScreen* GetTouchScreen();
+
+    // Signals
+
+    Signal<> displayConfigChanged; //<! Emited when display has been added/removed or properties of any display have changed
 
     /**
         Get CPU temperature in celsius.
@@ -51,9 +70,25 @@ public:
 
 private:
     void UpdateDisplayConfig();
-    void HandleEvent(const Private::MainDispatcherEvent& e);
+
+    bool HandleEvent(const Private::MainDispatcherEvent& e);
+    void HandleDisplayConfigChanged(const Private::MainDispatcherEvent& e);
+    void HandleGamepadMotion(const Private::MainDispatcherEvent& e);
+    void HandleGamepadButton(const Private::MainDispatcherEvent& e);
+    void HandleGamepadAdded(const Private::MainDispatcherEvent& e);
+    void HandleGamepadRemoved(const Private::MainDispatcherEvent& e);
+
+    void Update(float32 frameDelta);
+    void OnEngineInited();
 
     Vector<DisplayInfo> displays;
+
+    Keyboard* keyboard = nullptr;
+    Mouse* mouse = nullptr;
+    Gamepad* gamepad = nullptr;
+    TouchScreen* touchScreen = nullptr;
+    Vector<InputDevice*> inputDevices;
+
     std::unique_ptr<Private::DeviceManagerImpl> impl;
 
     friend class Private::EngineBackend;
