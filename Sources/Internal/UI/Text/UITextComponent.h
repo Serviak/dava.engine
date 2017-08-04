@@ -157,7 +157,7 @@ private:
     eTextMultiline multiline = eTextMultiline::MULTILINE_DISABLED;
     eTextFitting fitting = eTextFitting::FITTING_NONE;
     Color color = Color::White;
-    UIControlBackground::eColorInheritType colorInheritType = UIControlBackground::COLOR_IGNORE_PARENT;
+	UIControlBackground::eColorInheritType colorInheritType = UIControlBackground::COLOR_MULTIPLY_ON_PARENT;
     Vector2 shadowOffset;
     Color shadowColor = Color::Black;
     UIControlBackground::ePerPixelAccuracyType perPixelAccuracyType = UIControlBackground::PER_PIXEL_ACCURACY_ENABLED;
